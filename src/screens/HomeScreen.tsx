@@ -7,7 +7,6 @@ import {
 } from 'react-native';
 import { Colors } from '../constants/styles';
 import { HomeHeader } from '../components/home/HomeHeader';
-import { FilterBanner } from '../components/home/FilterBanner';
 import { Stories } from '../components/home/Stories';
 import { PostCard } from '../components/home/PostCard';
 import { EmptyState } from '../components/home/EmptyState';
@@ -82,6 +81,10 @@ export const HomeScreen: React.FC = () => {
     console.log('Adjust preferences pressed');
   };
 
+  const handleFilterPress = () => {
+    console.log('Filter pressed - show filter modal/screen');
+  };
+
   // Header action handlers
   const handleHeartPress = () => console.log('Heart pressed');
   const handleChatPress = () => console.log('Chat pressed');
@@ -101,26 +104,15 @@ export const HomeScreen: React.FC = () => {
         onComment={handleChat}
         onShare={(postId: string) => console.log('Share post:', postId)}
         onSave={() => console.log('Save post')}
-        onViewComments={() => console.log('View comments')}
     />
   );
 
   const renderListHeader = () => (
-    <>
-      <FilterBanner
-        postsCount={posts.length}
-        preferences={{
-          ageRange: `${userPreferences.partnerAgeMin}-${userPreferences.partnerAgeMax}`,
-          location: userPreferences.partnerLocation || [],
-          profession: userPreferences.partnerProfession || []
-        }}
-      />
-      <Stories
-        users={posts.map(post => post.user)}
-        onAddStory={handleAddStory}
-        onStoryPress={handleStoryPress}
-      />
-    </>
+    <Stories
+      users={posts.map(post => post.user)}
+      onAddStory={handleAddStory}
+      onStoryPress={handleStoryPress}
+    />
   );
 
   return (
@@ -133,6 +125,7 @@ export const HomeScreen: React.FC = () => {
         onHeartPress={handleHeartPress}
         onChatPress={handleChatPress}
         onAddPress={handleAddPress}
+        onFilterPress={handleFilterPress}
       />
 
       <FlatList

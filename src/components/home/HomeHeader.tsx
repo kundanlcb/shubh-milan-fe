@@ -11,6 +11,7 @@ interface HomeHeaderProps {
   onHeartPress: () => void;
   onChatPress: () => void;
   onAddPress: () => void;
+  onFilterPress: () => void;
 }
 
 export const HomeHeader: React.FC<HomeHeaderProps> = ({
@@ -18,6 +19,7 @@ export const HomeHeader: React.FC<HomeHeaderProps> = ({
   onHeartPress,
   onChatPress,
   onAddPress,
+  onFilterPress,
 }) => {
   return (
     <View style={styles.header}>
@@ -36,6 +38,9 @@ export const HomeHeader: React.FC<HomeHeaderProps> = ({
         </TouchableOpacity>
         <TouchableOpacity style={styles.iconButton} onPress={onAddPress}>
           <Icon name="plus" library="feather" size={20} color={Colors.primary} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.iconButton} onPress={onFilterPress}>
+          <Icon name="filter" library="feather" size={20} color={Colors.primary} />
         </TouchableOpacity>
       </View>
     </View>

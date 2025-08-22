@@ -33,7 +33,6 @@ interface PostCardProps {
   onComment: (postId: string) => void; // Added missing onComment
   onShare: (postId: string) => void; // Fixed signature to accept postId
   onSave: () => void;
-  onViewComments: () => void;
 }
 
 export const PostCard: React.FC<PostCardProps> = ({
@@ -41,9 +40,8 @@ export const PostCard: React.FC<PostCardProps> = ({
   userPreferences,
   onLike,
   onProfile,
-  onContactRequest,// Added onComment parameter
+  onContactRequest,
   onShare,
-  onViewComments,
 }) => {
   const compatibilityScore = Math.floor(Math.random() * 20) + 80;
 
@@ -131,11 +129,6 @@ export const PostCard: React.FC<PostCardProps> = ({
           <Text style={styles.username}>{post.user.name} </Text>
           {post.caption}
         </Text>
-        {post.comments > 0 && (
-          <TouchableOpacity style={styles.commentsLink} onPress={onViewComments}>
-            <Text style={styles.commentsText}>View all {post.comments} comments</Text>
-          </TouchableOpacity>
-        )}
       </View>
     </View>
   );
@@ -189,6 +182,9 @@ const styles = StyleSheet.create({
   location: {
     fontSize: 11,
     color: '#999',
+    paddingVertical: 2,
+    paddingHorizontal: 4,
+    marginTop: 2,
   },
   contactButton: {
     backgroundColor: Colors.primary,
@@ -263,13 +259,6 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: '#333',
     marginBottom: 8,
-  },
-  commentsLink: {
-    marginTop: 4,
-  },
-  commentsText: {
-    fontSize: 14,
-    color: '#999',
   },
   matchBadge: {
     backgroundColor: '#E8F5E9',
