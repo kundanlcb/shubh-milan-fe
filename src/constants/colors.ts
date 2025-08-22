@@ -35,6 +35,7 @@ export const Colors = {
   textSecondary: '#757575',
   textTertiary: '#9E9E9E',
   textInverse: '#FFFFFF',
+  white: '#FFFFFF', // Added missing white color
 
   // UI Colors
   border: '#E0E0E0',
@@ -46,6 +47,7 @@ export const Colors = {
   success: '#4CAF50',
   warning: '#FF9800',
   error: '#F44336',
+  errorLight: '#FFCDD2', // Added missing errorLight color
   info: '#2196F3',
 
   // Button Colors
@@ -58,19 +60,10 @@ export const Colors = {
   // Input Colors
   inputBackground: '#FFFFFF',
   inputBorder: '#E0E0E0',
-  inputBorderFocused: '#D32F2F',
-  inputText: '#212121',
   inputPlaceholder: '#9E9E9E',
+  inputFocus: '#D32F2F',
 
-  // Cultural/Religious Colors
-  auspicious: '#FF9800', // Golden/orange for auspicious occasions
-  sacred: '#D32F2F', // Red for sacred/religious elements
-  pure: '#FFFFFF', // White for purity
-  prosperity: '#4CAF50', // Green for prosperity
-
-  // Transparent Colors
-  overlay: 'rgba(0, 0, 0, 0.5)',
-  overlayLight: 'rgba(0, 0, 0, 0.3)',
+  // Card and Surface Colors
   cardShadow: 'rgba(0, 0, 0, 0.1)',
 } as const;
 

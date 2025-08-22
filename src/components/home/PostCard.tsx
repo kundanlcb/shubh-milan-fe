@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { Colors } from '../../constants/styles';
+import { Icon } from '../Icon';
 
 interface PostUser {
   name: string;
@@ -29,8 +30,8 @@ interface PostCardProps {
   onLike: (postId: string) => void;
   onProfile: (user: PostUser) => void;
   onContactRequest: (user: PostUser) => void;
-  onChat: () => void;
-  onShare: () => void;
+  onComment: (postId: string) => void; // Added missing onComment
+  onShare: (postId: string) => void; // Fixed signature to accept postId
   onSave: () => void;
   onViewComments: () => void;
 }
@@ -41,7 +42,7 @@ export const PostCard: React.FC<PostCardProps> = ({
   onLike,
   onProfile,
   onContactRequest,
-  onChat,
+  onComment, // Added onComment parameter
   onShare,
   onSave,
   onViewComments,
@@ -93,18 +94,25 @@ export const PostCard: React.FC<PostCardProps> = ({
             style={styles.actionButton}
             onPress={() => onLike(post.id)}
           >
-            <Text style={[styles.actionIcon, post.isLiked && styles.likedIcon]}>
-              {post.isLiked ? '❤️' : '🤍'}
+            <Icon
+              name="heart"
+              library="feather"
+              size={20}
+              color={post.isLiked ? Colors.white : Colors.primary}
+            />
+            <Text style={[styles.actionText, post.isLiked && styles.likedText]}>
+              {post.likes}
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={onChat}
-          >
-            <Text style={styles.actionIcon}>💬</Text>
+
+          <TouchableOpacity style={styles.actionButton} onPress={() => onComment(post.id)}>
+            <Icon name="message-circle" library="feather" size={20} color={Colors.primary} />
+            <Text style={styles.actionText}>{post.comments}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton} onPress={onShare}>
-            <Text style={styles.actionIcon}>📤</Text>
+
+          <TouchableOpacity style={styles.actionButton} onPress={() => onShare(post.id)}>
+            <Icon name="share-2" library="feather" size={20} color={Colors.primary} />
+            <Text style={styles.actionText}>Share</Text>
           </TouchableOpacity>
         </View>
         <TouchableOpacity style={styles.actionButton} onPress={onSave}>
@@ -221,7 +229,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginRight: 16,
+  },
+  actionText: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+    marginLeft: 4,
+    fontWeight: '500',
+  },
+  likedText: {
+    color: Colors.primary,
+    fontWeight: '600',
   },
   actionIcon: {
     fontSize: 24,

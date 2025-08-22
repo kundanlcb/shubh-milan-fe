@@ -1,42 +1,45 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Colors, Typography } from '../../constants/styles';
+import { Icon } from '../Icon';
 
 interface FilterBannerProps {
   postsCount: number;
-  userPreferences: {
-    partnerAgeMin: number;
-    partnerAgeMax: number;
-    partnerLocation: string[];
+  preferences: {
+    ageRange: string;
+    location: string[];
+    profession: string[];
   };
 }
 
-export const FilterBanner: React.FC<FilterBannerProps> = ({
-  postsCount,
-  userPreferences,
-}) => {
+export const FilterBanner: React.FC<FilterBannerProps> = ({ postsCount, preferences }) => {
   return (
-    <View style={styles.filterBanner}>
-      <Text style={styles.filterText}>
-        📍 Showing {postsCount} profiles matching your preferences: {' '}
-        {userPreferences.partnerAgeMin}-{userPreferences.partnerAgeMax} years, {' '}
-        {userPreferences.partnerLocation.join(', ')}
-      </Text>
+    <View style={styles.banner}>
+      <View style={styles.bannerContent}>
+        <Icon name="map-pin" library="feather" size={16} color={Colors.primary} />
+        <Text style={styles.bannerText}>
+          Showing {postsCount} profiles matching your preferences: {' '}
+          Age {preferences.ageRange}, {preferences.location.join(', ')}, {preferences.profession.join(', ')}
+        </Text>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  filterBanner: {
+  banner: {
     backgroundColor: '#E8F5E9',
     padding: 12,
     borderRadius: 8,
     margin: 16,
+  },
+  bannerContent: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
   },
-  filterText: {
-    fontSize: 14,
-    color: '#2E7D32',
+  bannerText: {
+    marginLeft: 8,
+    fontSize: Typography.fontSize.sm,
+    color: Colors.textPrimary,
   },
 });

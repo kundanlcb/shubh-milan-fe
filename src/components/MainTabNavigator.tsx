@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, Typography, Spacing, BorderRadius, Shadows } from '../constants/styles';
+import { Icon, AppIcons } from './Icon';
 import { HomeScreen } from '../screens/HomeScreen';
 import { SearchScreen } from '../screens/SearchScreen';
 import { ChatScreen } from '../screens/ChatScreen';
@@ -18,8 +19,8 @@ type TabKey = 'Home' | 'Search' | 'Chat' | 'Profile';
 interface Tab {
   key: TabKey;
   label: string;
-  icon: string;
-  activeIcon: string;
+  iconConfig: { name: string; library: 'feather' | 'material' | 'material-community' | 'ionicons' };
+  activeIconConfig: { name: string; library: 'feather' | 'material' | 'material-community' | 'ionicons' };
   component: React.ComponentType;
 }
 
@@ -27,29 +28,29 @@ const tabs: Tab[] = [
   {
     key: 'Home',
     label: 'Home',
-    icon: '🏠',
-    activeIcon: '🏡',
+    iconConfig: AppIcons.home,
+    activeIconConfig: AppIcons.homeActive,
     component: HomeScreen,
   },
   {
     key: 'Search',
     label: 'Search',
-    icon: '🔍',
-    activeIcon: '🔎',
+    iconConfig: AppIcons.search,
+    activeIconConfig: AppIcons.searchActive,
     component: SearchScreen,
   },
   {
     key: 'Chat',
     label: 'Messages',
-    icon: '💬',
-    activeIcon: '💭',
+    iconConfig: AppIcons.chat,
+    activeIconConfig: AppIcons.chatActive,
     component: ChatScreen,
   },
   {
     key: 'Profile',
     label: 'Profile',
-    icon: '👤',
-    activeIcon: '👥',
+    iconConfig: AppIcons.profile,
+    activeIconConfig: AppIcons.profileActive,
     component: ProfileScreen,
   },
 ];
@@ -68,6 +69,7 @@ export const MainTabNavigator: React.FC = () => {
 
   const renderTabButton = (tab: Tab) => {
     const isActive = activeTab === tab.key;
+    const iconConfig = isActive ? tab.activeIconConfig : tab.iconConfig;
 
     return (
       <TouchableOpacity
@@ -76,9 +78,12 @@ export const MainTabNavigator: React.FC = () => {
         onPress={() => setActiveTab(tab.key)}
       >
         <View style={[styles.tabIconContainer, isActive && styles.activeTabIconContainer]}>
-          <Text style={[styles.tabIcon, isActive && styles.activeTabIcon]}>
-            {isActive ? tab.activeIcon : tab.icon}
-          </Text>
+          <Icon
+            name={iconConfig.name}
+            library={iconConfig.library}
+            size={22}
+            color={isActive ? Colors.white : Colors.textSecondary}
+          />
         </View>
         <Text style={[styles.tabLabel, isActive && styles.activeTabLabel]}>
           {tab.label}

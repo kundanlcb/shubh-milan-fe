@@ -8,7 +8,8 @@ import {
   FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors, GlobalStyles, Typography, Spacing, BorderRadius, Shadows } from '../constants/styles';
+import { Colors, Typography, Spacing, BorderRadius, Shadows } from '../constants/styles';
+import { Icon, AppIcons } from '../components/Icon';
 
 // Mock search results data
 const searchResults = [
@@ -63,12 +64,12 @@ const searchResults = [
 ];
 
 const filterOptions = [
-  { key: 'age', label: 'Age', icon: '🎂' },
-  { key: 'location', label: 'Location', icon: '📍' },
-  { key: 'profession', label: 'Profession', icon: '💼' },
-  { key: 'education', label: 'Education', icon: '🎓' },
-  { key: 'height', label: 'Height', icon: '📏' },
-  { key: 'religion', label: 'Religion', icon: '🕉️' },
+  { key: 'age', label: 'Age', iconConfig: AppIcons.age },
+  { key: 'location', label: 'Location', iconConfig: AppIcons.location },
+  { key: 'profession', label: 'Profession', iconConfig: AppIcons.profession },
+  { key: 'education', label: 'Education', iconConfig: AppIcons.education },
+  { key: 'height', label: 'Height', iconConfig: AppIcons.height },
+  { key: 'religion', label: 'Religion', iconConfig: AppIcons.religion },
 ];
 
 export const SearchScreen: React.FC = () => {
@@ -93,7 +94,7 @@ export const SearchScreen: React.FC = () => {
           </View>
           {item.verified && (
             <View style={styles.verifiedBadge}>
-              <Text style={styles.verifiedIcon}>✓</Text>
+              <Icon name="check" library="feather" size={12} color={Colors.white} />
             </View>
           )}
         </View>
@@ -118,38 +119,47 @@ export const SearchScreen: React.FC = () => {
 
       <View style={styles.actionButtons}>
         <TouchableOpacity style={styles.interestButton}>
-          <Text style={styles.interestIcon}>💝</Text>
+          <Icon name="heart" library="feather" size={16} color={Colors.primary} />
           <Text style={styles.actionButtonText}>Interest</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.messageButton}>
-          <Text style={styles.messageIcon}>💬</Text>
+          <Icon name="message-circle" library="feather" size={16} color={Colors.info} />
           <Text style={styles.actionButtonText}>Message</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.shortlistButton}>
-          <Text style={styles.shortlistIcon}>⭐</Text>
+          <Icon name="star" library="feather" size={16} color={Colors.warning} />
           <Text style={styles.actionButtonText}>Shortlist</Text>
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
 
-  const renderFilterChip = ({ item }: { item: typeof filterOptions[0] }) => (
-    <TouchableOpacity
-      style={[
-        styles.filterChip,
-        selectedFilters.includes(item.key) && styles.activeFilterChip
-      ]}
-      onPress={() => toggleFilter(item.key)}
-    >
-      <Text style={styles.filterIcon}>{item.icon}</Text>
-      <Text style={[
-        styles.filterText,
-        selectedFilters.includes(item.key) && styles.activeFilterText
-      ]}>
-        {item.label}
-      </Text>
-    </TouchableOpacity>
-  );
+  const renderFilterChip = ({ item }: { item: typeof filterOptions[0] }) => {
+    const isSelected = selectedFilters.includes(item.key);
+
+    return (
+      <TouchableOpacity
+        style={[
+          styles.filterChip,
+          isSelected && styles.activeFilterChip
+        ]}
+        onPress={() => toggleFilter(item.key)}
+      >
+        <Icon
+          name={item.iconConfig.name}
+          library={item.iconConfig.library}
+          size={16}
+          color={isSelected ? Colors.white : Colors.primary}
+        />
+        <Text style={[
+          styles.filterText,
+          isSelected && styles.activeFilterText
+        ]}>
+          {item.label}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -161,80 +171,45 @@ export const SearchScreen: React.FC = () => {
 
       {/* Search Bar */}
       <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search by name, location, profession..."
-          placeholderTextColor={Colors.inputPlaceholder}
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
+        <View style={styles.searchInputContainer}>
+          <Icon name="search" library="feather" size={20} color={Colors.textSecondary} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search by name, location, profession..."
+            placeholderTextColor={Colors.inputPlaceholder}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+        </View>
         <TouchableOpacity
-          style={styles.filterToggle}
+          style={styles.filterButton}
           onPress={() => setShowFilters(!showFilters)}
         >
-          <Text style={styles.filterToggleIcon}>⚙️</Text>
+          <Icon name="filter" library="feather" size={20} color={Colors.primary} />
         </TouchableOpacity>
       </View>
 
       {/* Filter Options */}
       {showFilters && (
-        <View style={styles.filtersContainer}>
+        <View style={styles.filterContainer}>
           <FlatList
             data={filterOptions}
             renderItem={renderFilterChip}
             keyExtractor={(item) => item.key}
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.filtersList}
+            contentContainerStyle={styles.filterList}
           />
-          <TouchableOpacity
-            style={styles.clearFiltersButton}
-            onPress={() => setSelectedFilters([])}
-          >
-            <Text style={styles.clearFiltersText}>Clear All</Text>
-          </TouchableOpacity>
         </View>
       )}
 
-      {/* Quick Search Options */}
-      <View style={styles.quickSearchContainer}>
-        <Text style={styles.quickSearchTitle}>Quick Search</Text>
-        <View style={styles.quickSearchGrid}>
-          <TouchableOpacity style={styles.quickSearchItem}>
-            <Text style={styles.quickSearchIcon}>📍</Text>
-            <Text style={styles.quickSearchText}>Near Me</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.quickSearchItem}>
-            <Text style={styles.quickSearchIcon}>🎓</Text>
-            <Text style={styles.quickSearchText}>Highly Educated</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.quickSearchItem}>
-            <Text style={styles.quickSearchIcon}>⭐</Text>
-            <Text style={styles.quickSearchText}>Top Matches</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.quickSearchItem}>
-            <Text style={styles.quickSearchIcon}>🌟</Text>
-            <Text style={styles.quickSearchText}>Recently Joined</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Search Results */}
-      <View style={styles.resultsHeader}>
-        <Text style={styles.resultsCount}>{searchResults.length} matches found</Text>
-        <TouchableOpacity style={styles.sortButton}>
-          <Text style={styles.sortText}>Sort by Compatibility</Text>
-          <Text style={styles.sortIcon}>↕️</Text>
-        </TouchableOpacity>
-      </View>
-
+      {/* Results */}
       <FlatList
         data={searchResults}
         renderItem={renderSearchResult}
         keyExtractor={(item) => item.id}
-        style={styles.resultsList}
+        contentContainerStyle={styles.resultsList}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.resultsContainer}
       />
     </SafeAreaView>
   );
@@ -246,155 +221,94 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   header: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.lg,
-    alignItems: 'center',
+    padding: Spacing.lg,
+    backgroundColor: Colors.backgroundCard,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
   },
   headerTitle: {
-    fontSize: Typography.fontSize['2xl'],
+    fontSize: Typography.fontSize.xl,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.primary,
-    fontFamily: Typography.fontFamily.hindi,
+    color: Colors.textPrimary,
+    textAlign: 'center',
   },
   headerSubtitle: {
     fontSize: Typography.fontSize.sm,
     color: Colors.textSecondary,
+    textAlign: 'center',
     marginTop: Spacing.xs,
   },
   searchContainer: {
     flexDirection: 'row',
-    paddingHorizontal: Spacing.md,
-    marginBottom: Spacing.md,
+    padding: Spacing.md,
     gap: Spacing.sm,
   },
-  searchInput: {
-    ...GlobalStyles.input,
+  searchInputContainer: {
     flex: 1,
-    marginBottom: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.backgroundCard,
+    borderRadius: BorderRadius.md,
+    paddingHorizontal: Spacing.md,
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
-  filterToggle: {
+  searchInput: {
+    flex: 1,
+    fontSize: Typography.fontSize.md,
+    color: Colors.textPrimary,
+    paddingVertical: Spacing.sm,
+    marginLeft: Spacing.sm,
+  },
+  filterButton: {
     width: 48,
     height: 48,
+    backgroundColor: Colors.backgroundCard,
     borderRadius: BorderRadius.md,
-    backgroundColor: Colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
-  filterToggleIcon: {
-    fontSize: 18,
-  },
-  filtersContainer: {
-    paddingBottom: Spacing.md,
+  filterContainer: {
+    backgroundColor: Colors.backgroundCard,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.divider,
-    marginBottom: Spacing.md,
+    borderBottomColor: Colors.border,
   },
-  filtersList: {
+  filterList: {
     paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
   },
   filterChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.backgroundCard,
+    backgroundColor: Colors.background,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderRadius: BorderRadius.full,
     marginRight: Spacing.sm,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: Colors.primary,
+    gap: Spacing.xs,
   },
   activeFilterChip: {
     backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
-  },
-  filterIcon: {
-    fontSize: 16,
-    marginRight: Spacing.xs,
   },
   filterText: {
     fontSize: Typography.fontSize.sm,
-    color: Colors.textPrimary,
+    color: Colors.primary,
+    fontWeight: Typography.fontWeight.medium,
   },
   activeFilterText: {
-    color: Colors.textInverse,
-  },
-  clearFiltersButton: {
-    alignSelf: 'center',
-    marginTop: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.xs,
-  },
-  clearFiltersText: {
-    fontSize: Typography.fontSize.sm,
-    color: Colors.primary,
-    fontWeight: Typography.fontWeight.medium,
-  },
-  quickSearchContainer: {
-    paddingHorizontal: Spacing.md,
-    marginBottom: Spacing.lg,
-  },
-  quickSearchTitle: {
-    fontSize: Typography.fontSize.base,
-    fontWeight: Typography.fontWeight.semibold,
-    color: Colors.textPrimary,
-    marginBottom: Spacing.md,
-  },
-  quickSearchGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.sm,
-  },
-  quickSearchItem: {
-    width: '47%',
-    backgroundColor: Colors.backgroundCard,
-    padding: Spacing.md,
-    borderRadius: BorderRadius.lg,
-    alignItems: 'center',
-    ...Shadows.sm,
-  },
-  quickSearchIcon: {
-    fontSize: 24,
-    marginBottom: Spacing.xs,
-  },
-  quickSearchText: {
-    fontSize: Typography.fontSize.sm,
-    color: Colors.textPrimary,
-    textAlign: 'center',
-  },
-  resultsHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.md,
-    marginBottom: Spacing.md,
-  },
-  resultsCount: {
-    fontSize: Typography.fontSize.sm,
-    color: Colors.textSecondary,
-  },
-  sortButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
-  },
-  sortText: {
-    fontSize: Typography.fontSize.sm,
-    color: Colors.primary,
-    fontWeight: Typography.fontWeight.medium,
-  },
-  sortIcon: {
-    fontSize: 12,
+    color: Colors.white,
   },
   resultsList: {
-    flex: 1,
-  },
-  resultsContainer: {
-    paddingHorizontal: Spacing.md,
+    padding: Spacing.md,
   },
   resultCard: {
     backgroundColor: Colors.backgroundCard,
     borderRadius: BorderRadius.lg,
-    padding: Spacing.md,
+    padding: Spacing.lg,
     marginBottom: Spacing.md,
     ...Shadows.md,
   },
@@ -407,9 +321,9 @@ const styles = StyleSheet.create({
     marginRight: Spacing.md,
   },
   profileImage: {
-    width: 80,
-    height: 80,
-    borderRadius: BorderRadius.lg,
+    width: 60,
+    height: 60,
+    borderRadius: BorderRadius.full,
     backgroundColor: Colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
@@ -417,24 +331,20 @@ const styles = StyleSheet.create({
   profileImageText: {
     fontSize: Typography.fontSize.xl,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.textInverse,
+    color: Colors.white,
   },
   verifiedBadge: {
     position: 'absolute',
-    top: -5,
-    right: -5,
-    width: 24,
-    height: 24,
-    borderRadius: BorderRadius.full,
+    bottom: -2,
+    right: -2,
+    width: 20,
+    height: 20,
     backgroundColor: Colors.success,
+    borderRadius: BorderRadius.full,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
     borderColor: Colors.backgroundCard,
-  },
-  verifiedIcon: {
-    fontSize: 12,
-    color: Colors.textInverse,
   },
   profileInfo: {
     flex: 1,
@@ -442,19 +352,18 @@ const styles = StyleSheet.create({
   nameRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     marginBottom: Spacing.xs,
   },
   profileName: {
-    fontSize: Typography.fontSize.base,
+    fontSize: Typography.fontSize.lg,
     fontWeight: Typography.fontWeight.semibold,
     color: Colors.textPrimary,
-    flex: 1,
   },
   compatibilityChip: {
-    backgroundColor: Colors.warning,
-    paddingHorizontal: Spacing.xs,
-    paddingVertical: 2,
+    backgroundColor: Colors.info,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
     borderRadius: BorderRadius.sm,
   },
   highCompatibility: {
@@ -463,82 +372,71 @@ const styles = StyleSheet.create({
   compatibilityText: {
     fontSize: Typography.fontSize.xs,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.textInverse,
+    color: Colors.white,
   },
   profileAge: {
     fontSize: Typography.fontSize.sm,
     color: Colors.textSecondary,
-    marginBottom: 2,
+    marginBottom: Spacing.xs,
   },
   profileLocation: {
     fontSize: Typography.fontSize.sm,
     color: Colors.textSecondary,
-    marginBottom: 2,
+    marginBottom: Spacing.xs,
   },
   profileProfession: {
     fontSize: Typography.fontSize.sm,
-    color: Colors.secondary,
+    color: Colors.textPrimary,
     fontWeight: Typography.fontWeight.medium,
-    marginBottom: 2,
+    marginBottom: Spacing.xs,
   },
   profileEducation: {
-    fontSize: Typography.fontSize.xs,
-    color: Colors.textTertiary,
-    marginBottom: 4,
+    fontSize: Typography.fontSize.sm,
+    color: Colors.textSecondary,
+    marginBottom: Spacing.xs,
   },
   lastSeen: {
     fontSize: Typography.fontSize.xs,
-    color: Colors.success,
-    fontWeight: Typography.fontWeight.medium,
+    color: Colors.textSecondary,
+    fontStyle: 'italic',
   },
   actionButtons: {
     flexDirection: 'row',
-    gap: Spacing.sm,
+    justifyContent: 'space-around',
+    paddingTop: Spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
   },
   interestButton: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.primary,
     paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    backgroundColor: Colors.background,
     borderRadius: BorderRadius.md,
+    gap: Spacing.xs,
   },
   messageButton: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.secondary,
     paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    backgroundColor: Colors.background,
     borderRadius: BorderRadius.md,
+    gap: Spacing.xs,
   },
   shortlistButton: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.backgroundSecondary,
     paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    backgroundColor: Colors.background,
     borderRadius: BorderRadius.md,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  interestIcon: {
-    fontSize: 16,
-    marginRight: Spacing.xs,
-  },
-  messageIcon: {
-    fontSize: 16,
-    marginRight: Spacing.xs,
-  },
-  shortlistIcon: {
-    fontSize: 16,
-    marginRight: Spacing.xs,
+    gap: Spacing.xs,
   },
   actionButtonText: {
     fontSize: Typography.fontSize.xs,
+    color: Colors.textSecondary,
     fontWeight: Typography.fontWeight.medium,
-    color: Colors.textInverse,
   },
 });

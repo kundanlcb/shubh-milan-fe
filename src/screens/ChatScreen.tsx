@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  FlatList,
   TouchableOpacity,
   StyleSheet,
+  FlatList,
   TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors, GlobalStyles, Typography, Spacing, BorderRadius, Shadows } from '../constants/styles';
+import {Colors, Typography, Spacing, BorderRadius, Shadows, GlobalStyles} from '../constants/styles';
+import { Icon } from '../components/Icon';
 
 // Mock chat data
 const chatData = [
@@ -103,14 +104,15 @@ export const ChatScreen: React.FC = () => {
 
   const renderEmptyState = () => (
     <View style={styles.emptyState}>
-      <Text style={styles.emptyStateIcon}>💬</Text>
-      <Text style={styles.emptyStateTitle}>No conversations yet</Text>
-      <Text style={styles.emptyStateText}>
-        Start connecting with potential matches to begin conversations
-      </Text>
-      <TouchableOpacity style={styles.exploreButton}>
-        <Text style={styles.exploreButtonText}>Explore Matches</Text>
-      </TouchableOpacity>
+      <View style={styles.emptyStateContainer}>
+        <View style={styles.emptyStateIconContainer}>
+          <Icon name="message-circle" library="feather" size={48} color={Colors.textSecondary} />
+        </View>
+        <Text style={styles.emptyStateTitle}>No Messages Yet</Text>
+        <Text style={styles.emptyStateSubtitle}>
+          Start connecting with people and your conversations will appear here
+        </Text>
+      </View>
     </View>
   );
 
@@ -147,13 +149,25 @@ export const ChatScreen: React.FC = () => {
 
       {/* Quick Actions */}
       <View style={styles.quickActions}>
-        <TouchableOpacity style={styles.quickActionButton}>
-          <Text style={styles.quickActionIcon}>🔍</Text>
-          <Text style={styles.quickActionText}>Find Matches</Text>
+        <TouchableOpacity style={styles.quickAction}>
+          <View style={styles.quickActionIconContainer}>
+            <Icon name="mail" library="feather" size={20} color={Colors.primary} />
+          </View>
+          <Text style={styles.quickActionText}>New Chat</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.quickActionButton}>
-          <Text style={styles.quickActionIcon}>💝</Text>
-          <Text style={styles.quickActionText}>Send Interest</Text>
+
+        <TouchableOpacity style={styles.quickAction}>
+          <View style={styles.quickActionIconContainer}>
+            <Icon name="search" library="feather" size={20} color={Colors.primary} />
+          </View>
+          <Text style={styles.quickActionText}>Discover</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.quickAction}>
+          <View style={styles.quickActionIconContainer}>
+            <Icon name="heart" library="feather" size={20} color={Colors.primary} />
+          </View>
+          <Text style={styles.quickActionText}>Interests</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -291,9 +305,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: Spacing.xl,
   },
-  emptyStateIcon: {
-    fontSize: 64,
-    marginBottom: Spacing.lg,
+  emptyStateContainer: {
+    alignItems: 'center',
+  },
+  emptyStateIconContainer: {
+    marginBottom: Spacing.md,
   },
   emptyStateTitle: {
     fontSize: Typography.fontSize.xl,
@@ -302,20 +318,12 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
     textAlign: 'center',
   },
-  emptyStateText: {
+  emptyStateSubtitle: {
     fontSize: Typography.fontSize.base,
     color: Colors.textSecondary,
     textAlign: 'center',
     lineHeight: Typography.fontSize.base * Typography.lineHeight.normal,
     marginBottom: Spacing.xl,
-  },
-  exploreButton: {
-    ...GlobalStyles.button,
-    ...GlobalStyles.buttonPrimary,
-    paddingHorizontal: Spacing.xl,
-  },
-  exploreButtonText: {
-    ...GlobalStyles.buttonText,
   },
   quickActions: {
     flexDirection: 'row',
@@ -325,7 +333,7 @@ const styles = StyleSheet.create({
     borderTopColor: Colors.divider,
     gap: Spacing.md,
   },
-  quickActionButton: {
+  quickAction: {
     flex: 1,
     backgroundColor: Colors.backgroundCard,
     padding: Spacing.md,
@@ -335,9 +343,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     ...Shadows.sm,
   },
-  quickActionIcon: {
-    fontSize: 20,
-    marginRight: Spacing.xs,
+  quickActionIconContainer: {
+    marginRight: Spacing.sm,
   },
   quickActionText: {
     fontSize: Typography.fontSize.sm,

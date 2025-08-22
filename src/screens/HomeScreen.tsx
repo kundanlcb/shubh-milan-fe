@@ -98,20 +98,22 @@ export const HomeScreen: React.FC = () => {
         onLike={handleLike}
         onProfile={handleProfile}
         onContactRequest={handleContactRequest}
-        onChat={handleChat} onShare={function (): void {
-        throw new Error("Function not implemented.");
-    }} onSave={function (): void {
-        throw new Error("Function not implemented.");
-    }} onViewComments={function (): void {
-        throw new Error("Function not implemented.");
-    }}    />
+        onComment={handleChat}
+        onShare={(postId: string) => console.log('Share post:', postId)}
+        onSave={() => console.log('Save post')}
+        onViewComments={() => console.log('View comments')}
+    />
   );
 
   const renderListHeader = () => (
     <>
       <FilterBanner
         postsCount={posts.length}
-        userPreferences={userPreferences}
+        preferences={{
+          ageRange: `${userPreferences.partnerAgeMin}-${userPreferences.partnerAgeMax}`,
+          location: userPreferences.partnerLocation || [],
+          profession: userPreferences.partnerProfession || []
+        }}
       />
       <Stories
         users={posts.map(post => post.user)}
@@ -124,7 +126,10 @@ export const HomeScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <HomeHeader
-        userPreferences={userPreferences}
+        userPreferences={{
+          accountType: userPreferences.accountType,
+          name: 'User' // Add a default name since it's not in the current userPreferences structure
+        }}
         onHeartPress={handleHeartPress}
         onChatPress={handleChatPress}
         onAddPress={handleAddPress}

@@ -1,10 +1,12 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Colors } from '../../constants/styles';
+import { Icon } from '../Icon';
 
 interface HomeHeaderProps {
   userPreferences: {
     accountType: 'free' | 'premium';
+    name: string;
   };
   onHeartPress: () => void;
   onChatPress: () => void;
@@ -20,20 +22,20 @@ export const HomeHeader: React.FC<HomeHeaderProps> = ({
   return (
     <View style={styles.header}>
       <View style={styles.headerLeft}>
-        <Text style={styles.appTitle}>शुभ मिलन</Text>
+        <Text style={styles.greeting}>नमस्ते, {userPreferences.name}!</Text>
         <Text style={styles.subtitle}>
           {userPreferences.accountType === 'premium' ? 'Premium Member ⭐' : 'Filtered Feed'}
         </Text>
       </View>
       <View style={styles.headerRight}>
-        <TouchableOpacity style={styles.headerButton} onPress={onHeartPress}>
-          <Text style={styles.headerIcon}>❤️</Text>
+        <TouchableOpacity style={styles.iconButton} onPress={onHeartPress}>
+          <Icon name="heart" library="feather" size={20} color={Colors.primary} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.headerButton} onPress={onChatPress}>
-          <Text style={styles.headerIcon}>💬</Text>
+        <TouchableOpacity style={styles.iconButton} onPress={onChatPress}>
+          <Icon name="message-circle" library="feather" size={20} color={Colors.primary} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.headerButton} onPress={onAddPress}>
-          <Text style={styles.headerIcon}>➕</Text>
+        <TouchableOpacity style={styles.iconButton} onPress={onAddPress}>
+          <Icon name="plus" library="feather" size={20} color={Colors.primary} />
         </TouchableOpacity>
       </View>
     </View>
@@ -63,9 +65,9 @@ const styles = StyleSheet.create({
   headerLeft: {
     flex: 1,
   },
-  appTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
+  greeting: {
+    fontSize: 18,
+    fontWeight: '600',
     color: Colors.primary,
   },
   subtitle: {
@@ -77,11 +79,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  headerButton: {
+  iconButton: {
     padding: 8,
     marginLeft: 8,
-  },
-  headerIcon: {
-    fontSize: 24,
   },
 });
