@@ -117,7 +117,7 @@ export const ChatScreen: React.FC = () => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Messages</Text>

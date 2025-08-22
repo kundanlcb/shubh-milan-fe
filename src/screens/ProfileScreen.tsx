@@ -122,8 +122,8 @@ export const ProfileScreen: React.FC = () => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+    <SafeAreaView style={styles.container} edges={['left', 'right']}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>प्रोफाइल</Text>
@@ -416,5 +416,8 @@ const styles = StyleSheet.create({
   },
   logoutDescription: {
     color: Colors.errorLight,
+  },
+  scrollContent: {
+    paddingBottom: Spacing.md,
   },
 });

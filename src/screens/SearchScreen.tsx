@@ -162,7 +162,7 @@ export const SearchScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>खोजें</Text>
