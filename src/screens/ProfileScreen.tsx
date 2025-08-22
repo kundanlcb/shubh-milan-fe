@@ -63,64 +63,6 @@ export const ProfileScreen: React.FC = () => {
     }
   };
 
-  const renderProfileSection = (section: typeof profileSections[0]) => (
-    <TouchableOpacity
-      key={section.title}
-      style={styles.sectionCard}
-      onPress={() => handleSectionPress(section.title)}
-    >
-      <View style={styles.sectionIcon}>
-        <Icon
-          name={section.iconConfig.name}
-          library={section.iconConfig.library}
-          size={24}
-          color={Colors.primary}
-        />
-      </View>
-      <View style={styles.sectionContent}>
-        <Text style={styles.sectionTitle}>{section.title}</Text>
-        <Text style={styles.sectionDescription}>{section.description}</Text>
-      </View>
-      <Icon
-        name="chevron-right"
-        library="feather"
-        size={20}
-        color={Colors.textSecondary}
-      />
-    </TouchableOpacity>
-  );
-
-  const renderMenuItem = (item: typeof menuItems[0]) => (
-    <TouchableOpacity
-      key={item.title}
-      style={[styles.menuItem, item.isLogout && styles.logoutItem]}
-      onPress={() => handleMenuPress(item.title)}
-    >
-      <View style={[styles.menuIcon, item.isLogout && styles.logoutIcon]}>
-        <Icon
-          name={item.iconConfig.name}
-          library={item.iconConfig.library}
-          size={20}
-          color={item.isLogout ? Colors.error : Colors.textSecondary}
-        />
-      </View>
-      <View style={styles.menuContent}>
-        <Text style={[styles.menuTitle, item.isLogout && styles.logoutText]}>
-          {item.title}
-        </Text>
-        <Text style={[styles.menuDescription, item.isLogout && styles.logoutDescription]}>
-          {item.description}
-        </Text>
-      </View>
-      <Icon
-        name="chevron-right"
-        library="feather"
-        size={16}
-        color={item.isLogout ? Colors.error : Colors.textSecondary}
-      />
-    </TouchableOpacity>
-  );
-
   return (
     <SafeAreaView style={styles.container} edges={['left', 'right']}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
@@ -189,13 +131,78 @@ export const ProfileScreen: React.FC = () => {
         {/* Profile Sections */}
         <View style={styles.sectionsContainer}>
           <Text style={styles.sectionGroupTitle}>Profile Information</Text>
-          {profileSections.map(renderProfileSection)}
+          <View style={styles.groupCard}>
+            {profileSections.map((section, index) => (
+              <TouchableOpacity
+                key={section.title}
+                style={[
+                  styles.sectionRow,
+                  index !== profileSections.length - 1 && styles.sectionRowBorder
+                ]}
+                onPress={() => handleSectionPress(section.title)}
+              >
+                <View style={styles.sectionRowIcon}>
+                  <Icon
+                    name={section.iconConfig.name}
+                    library={section.iconConfig.library}
+                    size={20}
+                    color={Colors.primary}
+                  />
+                </View>
+                <View style={styles.sectionRowContent}>
+                  <Text style={styles.sectionRowTitle}>{section.title}</Text>
+                  <Text style={styles.sectionRowDescription}>{section.description}</Text>
+                </View>
+                <Icon
+                  name="chevron-right"
+                  library="feather"
+                  size={16}
+                  color={Colors.textSecondary}
+                />
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
 
         {/* Menu Items */}
         <View style={styles.menuContainer}>
           <Text style={styles.sectionGroupTitle}>Account</Text>
-          {menuItems.map(renderMenuItem)}
+          <View style={styles.groupCard}>
+            {menuItems.map((item, index) => (
+              <TouchableOpacity
+                key={item.title}
+                style={[
+                  styles.menuRow,
+                  index !== menuItems.length - 1 && styles.menuRowBorder,
+                  item.isLogout && styles.logoutRow
+                ]}
+                onPress={() => handleMenuPress(item.title)}
+              >
+                <View style={[styles.menuRowIcon, item.isLogout && styles.logoutIconContainer]}>
+                  <Icon
+                    name={item.iconConfig.name}
+                    library={item.iconConfig.library}
+                    size={18}
+                    color={item.isLogout ? Colors.error : Colors.textSecondary}
+                  />
+                </View>
+                <View style={styles.menuRowContent}>
+                  <Text style={[styles.menuRowTitle, item.isLogout && styles.logoutText]}>
+                    {item.title}
+                  </Text>
+                  <Text style={[styles.menuRowDescription, item.isLogout && styles.logoutDescription]}>
+                    {item.description}
+                  </Text>
+                </View>
+                <Icon
+                  name="chevron-right"
+                  library="feather"
+                  size={16}
+                  color={item.isLogout ? Colors.error : Colors.textSecondary}
+                />
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -407,17 +414,91 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
     marginBottom: Spacing.xs,
   },
-  logoutText: {
-    color: Colors.error,
-  },
   menuDescription: {
     fontSize: Typography.fontSize.sm,
     color: Colors.textSecondary,
+  },
+  logoutText: {
+    color: Colors.error,
   },
   logoutDescription: {
     color: Colors.errorLight,
   },
   scrollContent: {
     paddingBottom: Spacing.md,
+  },
+  groupCard: {
+    backgroundColor: Colors.backgroundCard,
+    borderRadius: BorderRadius.md,
+    marginBottom: Spacing.md,
+    ...Shadows.sm,
+  },
+  sectionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: Spacing.md,
+  },
+  sectionRowBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  logoutRow: {
+    backgroundColor: Colors.errorLight,
+  },
+  sectionRowIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: BorderRadius.md,
+    backgroundColor: Colors.background,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: Spacing.md,
+  },
+  sectionRowContent: {
+    flex: 1,
+  },
+  sectionRowTitle: {
+    fontSize: Typography.fontSize.md,
+    fontWeight: Typography.fontWeight.medium,
+    color: Colors.textPrimary,
+    marginBottom: Spacing.xs,
+  },
+  sectionRowDescription: {
+    fontSize: Typography.fontSize.sm,
+    color: Colors.textSecondary,
+  },
+  menuRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: Spacing.md,
+  },
+  menuRowBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  menuRowIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: BorderRadius.md,
+    backgroundColor: Colors.background,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: Spacing.md,
+  },
+  logoutIconContainer: {
+    backgroundColor: Colors.errorLight,
+  },
+  menuRowContent: {
+    flex: 1,
+  },
+  menuRowTitle: {
+    fontSize: Typography.fontSize.md,
+    fontWeight: Typography.fontWeight.medium,
+    color: Colors.textPrimary,
+    marginBottom: Spacing.xs,
+  },
+  menuRowDescription: {
+    fontSize: Typography.fontSize.sm,
+    color: Colors.textSecondary,
   },
 });

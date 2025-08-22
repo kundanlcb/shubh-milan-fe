@@ -119,9 +119,9 @@ export const AppIcons = {
   religion: { name: 'heart', library: 'feather' as IconLibrary },
 
   // Profile Section Icons
-  personalInfo: { name: 'user-circle', library: 'feather' as IconLibrary },
+  personalInfo: { name: 'user', library: 'feather' as IconLibrary },
   family: { name: 'users', library: 'feather' as IconLibrary },
-  educationCareer: { name: 'graduation-cap', library: 'feather' as IconLibrary },
+  educationCareer: { name: 'book', library: 'feather' as IconLibrary },
   lifestyle: { name: 'coffee', library: 'feather' as IconLibrary },
   horoscope: { name: 'star', library: 'feather' as IconLibrary },
   contact: { name: 'phone', library: 'feather' as IconLibrary },
