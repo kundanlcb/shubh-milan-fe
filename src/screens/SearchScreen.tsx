@@ -8,7 +8,7 @@ import {
   FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors, Typography, Spacing, BorderRadius, Shadows } from '../constants/styles';
+import { Colors, Typography, Spacing, BorderRadius } from '../constants/styles';
 import { Icon, AppIcons } from '../components/Icon';
 
 // Mock search results data
@@ -86,39 +86,31 @@ export const SearchScreen: React.FC = () => {
   };
 
   const renderSearchResult = ({ item }: { item: typeof searchResults[0] }) => (
-    <TouchableOpacity style={styles.gridItem}>
-      <View style={styles.imageContainer}>
-        <View style={styles.profileImage}>
-          <Text style={styles.profileImageText}>{item.name.charAt(0)}</Text>
+    <TouchableOpacity style={styles.resultItem}>
+      <View style={styles.resultImageContainer}>
+        <View style={styles.resultProfileImage}>
+          <Text style={styles.resultProfileImageText}>{item.name.charAt(0)}</Text>
         </View>
-
-        {/* Top badges */}
+        {/* Badges */}
         {item.verified && (
-          <View style={styles.verifiedBadge}>
+          <View style={styles.resultVerifiedBadge}>
             <Icon name="check" library="feather" size={8} color={Colors.white} />
           </View>
         )}
-        <View style={styles.compatibilityBadge}>
-          <Text style={styles.compatibilityText}>{item.compatibility}%</Text>
+        <View style={styles.resultCompatibilityBadge}>
+          <Text style={styles.resultCompatibilityText}>{item.compatibility}%</Text>
         </View>
       </View>
 
-      {/* Content below image */}
-      <View style={styles.profileContent}>
-        <Text style={styles.profileName} numberOfLines={1}>{item.name}</Text>
-        <Text style={styles.profileDetails}>{item.age} years • {item.profession}</Text>
-        <Text style={styles.profileLocation} numberOfLines={1}>
-          <Icon name="map-pin" library="feather" size={10} color={Colors.textSecondary} />
-          {' '}{item.location.split(',')[0]}
-        </Text>
-
-        <View style={styles.actionButtons}>
-          <TouchableOpacity style={styles.actionBtn}>
-            <Icon name="heart" library="feather" size={14} color={Colors.primary} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionBtn}>
-            <Icon name="message-circle" library="feather" size={14} color={Colors.info} />
-          </TouchableOpacity>
+      {/* Content */}
+      <View style={styles.resultContent}>
+        <View style={styles.resultInfo}>
+          <Text style={styles.resultName}>{item.name}</Text>
+          <Text style={styles.resultDetails}>{item.age} years • {item.profession}</Text>
+          <Text style={styles.resultLocation}>
+            <Icon name="map-pin" library="feather" size={12} color={Colors.textSecondary} />
+            {' '}{item.location}
+          </Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -152,11 +144,18 @@ export const SearchScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView style={styles.container} edges={['left', 'right']}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>खोजें</Text>
-        <Text style={styles.headerSubtitle}>Find Your Perfect Match</Text>
+        <View style={styles.headerLeft}>
+          <Text style={styles.headerTitle}>खोजें</Text>
+          <Text style={styles.headerSubtitle}>Find Your Perfect Match</Text>
+        </View>
+        <View style={styles.headerRight}>
+          <TouchableOpacity style={styles.iconButton}>
+            <Icon name="sliders" library="feather" size={20} color={Colors.primary} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Search Bar */}
@@ -200,8 +199,6 @@ export const SearchScreen: React.FC = () => {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.resultsList}
         showsVerticalScrollIndicator={false}
-        numColumns={2}
-        columnWrapperStyle={styles.columnWrapper}
       />
     </SafeAreaView>
   );
@@ -213,22 +210,44 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   header: {
-    padding: Spacing.lg,
-    backgroundColor: Colors.backgroundCard,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: 'white',
+    borderBottomWidth: 0.5,
+    borderBottomColor: '#E0E0E0',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    zIndex: 1,
+  },
+  headerLeft: {
+    flex: 1,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconButton: {
+    padding: 8,
+    marginLeft: 8,
   },
   headerTitle: {
-    fontSize: Typography.fontSize.xl,
-    fontWeight: Typography.fontWeight.bold,
-    color: Colors.textPrimary,
-    textAlign: 'center',
+    fontSize: 18,
+    fontWeight: '600',
+    color: Colors.primary,
   },
   headerSubtitle: {
-    fontSize: Typography.fontSize.sm,
-    color: Colors.textSecondary,
-    textAlign: 'center',
-    marginTop: Spacing.xs,
+    fontSize: 12,
+    color: '#666',
+    marginTop: 2,
   },
   searchContainer: {
     flexDirection: 'row',
@@ -297,22 +316,25 @@ const styles = StyleSheet.create({
   resultsList: {
     padding: Spacing.md,
   },
-  columnWrapper: {
-    justifyContent: 'space-between',
-    paddingHorizontal: Spacing.xs, // Add horizontal spacing between cards
+  resultItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: Colors.backgroundCard,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md,
+    marginBottom: Spacing.sm,
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
-  gridItem: {
-    width: '48%', // Fixed width for consistent card sizes
-    marginBottom: Spacing.md,
-    overflow: 'hidden',
-  },
-  imageContainer: {
+  resultImageContainer: {
     position: 'relative',
-    height: 120,
+    width: 80,
+    height: 80,
     borderRadius: BorderRadius.md,
     overflow: 'hidden',
+    marginRight: Spacing.md,
   },
-  profileImage: {
+  resultProfileImage: {
     width: '100%',
     height: '100%',
     borderRadius: BorderRadius.md,
@@ -320,17 +342,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  profileImageText: {
+  resultProfileImageText: {
     fontSize: Typography.fontSize.xl,
     fontWeight: Typography.fontWeight.bold,
     color: Colors.white,
   },
-  verifiedBadge: {
+  resultVerifiedBadge: {
     position: 'absolute',
-    top: 8,
-    right: 8,
-    width: 20,
-    height: 20,
+    top: 4,
+    right: 4,
+    width: 16,
+    height: 16,
     backgroundColor: Colors.success,
     borderRadius: BorderRadius.full,
     justifyContent: 'center',
@@ -338,58 +360,47 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: Colors.backgroundCard,
   },
-  compatibilityBadge: {
+  resultCompatibilityBadge: {
     position: 'absolute',
-    top: 8,
-    left: 8,
+    top: 4,
+    left: 4,
     backgroundColor: Colors.info,
     borderRadius: BorderRadius.md,
     paddingVertical: Spacing.xs,
     paddingHorizontal: Spacing.sm,
   },
-  compatibilityText: {
+  resultCompatibilityText: {
     fontSize: Typography.fontSize.sm,
     fontWeight: Typography.fontWeight.bold,
     color: Colors.white,
   },
-  profileContent: {
-    padding: Spacing.md,
-    backgroundColor: Colors.backgroundCard,
-    borderRadius: BorderRadius.md,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    marginTop: -20, // Pull up to overlap the image
+  resultContent: {
+    flex: 1,
+    paddingVertical: Spacing.xs,
   },
-  profileName: {
+  resultInfo: {
+    // No changes needed - keeping existing margin
+  },
+  resultName: {
     fontSize: Typography.fontSize.lg,
     fontWeight: Typography.fontWeight.semibold,
     color: Colors.textPrimary,
   },
-  profileDetails: {
+  resultDetails: {
     fontSize: Typography.fontSize.sm,
     color: Colors.textSecondary,
-    marginTop: 4,
+    marginTop: 2,
   },
-  profileLocation: {
+  resultLocation: {
     fontSize: Typography.fontSize.sm,
     color: Colors.textSecondary,
     marginTop: 2,
     flexDirection: 'row',
     alignItems: 'center',
   },
-  actionButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 8,
-  },
-  actionBtn: {
-    width: 36,
-    height: 36,
-    backgroundColor: Colors.background,
-    borderRadius: BorderRadius.md,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.border,
+  resultEducation: {
+    fontSize: Typography.fontSize.sm,
+    color: Colors.textSecondary,
+    marginTop: 2,
   },
 });

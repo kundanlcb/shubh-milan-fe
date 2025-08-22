@@ -41,8 +41,7 @@ export const PostCard: React.FC<PostCardProps> = ({
   userPreferences,
   onLike,
   onProfile,
-  onContactRequest,
-  onComment, // Added onComment parameter
+  onContactRequest,// Added onComment parameter
   onShare,
   onViewComments,
 }) => {
@@ -71,9 +70,14 @@ export const PostCard: React.FC<PostCardProps> = ({
           style={styles.contactButton}
           onPress={() => onContactRequest(post.user)}
         >
-          <Text style={styles.contactButtonText}>
-            {userPreferences.accountType === 'premium' ? '📞' : '💌'}
-          </Text>
+          <View style={styles.contactButtonContent}>
+            <Text style={styles.contactButtonIcon}>
+              {userPreferences.accountType === 'premium' ? '📞' : '💌'}
+            </Text>
+            <Text style={styles.contactButtonLabel}>
+              {userPreferences.accountType === 'premium' ? 'Call' : 'Interest'}
+            </Text>
+          </View>
         </TouchableOpacity>
       </View>
 
@@ -94,19 +98,14 @@ export const PostCard: React.FC<PostCardProps> = ({
             onPress={() => onLike(post.id)}
           >
             <Icon
-              name="heart"
+              name={post.isLiked ? "heart" : "heart"}
               library="feather"
               size={20}
-              color={post.isLiked ? Colors.white : Colors.primary}
+              color={post.isLiked ? "#E91E63" : Colors.primary}
             />
             <Text style={[styles.actionText, post.isLiked && styles.likedText]}>
               {post.likes}
             </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.actionButton} onPress={() => onComment(post.id)}>
-            <Icon name="message-circle" library="feather" size={20} color={Colors.primary} />
-            <Text style={styles.actionText}>{post.comments}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.actionButton} onPress={() => onShare(post.id)}>
@@ -197,7 +196,16 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 12,
   },
-  contactButtonText: {
+  contactButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  contactButtonIcon: {
+    color: 'white',
+    fontSize: 16,
+    marginRight: 4,
+  },
+  contactButtonLabel: {
     color: 'white',
     fontWeight: 'bold',
     fontSize: 16,
