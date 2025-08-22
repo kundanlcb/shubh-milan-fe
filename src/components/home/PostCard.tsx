@@ -44,7 +44,6 @@ export const PostCard: React.FC<PostCardProps> = ({
   onContactRequest,
   onComment, // Added onComment parameter
   onShare,
-  onSave,
   onViewComments,
 }) => {
   const compatibilityScore = Math.floor(Math.random() * 20) + 80;
@@ -114,15 +113,16 @@ export const PostCard: React.FC<PostCardProps> = ({
             <Icon name="share-2" library="feather" size={20} color={Colors.primary} />
             <Text style={styles.actionText}>Share</Text>
           </TouchableOpacity>
-        </View>
-        <TouchableOpacity style={styles.actionButton} onPress={onSave}>
-          <Text style={styles.actionIcon}>🔖</Text>
-        </TouchableOpacity>
-      </View>
 
-      {/* Post Stats */}
-      <View style={styles.postStats}>
-        <Text style={styles.likesText}>{post.likes} likes</Text>
+          {/* Match Compatibility right after share button */}
+          <View style={styles.matchBadge}>
+            <Text style={styles.matchText}>
+              {compatibilityScore}% Match
+            </Text>
+          </View>
+        </View>
+
+        {/* Time moved to far right */}
         <Text style={styles.timeText}>{post.timeAgo} ago</Text>
       </View>
 
@@ -137,13 +137,6 @@ export const PostCard: React.FC<PostCardProps> = ({
             <Text style={styles.commentsText}>View all {post.comments} comments</Text>
           </TouchableOpacity>
         )}
-      </View>
-
-      {/* Match Compatibility Badge */}
-      <View style={styles.compatibilityBadge}>
-        <Text style={styles.compatibilityText}>
-          ✨ {compatibilityScore}% Match
-        </Text>
       </View>
     </View>
   );
@@ -243,27 +236,15 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     fontWeight: '600',
   },
+  timeText: {
+    fontSize: 12,
+    color: '#999',
+  },
   actionIcon: {
     fontSize: 24,
   },
   likedIcon: {
     color: '#E91E63',
-  },
-  postStats: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    marginBottom: 8,
-  },
-  likesText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
-  },
-  timeText: {
-    fontSize: 12,
-    color: '#999',
   },
   captionContainer: {
     paddingHorizontal: 16,
@@ -282,17 +263,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#999',
   },
-  compatibilityBadge: {
+  matchBadge: {
     backgroundColor: '#E8F5E9',
-    padding: 8,
-    borderRadius: 16,
-    alignSelf: 'flex-start',
-    marginHorizontal: 16,
-    marginBottom: 12,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12, // Add some spacing from the next element
   },
-  compatibilityText: {
+  matchText: {
     color: '#2E7D32',
     fontWeight: 'bold',
-    fontSize: 14,
+    fontSize: 12,
   },
 });
