@@ -86,50 +86,40 @@ export const SearchScreen: React.FC = () => {
   };
 
   const renderSearchResult = ({ item }: { item: typeof searchResults[0] }) => (
-    <TouchableOpacity style={styles.resultCard}>
-      <View style={styles.cardHeader}>
-        <View style={styles.profileImageContainer}>
-          <View style={styles.profileImage}>
-            <Text style={styles.profileImageText}>{item.name.charAt(0)}</Text>
-          </View>
-          {item.verified && (
-            <View style={styles.verifiedBadge}>
-              <Icon name="check" library="feather" size={12} color={Colors.white} />
-            </View>
-          )}
+    <TouchableOpacity style={styles.gridItem}>
+      <View style={styles.imageContainer}>
+        <View style={styles.profileImage}>
+          <Text style={styles.profileImageText}>{item.name.charAt(0)}</Text>
         </View>
 
-        <View style={styles.profileInfo}>
-          <View style={styles.nameRow}>
-            <Text style={styles.profileName}>{item.name}</Text>
-            <View style={[
-              styles.compatibilityChip,
-              item.compatibility > 85 && styles.highCompatibility
-            ]}>
-              <Text style={styles.compatibilityText}>{item.compatibility}%</Text>
-            </View>
+        {/* Top badges */}
+        {item.verified && (
+          <View style={styles.verifiedBadge}>
+            <Icon name="check" library="feather" size={8} color={Colors.white} />
           </View>
-          <Text style={styles.profileAge}>{item.age} years • {item.height}</Text>
-          <Text style={styles.profileLocation}>{item.location}</Text>
-          <Text style={styles.profileProfession}>{item.profession}</Text>
-          <Text style={styles.profileEducation}>{item.education}</Text>
-          <Text style={styles.lastSeen}>{item.lastSeen}</Text>
+        )}
+        <View style={styles.compatibilityBadge}>
+          <Text style={styles.compatibilityText}>{item.compatibility}%</Text>
         </View>
       </View>
 
-      <View style={styles.actionButtons}>
-        <TouchableOpacity style={styles.interestButton}>
-          <Icon name="heart" library="feather" size={16} color={Colors.primary} />
-          <Text style={styles.actionButtonText}>Interest</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.messageButton}>
-          <Icon name="message-circle" library="feather" size={16} color={Colors.info} />
-          <Text style={styles.actionButtonText}>Message</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.shortlistButton}>
-          <Icon name="star" library="feather" size={16} color={Colors.warning} />
-          <Text style={styles.actionButtonText}>Shortlist</Text>
-        </TouchableOpacity>
+      {/* Content below image */}
+      <View style={styles.profileContent}>
+        <Text style={styles.profileName} numberOfLines={1}>{item.name}</Text>
+        <Text style={styles.profileDetails}>{item.age} years • {item.profession}</Text>
+        <Text style={styles.profileLocation} numberOfLines={1}>
+          <Icon name="map-pin" library="feather" size={10} color={Colors.textSecondary} />
+          {' '}{item.location.split(',')[0]}
+        </Text>
+
+        <View style={styles.actionButtons}>
+          <TouchableOpacity style={styles.actionBtn}>
+            <Icon name="heart" library="feather" size={14} color={Colors.primary} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.actionBtn}>
+            <Icon name="message-circle" library="feather" size={14} color={Colors.info} />
+          </TouchableOpacity>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -210,6 +200,8 @@ export const SearchScreen: React.FC = () => {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.resultsList}
         showsVerticalScrollIndicator={false}
+        numColumns={2}
+        columnWrapperStyle={styles.columnWrapper}
       />
     </SafeAreaView>
   );
@@ -305,25 +297,25 @@ const styles = StyleSheet.create({
   resultsList: {
     padding: Spacing.md,
   },
-  resultCard: {
-    backgroundColor: Colors.backgroundCard,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.lg,
-    marginBottom: Spacing.md,
-    ...Shadows.md,
+  columnWrapper: {
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.xs, // Add horizontal spacing between cards
   },
-  cardHeader: {
-    flexDirection: 'row',
+  gridItem: {
+    width: '48%', // Fixed width for consistent card sizes
     marginBottom: Spacing.md,
+    overflow: 'hidden',
   },
-  profileImageContainer: {
+  imageContainer: {
     position: 'relative',
-    marginRight: Spacing.md,
+    height: 120,
+    borderRadius: BorderRadius.md,
+    overflow: 'hidden',
   },
   profileImage: {
-    width: 60,
-    height: 60,
-    borderRadius: BorderRadius.full,
+    width: '100%',
+    height: '100%',
+    borderRadius: BorderRadius.md,
     backgroundColor: Colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
@@ -335,8 +327,8 @@ const styles = StyleSheet.create({
   },
   verifiedBadge: {
     position: 'absolute',
-    bottom: -2,
-    right: -2,
+    top: 8,
+    right: 8,
     width: 20,
     height: 20,
     backgroundColor: Colors.success,
@@ -346,97 +338,58 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: Colors.backgroundCard,
   },
-  profileInfo: {
-    flex: 1,
+  compatibilityBadge: {
+    position: 'absolute',
+    top: 8,
+    left: 8,
+    backgroundColor: Colors.info,
+    borderRadius: BorderRadius.md,
+    paddingVertical: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
   },
-  nameRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: Spacing.xs,
+  compatibilityText: {
+    fontSize: Typography.fontSize.sm,
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.white,
+  },
+  profileContent: {
+    padding: Spacing.md,
+    backgroundColor: Colors.backgroundCard,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    marginTop: -20, // Pull up to overlap the image
   },
   profileName: {
     fontSize: Typography.fontSize.lg,
     fontWeight: Typography.fontWeight.semibold,
     color: Colors.textPrimary,
   },
-  compatibilityChip: {
-    backgroundColor: Colors.info,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
-    borderRadius: BorderRadius.sm,
-  },
-  highCompatibility: {
-    backgroundColor: Colors.success,
-  },
-  compatibilityText: {
-    fontSize: Typography.fontSize.xs,
-    fontWeight: Typography.fontWeight.bold,
-    color: Colors.white,
-  },
-  profileAge: {
+  profileDetails: {
     fontSize: Typography.fontSize.sm,
     color: Colors.textSecondary,
-    marginBottom: Spacing.xs,
+    marginTop: 4,
   },
   profileLocation: {
     fontSize: Typography.fontSize.sm,
     color: Colors.textSecondary,
-    marginBottom: Spacing.xs,
-  },
-  profileProfession: {
-    fontSize: Typography.fontSize.sm,
-    color: Colors.textPrimary,
-    fontWeight: Typography.fontWeight.medium,
-    marginBottom: Spacing.xs,
-  },
-  profileEducation: {
-    fontSize: Typography.fontSize.sm,
-    color: Colors.textSecondary,
-    marginBottom: Spacing.xs,
-  },
-  lastSeen: {
-    fontSize: Typography.fontSize.xs,
-    color: Colors.textSecondary,
-    fontStyle: 'italic',
+    marginTop: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   actionButtons: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingTop: Spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
+    justifyContent: 'space-between',
+    marginTop: 8,
   },
-  interestButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
+  actionBtn: {
+    width: 36,
+    height: 36,
     backgroundColor: Colors.background,
     borderRadius: BorderRadius.md,
-    gap: Spacing.xs,
-  },
-  messageButton: {
-    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    backgroundColor: Colors.background,
-    borderRadius: BorderRadius.md,
-    gap: Spacing.xs,
-  },
-  shortlistButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    backgroundColor: Colors.background,
-    borderRadius: BorderRadius.md,
-    gap: Spacing.xs,
-  },
-  actionButtonText: {
-    fontSize: Typography.fontSize.xs,
-    color: Colors.textSecondary,
-    fontWeight: Typography.fontWeight.medium,
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
 });
