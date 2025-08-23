@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TextInput,
   FlatList,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Typography, Spacing, BorderRadius } from '../constants/styles';
@@ -16,6 +17,7 @@ const searchResults = [
   {
     id: '1',
     name: 'Priya Sharma',
+    avatar: 'https://picsum.photos/200/200?random=1001',
     age: 25,
     location: 'Darbhanga, Bihar',
     profession: 'Teacher',
@@ -28,6 +30,7 @@ const searchResults = [
   {
     id: '2',
     name: 'Anjali Mishra',
+    avatar: 'https://picsum.photos/200/200?random=1002',
     age: 23,
     location: 'Muzaffarpur, Bihar',
     profession: 'Software Engineer',
@@ -40,6 +43,7 @@ const searchResults = [
   {
     id: '3',
     name: 'Kavita Jha',
+    avatar: 'https://picsum.photos/200/200?random=1003',
     age: 27,
     location: 'Madhubani, Bihar',
     profession: 'Doctor',
@@ -52,6 +56,7 @@ const searchResults = [
   {
     id: '4',
     name: 'Rekha Singh',
+    avatar: 'https://picsum.photos/200/200?random=1004',
     age: 26,
     location: 'Samastipur, Bihar',
     profession: 'Government Officer',
@@ -105,7 +110,11 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
       <View style={styles.mainContentRow}>
         <View style={styles.resultImageContainer}>
           <View style={styles.resultProfileImage}>
-            <Text style={styles.resultProfileImageText}>{item.name.charAt(0)}</Text>
+            <Image
+              source={{ uri: item.avatar }}
+              style={styles.resultProfileImage}
+              resizeMode="cover"
+            />
           </View>
         </View>
 
@@ -119,25 +128,6 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
               {' '}{item.location}
             </Text>
           </View>
-        </View>
-      </View>
-
-      {/* Horizontal line separator */}
-      <View style={styles.separator} />
-
-      {/* Bottom badges row - completely independent */}
-      <View style={styles.badgesRow}>
-        <View style={styles.compatibilityInfo}>
-          <Text style={styles.compatibilityText}>{item.compatibility}% Match</Text>
-        </View>
-        {item.verified && (
-          <View style={styles.verifiedInfo}>
-            <Icon name="check" library="feather" size={8} color="#16a34a" />
-            <Text style={styles.verifiedText}>Verified</Text>
-          </View>
-        )}
-        <View style={styles.lastSeenInfo}>
-          <Text style={styles.lastSeenText}>{item.lastSeen}</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -341,99 +331,38 @@ const styles = StyleSheet.create({
     color: Colors.white,
   },
   resultsList: {
-    padding: Spacing.md,
+    flex: 1,
   },
   resultItem: {
     flexDirection: 'column',
-    backgroundColor: Colors.backgroundCard,
-    borderRadius: BorderRadius.md,
-    padding: Spacing.md,
-    marginBottom: Spacing.sm,
-    borderWidth: 1,
-    borderColor: Colors.border,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.divider,
   },
   mainContentRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
   },
   resultImageContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     overflow: 'hidden',
     marginRight: Spacing.md,
   },
   resultProfileImage: {
     width: '100%',
     height: '100%',
-    borderRadius: 40,
+    borderRadius: 25,
     backgroundColor: Colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
   },
   resultProfileImageText: {
-    fontSize: Typography.fontSize.xl,
+    fontSize: Typography.fontSize.lg,
     fontWeight: Typography.fontWeight.bold,
     color: Colors.white,
-  },
-  separator: {
-    height: 1,
-    width: '100%',
-    backgroundColor: Colors.border,
-    marginVertical: 8,
-  },
-  badgesRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-  },
-  compatibilityInfo: {
-    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-    borderRadius: 6,
-    paddingVertical: 3,
-    paddingHorizontal: 8,
-    marginRight: 6,
-    marginBottom: 4,
-    borderWidth: 1,
-    borderColor: 'rgba(59, 130, 246, 0.2)',
-  },
-  compatibilityText: {
-    fontSize: 11,
-    color: '#2563eb',
-    fontWeight: '500',
-  },
-  verifiedInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(34, 197, 94, 0.1)',
-    borderRadius: 6,
-    paddingVertical: 3,
-    paddingHorizontal: 8,
-    marginRight: 6,
-    marginBottom: 4,
-    borderWidth: 1,
-    borderColor: 'rgba(34, 197, 94, 0.2)',
-  },
-  verifiedText: {
-    fontSize: 11,
-    color: '#16a34a',
-    marginLeft: 3,
-    fontWeight: '500',
-  },
-  lastSeenInfo: {
-    backgroundColor: 'rgba(107, 114, 128, 0.1)',
-    borderRadius: 6,
-    paddingVertical: 3,
-    paddingHorizontal: 8,
-    marginBottom: 4,
-    borderWidth: 1,
-    borderColor: 'rgba(107, 114, 128, 0.2)',
-  },
-  lastSeenText: {
-    fontSize: 11,
-    color: '#6b7280',
-    fontWeight: '500',
   },
   resultContent: {
     flex: 1,

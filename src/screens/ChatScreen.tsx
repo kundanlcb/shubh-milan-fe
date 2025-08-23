@@ -7,6 +7,7 @@ import {
   FlatList,
   TextInput,
   Alert,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {Colors, Typography, Spacing, BorderRadius, Shadows, GlobalStyles} from '../constants/styles';
@@ -18,6 +19,7 @@ const chatData = [
   {
     id: '1',
     name: 'Priya Sharma',
+    avatar: 'https://picsum.photos/200/200?random=1001',
     lastMessage: 'Thank you for showing interest in my profile',
     timestamp: '2 min ago',
     unreadCount: 2,
@@ -26,6 +28,7 @@ const chatData = [
   {
     id: '2',
     name: 'Anjali Mishra',
+    avatar: 'https://picsum.photos/200/200?random=1002',
     lastMessage: 'I would like to know more about your family',
     timestamp: '1 hour ago',
     unreadCount: 0,
@@ -34,6 +37,7 @@ const chatData = [
   {
     id: '3',
     name: 'Kavita Jha',
+    avatar: 'https://picsum.photos/200/200?random=1003',
     lastMessage: 'Can we schedule a video call?',
     timestamp: '3 hours ago',
     unreadCount: 1,
@@ -42,6 +46,7 @@ const chatData = [
   {
     id: '4',
     name: 'Rekha Singh',
+    avatar: 'https://picsum.photos/200/200?random=1004',
     lastMessage: 'Nice to connect with you',
     timestamp: 'Yesterday',
     unreadCount: 0,
@@ -50,6 +55,7 @@ const chatData = [
   {
     id: '5',
     name: 'Meera Thakur',
+    avatar: 'https://picsum.photos/200/200?random=1009',
     lastMessage: 'Looking forward to meeting your family',
     timestamp: '2 days ago',
     unreadCount: 0,
@@ -122,7 +128,7 @@ export const ChatScreen: React.FC<MainScreenProps<'Chat'>> = ({ navigation }) =>
     >
       <View style={styles.avatarContainer}>
         <View style={[styles.avatar, item.isOnline && styles.onlineAvatar]}>
-          <Text style={styles.avatarText}>{item.name.charAt(0)}</Text>
+          <Image source={{ uri: item.avatar }} style={styles.avatarImage} />
         </View>
         {item.isOnline && <View style={styles.onlineIndicator} />}
       </View>
@@ -281,13 +287,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: BorderRadius.full,
+  },
   onlineAvatar: {
     backgroundColor: Colors.success,
-  },
-  avatarText: {
-    fontSize: Typography.fontSize.lg,
-    fontWeight: Typography.fontWeight.bold,
-    color: Colors.textInverse,
   },
   onlineIndicator: {
     position: 'absolute',

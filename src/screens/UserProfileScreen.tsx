@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../constants/styles';
@@ -119,7 +120,7 @@ export const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ navigation
           <View style={styles.profileHeader}>
             <View style={styles.profileImageContainer}>
               <View style={styles.profileImage}>
-                <Text style={styles.profileImageText}>{user.avatar}</Text>
+                <Image source={{ uri: user.avatar }} style={styles.profileImagePhoto} />
               </View>
               <View style={styles.verifiedBadge}>
                 <Icon name="check" library="feather" size={12} color="white" />
@@ -215,10 +216,8 @@ export const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ navigation
                 <PostCard
                   key={post.id}
                   post={post}
-                  userPreferences={{ accountType: 'free' }}
                   onLike={(postId) => console.log('Like post:', postId)}
                   onProfile={() => {}}
-                  onContactRequest={() => handleMessage()}
                   onComment={() => handleMessage()}
                   onShare={(postId) => console.log('Share post:', postId)}
                   onSave={() => console.log('Save post')}
@@ -357,10 +356,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  profileImageText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
+  profileImagePhoto: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 40,
   },
   verifiedBadge: {
     position: 'absolute',

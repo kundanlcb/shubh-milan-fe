@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image } from 'react-native';
 import { Colors } from '../../constants/styles';
 
 interface User {
@@ -35,7 +35,7 @@ export const Stories: React.FC<StoriesProps> = ({
             onPress={() => onStoryPress(user)}
           >
             <View style={styles.storyCircle}>
-              <Text style={styles.storyAvatar}>{user.avatar}</Text>
+              <Image source={{ uri: user.avatar }} style={styles.storyAvatarImage} />
             </View>
             <Text style={styles.storyLabel} numberOfLines={1}>
               {user.name.split(' ')[0]}
@@ -87,10 +87,10 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#E91E63',
   },
-  storyAvatar: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: 'white',
+  storyAvatarImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
   },
   storyLabel: {
     fontSize: 12,

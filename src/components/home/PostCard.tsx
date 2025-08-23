@@ -100,7 +100,7 @@ export const PostCard: React.FC<PostCardProps> = ({
           onPress={() => onProfile(post.user)}
         >
           <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{post.user.avatar}</Text>
+            <Image source={{ uri: post.user.avatar }} style={styles.avatarImage} />
           </View>
           <View style={styles.userDetails}>
             <Text style={styles.username}>{post.user.name}</Text>
@@ -233,10 +233,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 12,
   },
-  avatarText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: 'white',
+  avatarImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 20,
   },
   userDetails: {
     flex: 1,

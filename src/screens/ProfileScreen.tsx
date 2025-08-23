@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Image,
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,6 +15,7 @@ import { Icon, AppIcons } from '../components/Icon';
 // Mock user data
 const userData = {
   name: 'Priya Sharma',
+  avatar: 'https://picsum.photos/200/200?random=1001',
   age: 25,
   location: 'Darbhanga, Bihar',
   profession: 'Teacher',
@@ -78,7 +80,7 @@ export const ProfileScreen: React.FC<{ onNavigateToEditProfile?: () => void }> =
         <View style={styles.profileCard}>
           <View style={styles.profileHeader}>
             <View style={styles.profileImage}>
-              <Text style={styles.profileImageText}>{userData.name.charAt(0)}</Text>
+              <Image source={{ uri: userData.avatar }} style={styles.avatarImage} />
             </View>
             <View style={styles.profileInfo}>
               <Text style={styles.profileName}>{userData.name}</Text>
@@ -249,10 +251,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: Spacing.md,
   },
-  profileImageText: {
-    fontSize: Typography.fontSize.xl,
-    fontWeight: Typography.fontWeight.bold,
-    color: Colors.white,
+  avatarImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: BorderRadius.full,
   },
   profileInfo: {
     flex: 1,

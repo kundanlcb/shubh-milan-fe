@@ -4,10 +4,11 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
   TextInput,
+  ScrollView,
   Alert,
   BackHandler,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Typography, Spacing, BorderRadius, Shadows, GlobalStyles } from '../constants/styles';
@@ -173,7 +174,10 @@ export const EditProfileScreen: React.FC<MainScreenProps<'EditProfile'>> = ({
         <View style={styles.photoSection}>
           <View style={styles.profilePhotoContainer}>
             <View style={styles.profilePhoto}>
-              <Text style={styles.profilePhotoText}>{formData.name.charAt(0)}</Text>
+              <Image
+                source={{ uri: 'https://picsum.photos/200/200?random=1001' }}
+                style={styles.profilePhotoImage}
+              />
             </View>
             <TouchableOpacity style={styles.changePhotoButton}>
               <Icon name="camera" library="feather" size={16} color={Colors.white} />
@@ -308,10 +312,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     ...Shadows.md,
   },
-  profilePhotoText: {
-    fontSize: Typography.fontSize['3xl'],
-    fontWeight: Typography.fontWeight.bold,
-    color: Colors.white,
+  profilePhotoImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: BorderRadius.full,
   },
   changePhotoButton: {
     position: 'absolute',
