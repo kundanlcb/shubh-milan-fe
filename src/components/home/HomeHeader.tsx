@@ -20,7 +20,7 @@ export const HomeHeader: React.FC<HomeHeaderProps> = ({
       <View style={styles.headerLeft}>
         <View style={styles.greetingContainer}>
           <Image
-            source={require('../../../shubh-milan-icon.png')}
+            source={require('../../../subh-milan.png')}
             style={styles.appIcon}
             resizeMode="contain"
           />
