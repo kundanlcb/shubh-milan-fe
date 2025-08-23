@@ -23,8 +23,9 @@ const EmptyStateComponent: React.FC<{ onAdjustPreferences: () => void }> = ({ on
 
 export const HomeScreen: React.FC<{
   onNavigateToAddPost?: () => void;
+  onNavigateToAddStory?: () => void;
   onNavigateToUserProfile?: (userId: string) => void;
-}> = ({onNavigateToUserProfile }) => {
+}> = ({ onNavigateToAddStory, onNavigateToUserProfile }) => {
   // Filter posts based on user preferences
   const [userPreferences] = useState(currentUserPreferences);
   const [activeFilters, setActiveFilters] = useState({
@@ -191,7 +192,13 @@ export const HomeScreen: React.FC<{
   const handleHeartPress = () => console.log('Heart pressed');
 
   // Stories action handlers
-  const handleAddStory = () => console.log('Add story pressed');
+  const handleAddStory = () => {
+    if (onNavigateToAddStory) {
+      onNavigateToAddStory();
+    } else {
+      console.log('Add story pressed');
+    }
+  };
   const handleStoryPress = (user: any) => {
     // Navigate to user profile when story is pressed
     if (onNavigateToUserProfile) {

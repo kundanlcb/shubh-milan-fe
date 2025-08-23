@@ -14,6 +14,7 @@ import { SearchScreen } from '../screens/SearchScreen';
 import { ChatScreen } from '../screens/ChatScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { AddPostScreen } from '../screens/AddPostScreen';
+import { AddStoryScreen } from '../screens/AddStoryScreen';
 
 type TabKey = 'Home' | 'Search' | 'AddPost' | 'Chat' | 'Profile';
 
@@ -67,7 +68,17 @@ const tabs: Tab[] = [
 
 export const MainTabNavigator: React.FC<{ onNavigateToUserProfile: (userId: string) => void }> = ({ onNavigateToUserProfile }) => {
   const [activeTab, setActiveTab] = useState<TabKey>('Home');
+  const [showAddStoryScreen, setShowAddStoryScreen] = useState(false);
   const insets = useSafeAreaInsets();
+
+  // If AddStory screen is active, show it
+  if (showAddStoryScreen) {
+    return (
+      <View style={styles.container}>
+        <AddStoryScreen navigation={{ goBack: () => setShowAddStoryScreen(false) }} />
+      </View>
+    );
+  }
 
   const renderActiveScreen = () => {
     const activeTabData = tabs.find(tab => tab.key === activeTab);
@@ -84,6 +95,7 @@ export const MainTabNavigator: React.FC<{ onNavigateToUserProfile: (userId: stri
     if (activeTab === 'Home') {
       return <Component
         onNavigateToAddPost={() => setActiveTab('AddPost')}
+        onNavigateToAddStory={() => setShowAddStoryScreen(true)}
         onNavigateToUserProfile={onNavigateToUserProfile}
       />;
     }
