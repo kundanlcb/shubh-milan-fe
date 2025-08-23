@@ -422,7 +422,7 @@ const styles = StyleSheet.create({
     color: Colors.error,
   },
   logoutDescription: {
-    color: Colors.errorLight,
+    color: Colors.textSecondary, // Changed from Colors.errorLight to match other descriptions
   },
   scrollContent: {
     paddingBottom: Spacing.md,
@@ -443,7 +443,8 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.border,
   },
   logoutRow: {
-    backgroundColor: Colors.errorLight,
+    // Remove the background color to match other items
+    // backgroundColor: Colors.errorLight, // Removed
   },
   sectionRowIcon: {
     width: 32,
