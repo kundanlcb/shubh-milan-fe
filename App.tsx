@@ -13,23 +13,35 @@ import {
 import { LoginScreen } from './src/screens/LoginScreen';
 import { RegisterScreen } from './src/screens/RegisterScreen';
 import { MainTabNavigator } from './src/components/MainTabNavigator';
+import { UserProfileScreen } from './src/screens/UserProfileScreen';
 import { Colors } from './src/constants/colors';
 
 type CurrentScreen = 'Login' | 'Register' | 'ForgotPassword' | 'OTPVerification' | 'Main';
+type ModalScreen = 'UserProfile' | null;
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   const [currentScreen, setCurrentScreen] = useState<CurrentScreen>('Login');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [modalScreen, setModalScreen] = useState<ModalScreen>(null);
+  const [modalParams, setModalParams] = useState<any>(null);
 
-  // Enhanced navigation function that handles login flow
-  const navigate = (screen: string) => {
+  // Enhanced navigation function that handles login flow and modals
+  const navigate = (screen: string, params?: any) => {
     if (screen === 'Main') {
       setIsLoggedIn(true);
       setCurrentScreen('Main');
+    } else if (screen === 'UserProfile') {
+      setModalScreen('UserProfile');
+      setModalParams(params);
     } else {
       setCurrentScreen(screen as CurrentScreen);
     }
+  };
+
+  const closeModal = () => {
+    setModalScreen(null);
+    setModalParams(null);
   };
 
   // Simulate login success
@@ -51,26 +63,37 @@ function App(): React.JSX.Element {
           barStyle={isDarkMode ? 'light-content' : 'dark-content'}
           backgroundColor={Colors.background}
         />
-        <MainTabNavigator />
+        <MainTabNavigator onNavigateToUserProfile={(userId: string) => navigate('UserProfile', { userId })} />
+
+        {/* Modal Screens */}
+        {modalScreen === 'UserProfile' && (
+          <UserProfileScreen
+            navigation={{ goBack: closeModal }}
+            route={{ params: modalParams }}
+          />
+        )}
       </SafeAreaProvider>
     );
   }
 
   // Show authentication screens if not logged in
+  const renderAuthScreen = () => {
+    switch (currentScreen) {
+      case 'Register':
+        return <RegisterScreen navigation={navigationProps} />;
+      case 'Login':
+      default:
+        return <LoginScreen navigation={navigationProps} />;
+    }
+  };
+
   return (
     <SafeAreaProvider>
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={Colors.background}
       />
-      {currentScreen === 'Login' ? (
-        <LoginScreen navigation={navigationProps} />
-      ) : currentScreen === 'Register' ? (
-        <RegisterScreen navigation={navigationProps} />
-      ) : (
-        // Placeholder for other screens (ForgotPassword, etc.)
-        <LoginScreen navigation={navigationProps} />
-      )}
+      {renderAuthScreen()}
     </SafeAreaProvider>
   );
 }

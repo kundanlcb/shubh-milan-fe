@@ -14,7 +14,6 @@ import { FilterModal } from '../components/home/FilterModal';
 import {
   allUsers,
   currentUserPreferences,
-  filterPostsByPreferences,
   PostData,
 } from '../utils/homeData';
 
@@ -22,7 +21,10 @@ const EmptyStateComponent: React.FC<{ onAdjustPreferences: () => void }> = ({ on
   <EmptyState onAdjustPreferences={onAdjustPreferences} />
 );
 
-export const HomeScreen: React.FC<{ onNavigateToAddPost?: () => void }> = ({ onNavigateToAddPost }) => {
+export const HomeScreen: React.FC<{
+  onNavigateToAddPost?: () => void;
+  onNavigateToUserProfile?: (userId: string) => void;
+}> = ({ onNavigateToAddPost, onNavigateToUserProfile }) => {
   // Filter posts based on user preferences
   const [userPreferences] = useState(currentUserPreferences);
   const [activeFilters, setActiveFilters] = useState({
@@ -87,13 +89,11 @@ export const HomeScreen: React.FC<{ onNavigateToAddPost?: () => void }> = ({ onN
   };
 
   const handleProfile = (user: { name: string; avatar: string; location: string; age: number; profession: string; }) => {
-    // Navigate to profile screen with premium check
-    if (userPreferences.accountType === 'premium') {
-      console.log('Navigate to full profile with contact details:', user.name);
-      // Show full profile with contact information
+    // Navigate to user profile screen
+    if (onNavigateToUserProfile) {
+      onNavigateToUserProfile(user.name);
     } else {
-      console.log('Navigate to limited profile:', user.name);
-      // Show limited profile, prompt for premium upgrade for contact details
+      console.log('Navigate to profile:', user.name);
     }
   };
 
@@ -192,7 +192,14 @@ export const HomeScreen: React.FC<{ onNavigateToAddPost?: () => void }> = ({ onN
 
   // Stories action handlers
   const handleAddStory = () => console.log('Add story pressed');
-  const handleStoryPress = (user: any) => console.log('Story pressed for:', user.name);
+  const handleStoryPress = (user: any) => {
+    // Navigate to user profile when story is pressed
+    if (onNavigateToUserProfile) {
+      onNavigateToUserProfile(user.name);
+    } else {
+      console.log('Story pressed for:', user.name);
+    }
+  };
 
   const renderPost = ({ item }: { item: PostData }) => (
     <PostCard

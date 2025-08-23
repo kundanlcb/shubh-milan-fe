@@ -14,6 +14,7 @@ import { SearchScreen } from '../screens/SearchScreen';
 import { ChatScreen } from '../screens/ChatScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { AddPostScreen } from '../screens/AddPostScreen';
+import { UserProfileScreen } from '../screens/UserProfileScreen';
 
 type TabKey = 'Home' | 'Search' | 'AddPost' | 'Chat' | 'Profile';
 
@@ -65,7 +66,7 @@ const tabs: Tab[] = [
   },
 ];
 
-export const MainTabNavigator: React.FC = () => {
+export const MainTabNavigator: React.FC<{ onNavigateToUserProfile: (userId: string) => void }> = ({ onNavigateToUserProfile }) => {
   const [activeTab, setActiveTab] = useState<TabKey>('Home');
   const insets = useSafeAreaInsets();
 
@@ -82,7 +83,10 @@ export const MainTabNavigator: React.FC = () => {
 
     // Pass navigation callback to HomeScreen
     if (activeTab === 'Home') {
-      return <Component onNavigateToAddPost={() => setActiveTab('AddPost')} />;
+      return <Component
+        onNavigateToAddPost={() => setActiveTab('AddPost')}
+        onNavigateToUserProfile={onNavigateToUserProfile}
+      />;
     }
 
     return <Component />;

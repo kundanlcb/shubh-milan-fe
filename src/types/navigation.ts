@@ -12,6 +12,7 @@ export type MainStackParamList = {
   Chat: undefined;
   AddPost: undefined;
   Settings: undefined;
+  UserProfile: { userId: string };
   ProfileDetail: { userId: string };
   EditProfile: undefined;
 };
