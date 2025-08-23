@@ -32,12 +32,8 @@ interface PostData {
 
 interface PostCardProps {
   post: PostData;
-  userPreferences: {
-    accountType: 'free' | 'premium';
-  };
   onLike: (postId: string) => void;
   onProfile: (user: PostUser) => void;
-  onContactRequest: (user: PostUser) => void;
   onComment: (postId: string) => void;
   onShare: (postId: string) => void;
   onSave: () => void;
@@ -45,10 +41,8 @@ interface PostCardProps {
 
 export const PostCard: React.FC<PostCardProps> = ({
   post,
-  userPreferences,
   onLike,
   onProfile,
-  onContactRequest,
   onShare,
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -112,19 +106,6 @@ export const PostCard: React.FC<PostCardProps> = ({
             <Text style={styles.username}>{post.user.name}</Text>
             <Text style={styles.userMeta}>
               {post.user.age} • {post.user.profession}
-            </Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.contactButton}
-          onPress={() => onContactRequest(post.user)}
-        >
-          <View style={styles.contactButtonContent}>
-            <Text style={styles.contactButtonIcon}>
-              {userPreferences.accountType === 'premium' ? '📞' : '💌'}
-            </Text>
-            <Text style={styles.contactButtonLabel}>
-              {userPreferences.accountType === 'premium' ? 'Call' : 'Interest'}
             </Text>
           </View>
         </TouchableOpacity>
@@ -277,26 +258,6 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     paddingHorizontal: 4,
     marginTop: 2,
-  },
-  contactButton: {
-    backgroundColor: Colors.primary,
-    borderRadius: 16,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-  },
-  contactButtonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  contactButtonIcon: {
-    color: 'white',
-    fontSize: 16,
-    marginRight: 4,
-  },
-  contactButtonLabel: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 16,
   },
   mediaContainer: {
     width: '100%',
