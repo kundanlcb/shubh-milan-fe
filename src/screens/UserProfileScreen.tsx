@@ -101,10 +101,6 @@ export const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ navigation
             <Text style={styles.headerTitle}>Profile</Text>
           </View>
           <View style={styles.headerActions}>
-            <View style={styles.compatibilityBadge}>
-              <Icon name="heart" library="feather" size={12} color={Colors.primary} />
-              <Text style={styles.compatibilityText}>{getCompatibilityScore()}%</Text>
-            </View>
             <TouchableOpacity
               style={[styles.headerInterestButton,
                 followStatus === 'following' && styles.headerFollowingButton,
@@ -150,17 +146,20 @@ export const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ navigation
             </View>
           </View>
 
-          {/* Action Buttons - Simplified without interest button */}
-          <View style={styles.actionButtonsContainer}>
-            <View style={styles.secondaryButtonsRow}>
-              <TouchableOpacity style={styles.secondaryButton} onPress={handleMessage}>
-                <Icon name="message-circle" library="feather" size={18} color={Colors.primary} />
-                <Text style={styles.secondaryButtonText}>Message</Text>
+          {/* Action Row - Match percentage on left, action icons on right */}
+          <View style={styles.actionRow}>
+            <View style={styles.compatibilityBadgeProfile}>
+              <Icon name="heart" library="feather" size={16} color={Colors.primary} />
+              <Text style={styles.compatibilityTextProfile}>{getCompatibilityScore()}%</Text>
+            </View>
+
+            <View style={styles.actionIconsRow}>
+              <TouchableOpacity style={styles.actionIcon} onPress={handleMessage}>
+                <Icon name="message-circle" library="feather" size={20} color={Colors.primary} />
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.secondaryButton} onPress={handleCall}>
-                <Icon name="phone" library="feather" size={18} color={Colors.primary} />
-                <Text style={styles.secondaryButtonText}>Call</Text>
+              <TouchableOpacity style={styles.actionIcon} onPress={handleCall}>
+                <Icon name="phone" library="feather" size={20} color={Colors.primary} />
               </TouchableOpacity>
             </View>
           </View>
@@ -338,7 +337,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     marginBottom: 16,
   },
   profileImageContainer: {
@@ -394,79 +393,37 @@ const styles = StyleSheet.create({
     color: '#666',
     marginLeft: 4,
   },
-  actionButtonsContainer: {
-    flexDirection: 'column',
-    alignItems: 'stretch',
-    justifyContent: 'center',
-    width: '100%',
-    paddingHorizontal: 16,
-    marginBottom: 24,
-  },
-  primaryButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 25,
-    backgroundColor: Colors.primary,
-    flex: 1,
-    marginBottom: 12,
-  },
-  followingButton: {
-    backgroundColor: '#E0E0E0',
-  },
-  requestedButton: {
-    backgroundColor: '#FFF3E0',
-    borderWidth: 1,
-    borderColor: '#FF9800',
-  },
-  primaryButtonText: {
-    color: 'white',
-    fontWeight: '600',
-    fontSize: 14,
-    marginLeft: 8,
-  },
-  followingButtonText: {
-    color: '#666',
-  },
-  requestedButtonText: {
-    color: '#FF9800',
-  },
-  secondaryButtonsRow: {
+  actionRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    width: '100%',
+    paddingHorizontal: 20,
+    marginBottom: 24,
   },
-  secondaryButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 25,
-    backgroundColor: '#F1F1F1',
-    flex: 1,
-    marginLeft: 8,
-  },
-  secondaryButtonText: {
-    color: Colors.primary,
-    fontWeight: '500',
-    fontSize: 14,
-    marginLeft: 8,
-  },
-  compatibilityBadge: {
+  compatibilityBadgeProfile: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#E8F5E9',
     paddingVertical: 6,
     paddingHorizontal: 10,
     borderRadius: 12,
-    marginRight: 12,
   },
-  compatibilityText: {
+  compatibilityTextProfile: {
     fontSize: 12,
     fontWeight: '600',
     color: Colors.primary,
     marginLeft: 4,
+  },
+  actionIconsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  actionIcon: {
+    padding: 8,
+    borderRadius: 24,
+    marginLeft: 8,
+    backgroundColor: '#F1F1F1',
   },
   statsContainer: {
     flexDirection: 'row',
