@@ -188,8 +188,8 @@ export const PostCard: React.FC<PostCardProps> = ({
             onPress={() => onLike(post.id)}
           >
             <Icon
-              name={post.isLiked ? "heart" : "heart"}
-              library="feather"
+              name={post.isLiked ? "favorite" : "favorite-border"}
+              library={post.isLiked ? "material" : "material"}
               size={20}
               color={post.isLiked ? "#E91E63" : Colors.primary}
             />

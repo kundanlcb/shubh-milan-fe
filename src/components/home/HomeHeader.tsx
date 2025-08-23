@@ -8,13 +8,11 @@ interface HomeHeaderProps {
     accountType: 'free' | 'premium';
     name: string;
   };
-  onHeartPress: () => void;
   onFilterPress: () => void;
 }
 
 export const HomeHeader: React.FC<HomeHeaderProps> = ({
   userPreferences,
-  onHeartPress,
   onFilterPress,
 }) => {
   return (
@@ -26,9 +24,6 @@ export const HomeHeader: React.FC<HomeHeaderProps> = ({
         </Text>
       </View>
       <View style={styles.headerRight}>
-        <TouchableOpacity style={styles.iconButton} onPress={onHeartPress}>
-          <Icon name="heart" library="feather" size={20} color={Colors.primary} />
-        </TouchableOpacity>
         <TouchableOpacity style={styles.iconButton} onPress={onFilterPress}>
           <Icon name="filter" library="feather" size={20} color={Colors.primary} />
         </TouchableOpacity>

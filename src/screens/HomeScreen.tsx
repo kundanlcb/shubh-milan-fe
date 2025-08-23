@@ -188,9 +188,6 @@ export const HomeScreen: React.FC<{
     setPosts(filteredPosts);
   };
 
-  // Header action handlers
-  const handleHeartPress = () => console.log('Heart pressed');
-
   // Stories action handlers
   const handleAddStory = () => {
     if (onNavigateToAddStory) {
@@ -233,7 +230,6 @@ export const HomeScreen: React.FC<{
     <View style={styles.container}>
       <HomeHeader
         userPreferences={userPreferences}
-        onHeartPress={handleHeartPress}
         onFilterPress={handleFilterPress}
       />
 
