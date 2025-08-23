@@ -1,7 +1,9 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Text, TouchableOpacity, Image, StyleSheet, Dimensions, FlatList } from 'react-native';
 import { Colors } from '../../constants/styles';
 import { Icon } from '../Icon';
+
+const { width: screenWidth } = Dimensions.get('window');
 
 interface PostUser {
   name: string;
@@ -11,10 +13,16 @@ interface PostUser {
   profession: string;
 }
 
+interface MediaItem {
+  id: string;
+  uri: string;
+  type: 'image' | 'video';
+}
+
 interface PostData {
   id: string;
   user: PostUser;
-  image: string;
+  media: MediaItem[];
   caption: string;
   likes: number;
   comments: number;
@@ -30,8 +38,8 @@ interface PostCardProps {
   onLike: (postId: string) => void;
   onProfile: (user: PostUser) => void;
   onContactRequest: (user: PostUser) => void;
-  onComment: (postId: string) => void; // Added missing onComment
-  onShare: (postId: string) => void; // Fixed signature to accept postId
+  onComment: (postId: string) => void;
+  onShare: (postId: string) => void;
   onSave: () => void;
 }
 
@@ -43,7 +51,51 @@ export const PostCard: React.FC<PostCardProps> = ({
   onContactRequest,
   onShare,
 }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const flatListRef = useRef<FlatList>(null);
   const compatibilityScore = Math.floor(Math.random() * 20) + 80;
+
+  const onViewableItemsChanged = useRef(({ viewableItems }: any) => {
+    if (viewableItems.length > 0) {
+      setCurrentIndex(viewableItems[0].index || 0);
+    }
+  }).current;
+
+  const viewabilityConfig = useRef({
+    itemVisiblePercentThreshold: 50,
+  }).current;
+
+  const renderMediaItem = ({ item }: { item: MediaItem }) => {
+    if (item.type === 'video') {
+      return (
+        <View style={styles.mediaItem}>
+          <Image
+            source={{ uri: item.uri }}
+            style={styles.postImage}
+            resizeMode="cover"
+          />
+          <View style={styles.videoOverlay}>
+            <TouchableOpacity style={styles.playButton}>
+              <Icon name="play" library="feather" size={48} color="white" />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.videoIndicator}>
+            <Icon name="video" library="feather" size={16} color="white" />
+          </View>
+        </View>
+      );
+    }
+
+    return (
+      <View style={styles.mediaItem}>
+        <Image
+          source={{ uri: item.uri }}
+          style={styles.postImage}
+          resizeMode="cover"
+        />
+      </View>
+    );
+  };
 
   return (
     <View style={styles.postContainer}>
@@ -61,7 +113,6 @@ export const PostCard: React.FC<PostCardProps> = ({
             <Text style={styles.userMeta}>
               {post.user.age} • {post.user.profession}
             </Text>
-           {/* <Text style={styles.location}>{post.user.location}</Text> */}
           </View>
         </TouchableOpacity>
         <TouchableOpacity
@@ -79,13 +130,54 @@ export const PostCard: React.FC<PostCardProps> = ({
         </TouchableOpacity>
       </View>
 
-      {/* Post Image */}
-      <View style={styles.imageContainer}>
-        <Image
-          source={{ uri: post.image }}
-          style={styles.postImage}
-          resizeMode="cover"
-        />
+      {/* Media Gallery */}
+      <View style={styles.mediaContainer}>
+        {post.media.length === 1 ? (
+          // Single media item - no pagination needed
+          renderMediaItem({ item: post.media[0] })
+        ) : (
+          // Multiple media items - use horizontal FlatList
+          <>
+            <FlatList
+              ref={flatListRef}
+              data={post.media}
+              renderItem={renderMediaItem}
+              keyExtractor={(item) => item.id}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              onViewableItemsChanged={onViewableItemsChanged}
+              viewabilityConfig={viewabilityConfig}
+              decelerationRate="fast"
+              snapToInterval={screenWidth}
+              snapToAlignment="start"
+              style={styles.mediaFlatList}
+            />
+
+            {/* Page Indicators */}
+            <View style={styles.pageIndicators}>
+              {post.media.map((_, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    styles.pageIndicator,
+                    currentIndex === index && styles.activePageIndicator
+                  ]}
+                  onPress={() => {
+                    flatListRef.current?.scrollToIndex({ index, animated: true });
+                  }}
+                />
+              ))}
+            </View>
+
+            {/* Media Counter */}
+            <View style={styles.mediaCounter}>
+              <Text style={styles.mediaCounterText}>
+                {currentIndex + 1}/{post.media.length}
+              </Text>
+            </View>
+          </>
+        )}
       </View>
 
       {/* Post Actions */}
@@ -111,7 +203,7 @@ export const PostCard: React.FC<PostCardProps> = ({
             <Text style={styles.actionText}>Share</Text>
           </TouchableOpacity>
 
-          {/* Match Compatibility right after share button */}
+          {/* Match Compatibility */}
           <View style={styles.matchBadge}>
             <Text style={styles.matchText}>
               {compatibilityScore}% Match
@@ -206,13 +298,47 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
-  imageContainer: {
+  mediaContainer: {
     width: '100%',
     height: 300,
+    position: 'relative',
+  },
+  mediaFlatList: {
+    width: '100%',
+    height: '100%',
+  },
+  mediaItem: {
+    width: screenWidth,
+    height: 300,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
   },
   postImage: {
     width: '100%',
     height: '100%',
+  },
+  videoOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  playButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  videoIndicator: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    padding: 4,
+    borderRadius: 12,
   },
   postActions: {
     flexDirection: 'row',
@@ -273,5 +399,38 @@ const styles = StyleSheet.create({
     color: '#2E7D32',
     fontWeight: 'bold',
     fontSize: 12,
+  },
+  pageIndicators: {
+    position: 'absolute',
+    bottom: 8,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pageIndicator: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#ccc',
+    marginHorizontal: 4,
+  },
+  activePageIndicator: {
+    backgroundColor: Colors.primary,
+  },
+  mediaCounter: {
+    position: 'absolute',
+    bottom: 8,
+    right: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 16,
+  },
+  mediaCounterText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
 });
