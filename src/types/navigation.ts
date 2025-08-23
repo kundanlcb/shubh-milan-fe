@@ -10,6 +10,7 @@ export type MainStackParamList = {
   Profile: undefined;
   Search: undefined;
   Chat: undefined;
+  ChatConversation: { chatId: string; chatName: string; isOnline?: boolean };
   AddPost: undefined;
   Settings: undefined;
   UserProfile: { userId: string };

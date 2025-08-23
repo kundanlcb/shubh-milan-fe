@@ -14,9 +14,10 @@ import { LoginScreen } from './src/screens/LoginScreen';
 import { RegisterScreen } from './src/screens/RegisterScreen';
 import { MainTabNavigator } from './src/components/MainTabNavigator';
 import { UserProfileScreen } from './src/screens/UserProfileScreen';
+import { ChatConversationScreen } from './src/screens/ChatConversationScreen';
 import { Colors } from './src/constants/colors';
 
-type CurrentScreen = 'Login' | 'Register' | 'ForgotPassword' | 'OTPVerification' | 'Main';
+type CurrentScreen = 'Login' | 'Register' | 'ForgotPassword' | 'OTPVerification' | 'Main' | 'ChatConversation';
 type ModalScreen = 'UserProfile' | null;
 
 function App(): React.JSX.Element {
@@ -25,6 +26,8 @@ function App(): React.JSX.Element {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [modalScreen, setModalScreen] = useState<ModalScreen>(null);
   const [modalParams, setModalParams] = useState<any>(null);
+  const [chatConversationParams, setChatConversationParams] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState<string>('Home');
 
   // Enhanced navigation function that handles login flow and modals
   const navigate = (screen: string, params?: any) => {
@@ -34,6 +37,10 @@ function App(): React.JSX.Element {
     } else if (screen === 'UserProfile') {
       setModalScreen('UserProfile');
       setModalParams(params);
+    } else if (screen === 'ChatConversation') {
+      setActiveTab('Chat'); // Remember we came from Chat tab
+      setCurrentScreen('ChatConversation');
+      setChatConversationParams(params);
     } else {
       setCurrentScreen(screen as CurrentScreen);
     }
@@ -55,6 +62,29 @@ function App(): React.JSX.Element {
     onLoginSuccess: handleLoginSuccess,
   };
 
+  // Show ChatConversation screen as standalone
+  if (isLoggedIn && currentScreen === 'ChatConversation') {
+    return (
+      <SafeAreaProvider>
+        <StatusBar
+          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+          backgroundColor={Colors.background}
+        />
+        <ChatConversationScreen
+          navigation={{
+            goBack: () => setCurrentScreen('Main'),
+            navigate: (screen: string, params?: any) => {
+              if (screen === 'UserProfile') {
+                navigate('UserProfile', params);
+              }
+            }
+          }}
+          route={{ params: chatConversationParams }}
+        />
+      </SafeAreaProvider>
+    );
+  }
+
   // Show main app if logged in
   if (isLoggedIn && currentScreen === 'Main') {
     return (
@@ -63,7 +93,12 @@ function App(): React.JSX.Element {
           barStyle={isDarkMode ? 'light-content' : 'dark-content'}
           backgroundColor={Colors.background}
         />
-        <MainTabNavigator onNavigateToUserProfile={(userId: string) => navigate('UserProfile', { userId })} />
+        <MainTabNavigator
+          initialActiveTab={activeTab}
+          onTabChange={setActiveTab}
+          onNavigateToUserProfile={(userId: string) => navigate('UserProfile', { userId })}
+          onNavigateToChatConversation={(params: any) => navigate('ChatConversation', params)}
+        />
 
         {/* Modal Screens */}
         {modalScreen === 'UserProfile' && (

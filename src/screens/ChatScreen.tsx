@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,10 +6,12 @@ import {
   StyleSheet,
   FlatList,
   TextInput,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {Colors, Typography, Spacing, BorderRadius, Shadows, GlobalStyles} from '../constants/styles';
 import { Icon } from '../components/Icon';
+import { MainScreenProps } from '../types/navigation';
 
 // Mock chat data
 const chatData = [
@@ -55,9 +57,21 @@ const chatData = [
   },
 ];
 
-export const ChatScreen: React.FC = () => {
+export const ChatScreen: React.FC<MainScreenProps<'Chat'>> = ({ navigation }) => {
   const [searchText, setSearchText] = useState('');
   const [filteredChats, setFilteredChats] = useState(chatData);
+
+  useEffect(() => {
+    // Only add listener if navigation has addListener method (React Navigation)
+    if (navigation?.addListener) {
+      const unsubscribe = navigation.addListener('focus', () => {
+        // Code to run when the screen is focused
+        // For example, you can fetch the latest chat data here
+      });
+
+      return unsubscribe;
+    }
+  }, [navigation]);
 
   const handleSearch = (text: string) => {
     setSearchText(text);
@@ -71,8 +85,41 @@ export const ChatScreen: React.FC = () => {
     }
   };
 
+  const handleNewChat = () => {
+    Alert.alert(
+      'Start New Chat',
+      'How would you like to start a new conversation?',
+      [
+        { text: 'Browse Profiles', onPress: () => navigation.navigate('Search') },
+        { text: 'From Interests', onPress: () => Alert.alert('Feature coming soon!') },
+        { text: 'Cancel', style: 'cancel' },
+      ]
+    );
+  };
+
+  const handleQuickAction = (action: string) => {
+    switch (action) {
+      case 'newChat':
+        handleNewChat();
+        break;
+      case 'discover':
+        navigation.navigate('Search');
+        break;
+      case 'interests':
+        Alert.alert('Interests', 'Browse people with similar interests feature coming soon!');
+        break;
+    }
+  };
+
   const renderChatItem = ({ item }: { item: typeof chatData[0] }) => (
-    <TouchableOpacity style={styles.chatItem}>
+    <TouchableOpacity
+      style={styles.chatItem}
+      onPress={() => navigation.navigate('ChatConversation', {
+        chatId: item.id,
+        chatName: item.name,
+        isOnline: item.isOnline,
+      })}
+    >
       <View style={styles.avatarContainer}>
         <View style={[styles.avatar, item.isOnline && styles.onlineAvatar]}>
           <Text style={styles.avatarText}>{item.name.charAt(0)}</Text>
@@ -121,8 +168,8 @@ export const ChatScreen: React.FC = () => {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Messages</Text>
-        <TouchableOpacity style={styles.newChatButton}>
-          <Text style={styles.newChatIcon}>✉️</Text>
+        <TouchableOpacity style={styles.newChatButton} onPress={handleNewChat}>
+          <Icon name="plus" library="feather" size={20} color={Colors.textInverse} />
         </TouchableOpacity>
       </View>
 
@@ -149,21 +196,21 @@ export const ChatScreen: React.FC = () => {
 
       {/* Quick Actions */}
       <View style={styles.quickActions}>
-        <TouchableOpacity style={styles.quickAction}>
+        <TouchableOpacity style={styles.quickAction} onPress={() => handleQuickAction('newChat')}>
           <View style={styles.quickActionIconContainer}>
             <Icon name="mail" library="feather" size={20} color={Colors.primary} />
           </View>
           <Text style={styles.quickActionText}>New Chat</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.quickAction}>
+        <TouchableOpacity style={styles.quickAction} onPress={() => handleQuickAction('discover')}>
           <View style={styles.quickActionIconContainer}>
             <Icon name="search" library="feather" size={20} color={Colors.primary} />
           </View>
           <Text style={styles.quickActionText}>Discover</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.quickAction}>
+        <TouchableOpacity style={styles.quickAction} onPress={() => handleQuickAction('interests')}>
           <View style={styles.quickActionIconContainer}>
             <Icon name="heart" library="feather" size={20} color={Colors.primary} />
           </View>

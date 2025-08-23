@@ -61,9 +61,12 @@ export const Colors = {
   inputBackground: '#FFFFFF',
   inputBorder: '#E0E0E0',
   inputPlaceholder: '#9E9E9E',
-  inputFocus: '#D32F2F',
+  inputText: '#212121',
 
-  // Card and Surface Colors
+  // Modal Colors
+  modalBackground: 'rgba(0, 0, 0, 0.5)',
+
+  // Surface Colors
   cardShadow: 'rgba(0, 0, 0, 0.1)',
 } as const;
 

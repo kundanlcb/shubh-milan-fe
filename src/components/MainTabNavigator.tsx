@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
-
+  Alert,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, Typography, Spacing, BorderRadius, Shadows } from '../constants/styles';
@@ -66,10 +66,26 @@ const tabs: Tab[] = [
   },
 ];
 
-export const MainTabNavigator: React.FC<{ onNavigateToUserProfile: (userId: string) => void }> = ({ onNavigateToUserProfile }) => {
-  const [activeTab, setActiveTab] = useState<TabKey>('Home');
+export const MainTabNavigator: React.FC<{
+  initialActiveTab?: string;
+  onTabChange?: (tab: string) => void;
+  onNavigateToUserProfile: (userId: string) => void;
+  onNavigateToChatConversation: (params: any) => void;
+}> = ({ initialActiveTab = 'Home', onTabChange, onNavigateToUserProfile, onNavigateToChatConversation }) => {
+  const [activeTab, setActiveTab] = useState<TabKey>(initialActiveTab as TabKey);
   const [showAddStoryScreen, setShowAddStoryScreen] = useState(false);
   const insets = useSafeAreaInsets();
+
+  // Update activeTab when initialActiveTab prop changes (coming back from chat conversation)
+  useEffect(() => {
+    setActiveTab(initialActiveTab as TabKey);
+  }, [initialActiveTab]);
+
+  // Handle tab change and notify parent
+  const handleTabChange = (tab: TabKey) => {
+    setActiveTab(tab);
+    onTabChange?.(tab);
+  };
 
   // If AddStory screen is active, show it
   if (showAddStoryScreen) {
@@ -113,6 +129,21 @@ export const MainTabNavigator: React.FC<{ onNavigateToUserProfile: (userId: stri
       />;
     }
 
+    // Pass navigation callback to ChatScreen
+    if (activeTab === 'Chat') {
+      return <Component
+        navigation={{
+          navigate: (screen: string, params?: any) => {
+            if (screen === 'Search') {
+              setActiveTab('Search');
+            } else if (screen === 'ChatConversation') {
+              onNavigateToChatConversation(params);
+            }
+          }
+        }}
+      />;
+    }
+
     return <Component />;
   };
 
@@ -126,7 +157,7 @@ export const MainTabNavigator: React.FC<{ onNavigateToUserProfile: (userId: stri
         <TouchableOpacity
           key={tab.key}
           style={[styles.tabButton, isActive && styles.activeTabButton]}
-          onPress={() => setActiveTab(tab.key)}
+          onPress={() => handleTabChange(tab.key)}
         >
           <View style={[styles.tabIconContainer, isActive && styles.activeTabIconContainer]}>
             <Icon
@@ -148,7 +179,7 @@ export const MainTabNavigator: React.FC<{ onNavigateToUserProfile: (userId: stri
       <TouchableOpacity
         key={tab.key}
         style={[styles.tabButton, isActive && styles.activeTabButton]}
-        onPress={() => setActiveTab(tab.key)}
+        onPress={() => handleTabChange(tab.key)}
       >
         <View style={[styles.tabIconContainer, isActive && styles.activeTabIconContainer]}>
           <Icon
