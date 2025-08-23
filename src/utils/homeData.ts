@@ -274,6 +274,7 @@ export const allUsers = [
 
 // User preferences from registration (normally from backend/storage)
 export const currentUserPreferences = {
+  name: 'Prakash Roy',
   partnerAgeMin: 22,
   partnerAgeMax: 30,
   partnerProfession: ['Teacher', 'Software Engineer', 'Doctor'],

@@ -59,9 +59,9 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   addStoryCircle: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     backgroundColor: '#F0F0F0',
     borderWidth: 2,
     borderColor: '#DDD',
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   addStoryIcon: {
-    fontSize: 24,
+    fontSize: 28,
     color: '#666',
   },
   storyItem: {
@@ -78,9 +78,9 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   storyCircle: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     backgroundColor: Colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
@@ -88,15 +88,15 @@ const styles = StyleSheet.create({
     borderColor: '#E91E63',
   },
   storyAvatar: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: 'bold',
     color: 'white',
   },
   storyLabel: {
     fontSize: 12,
-    marginTop: 6,
+    marginTop: 8,
     color: '#333',
-    width: 64,
+    width: 80,
     textAlign: 'center',
   },
 });

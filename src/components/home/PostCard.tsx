@@ -61,7 +61,7 @@ export const PostCard: React.FC<PostCardProps> = ({
             <Text style={styles.userMeta}>
               {post.user.age} • {post.user.profession}
             </Text>
-            <Text style={styles.location}>{post.user.location}</Text>
+           {/* <Text style={styles.location}>{post.user.location}</Text> */}
           </View>
         </TouchableOpacity>
         <TouchableOpacity

@@ -118,10 +118,7 @@ export const HomeScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <HomeHeader
-        userPreferences={{
-          accountType: userPreferences.accountType,
-          name: 'User' // Add a default name since it's not in the current userPreferences structure
-        }}
+        userPreferences={userPreferences}
         onHeartPress={handleHeartPress}
         onChatPress={handleChatPress}
         onAddPress={handleAddPress}
