@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image } from 'react-native';
 import { Colors } from '../../constants/styles';
 
@@ -18,6 +18,14 @@ export const Stories: React.FC<StoriesProps> = ({
   onAddStory,
   onStoryPress,
 }) => {
+  const [seenStories, setSeenStories] = useState<Set<string>>(new Set());
+
+  const handleStoryPress = (user: User) => {
+    // Mark this story as seen
+    setSeenStories(prev => new Set(prev).add(user.name));
+    onStoryPress(user);
+  };
+
   return (
     <View style={styles.storiesContainer}>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -28,20 +36,26 @@ export const Stories: React.FC<StoriesProps> = ({
           <Text style={styles.storyLabel}>Your Story</Text>
         </TouchableOpacity>
 
-        {users.slice(0, 5).map((user, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.storyItem}
-            onPress={() => onStoryPress(user)}
-          >
-            <View style={styles.storyCircle}>
-              <Image source={{ uri: user.avatar }} style={styles.storyAvatarImage} />
-            </View>
-            <Text style={styles.storyLabel} numberOfLines={1}>
-              {user.name.split(' ')[0]}
-            </Text>
-          </TouchableOpacity>
-        ))}
+        {users.slice(0, 5).map((user, index) => {
+          const isSeen = seenStories.has(user.name);
+          return (
+            <TouchableOpacity
+              key={index}
+              style={styles.storyItem}
+              onPress={() => handleStoryPress(user)}
+            >
+              <View style={[
+                styles.storyCircle,
+                isSeen ? styles.storyCircleSeen : styles.storyCircleUnseen
+              ]}>
+                <Image source={{ uri: user.avatar }} style={styles.storyAvatarImage} />
+              </View>
+              <Text style={styles.storyLabel} numberOfLines={1}>
+                {user.name.split(' ')[0]}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </ScrollView>
     </View>
   );
@@ -84,13 +98,18 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#E91E63',
+    borderWidth: 3,
+  },
+  storyCircleUnseen: {
+    borderColor: '#E91E63', // Magenta border for unseen stories
+  },
+  storyCircleSeen: {
+    borderColor: '#999', // Grey border for seen stories
   },
   storyAvatarImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 54,
+    height: 54,
+    borderRadius: 27,
   },
   storyLabel: {
     fontSize: 12,
