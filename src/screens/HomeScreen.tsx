@@ -10,12 +10,12 @@ import { HomeHeader } from '../components/home/HomeHeader';
 import { Stories } from '../components/home/Stories';
 import { PostCard } from '../components/home/PostCard';
 import { EmptyState } from '../components/home/EmptyState';
+import { FilterModal } from '../components/home/FilterModal';
 import {
   allUsers,
   currentUserPreferences,
   filterPostsByPreferences,
   PostData,
-
 } from '../utils/homeData';
 
 const EmptyStateComponent: React.FC<{ onAdjustPreferences: () => void }> = ({ onAdjustPreferences }) => (
@@ -24,9 +24,59 @@ const EmptyStateComponent: React.FC<{ onAdjustPreferences: () => void }> = ({ on
 
 export const HomeScreen: React.FC<{ onNavigateToAddPost?: () => void }> = ({ onNavigateToAddPost }) => {
   // Filter posts based on user preferences
-  const filteredPosts = filterPostsByPreferences(allUsers, currentUserPreferences);
-  const [posts, setPosts] = useState(filteredPosts);
   const [userPreferences] = useState(currentUserPreferences);
+  const [activeFilters, setActiveFilters] = useState({
+    ageMin: userPreferences.partnerAgeMin,
+    ageMax: userPreferences.partnerAgeMax,
+    professions: userPreferences.partnerProfession,
+    locations: userPreferences.partnerLocation,
+    religions: ['Hindu'], // Default religion filter
+    genders: ['Male', 'Female'], // Default to show both genders
+    salaryMin: 300000, // Default minimum salary (3 LPA)
+    salaryMax: 5000000, // Default maximum salary (50 LPA)
+  });
+  const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
+
+  // Apply filters to get filtered posts
+  const getFilteredPosts = () => {
+    return allUsers.filter(post => {
+      const user = post.user;
+
+      // Age filter
+      if (user.age < activeFilters.ageMin || user.age > activeFilters.ageMax) {
+        return false;
+      }
+
+      // Profession filter
+      if (activeFilters.professions.length > 0 && !activeFilters.professions.includes(user.profession)) {
+        return false;
+      }
+
+      // Location filter
+      if (activeFilters.locations.length > 0 && !activeFilters.locations.includes(user.location)) {
+        return false;
+      }
+
+      // Religion filter
+      if (activeFilters.religions.length > 0 && !activeFilters.religions.includes(user.religion)) {
+        return false;
+      }
+
+      // Gender filter
+      if (activeFilters.genders.length > 0 && !activeFilters.genders.includes(user.gender)) {
+        return false;
+      }
+
+      // Salary filter
+      if (user.salary < activeFilters.salaryMin || user.salary > activeFilters.salaryMax) {
+        return false;
+      }
+
+      return true;
+    });
+  };
+
+  const [posts, setPosts] = useState(getFilteredPosts());
 
   const handleLike = (postId: string) => {
     setPosts(posts.map(post =>
@@ -82,7 +132,59 @@ export const HomeScreen: React.FC<{ onNavigateToAddPost?: () => void }> = ({ onN
   };
 
   const handleFilterPress = () => {
-    console.log('Filter pressed - show filter modal/screen');
+    setIsFilterModalVisible(true);
+  };
+
+  const handleApplyFilters = (newFilters: {
+    ageMin: number;
+    ageMax: number;
+    professions: string[];
+    locations: string[];
+    religions: string[];
+    genders: string[];
+    salaryMin: number;
+    salaryMax: number;
+  }) => {
+    setActiveFilters(newFilters);
+
+    // Apply new filters and update posts
+    const filteredPosts = allUsers.filter(post => {
+      const user = post.user;
+
+      // Age filter
+      if (user.age < newFilters.ageMin || user.age > newFilters.ageMax) {
+        return false;
+      }
+
+      // Profession filter
+      if (newFilters.professions.length > 0 && !newFilters.professions.includes(user.profession)) {
+        return false;
+      }
+
+      // Location filter
+      if (newFilters.locations.length > 0 && !newFilters.locations.includes(user.location)) {
+        return false;
+      }
+
+      // Religion filter
+      if (newFilters.religions.length > 0 && !newFilters.religions.includes(user.religion)) {
+        return false;
+      }
+
+      // Gender filter
+      if (newFilters.genders.length > 0 && !newFilters.genders.includes(user.gender)) {
+        return false;
+      }
+
+      // Salary filter
+      if (user.salary < newFilters.salaryMin || user.salary > newFilters.salaryMax) {
+        return false;
+      }
+
+      return true;
+    });
+
+    setPosts(filteredPosts);
   };
 
   // Header action handlers
@@ -130,6 +232,13 @@ export const HomeScreen: React.FC<{ onNavigateToAddPost?: () => void }> = ({ onN
         contentContainerStyle={styles.scrollContent}
         ListHeaderComponent={renderListHeader}
         ListEmptyComponent={<EmptyStateComponent onAdjustPreferences={handleAdjustPreferences} />}
+      />
+
+      <FilterModal
+        visible={isFilterModalVisible}
+        onClose={() => setIsFilterModalVisible(false)}
+        currentFilters={activeFilters}
+        onApplyFilters={handleApplyFilters}
       />
     </View>
   );
