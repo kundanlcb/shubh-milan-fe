@@ -4,7 +4,7 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Alert,
+  BackHandler,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, Typography, Spacing, BorderRadius, Shadows } from '../constants/styles';
@@ -81,6 +81,26 @@ export const MainTabNavigator: React.FC<{
   useEffect(() => {
     setActiveTab(initialActiveTab as TabKey);
   }, [initialActiveTab]);
+
+  // Handle back button press
+  useEffect(() => {
+    const backAction = () => {
+      if (activeTab === 'AddPost') {
+        setActiveTab('Home');
+        return true; // Prevent default back navigation
+      } else if (showAddStoryScreen) {
+        setShowAddStoryScreen(false);
+        return true; // Prevent default back navigation
+      }
+      return false; // Allow default back navigation
+    };
+
+    const subscription = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => {
+      subscription.remove();
+    };
+  }, [activeTab, showAddStoryScreen]);
 
   // Handle tab change and notify parent
   const handleTabChange = (tab: TabKey) => {

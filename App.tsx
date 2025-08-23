@@ -5,8 +5,8 @@
  * @format
  */
 
-import React, { useState } from 'react';
-import { StatusBar, useColorScheme } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StatusBar, useColorScheme, BackHandler } from 'react-native';
 import {
   SafeAreaProvider,
 } from 'react-native-safe-area-context';
@@ -65,6 +65,34 @@ function App(): React.JSX.Element {
     navigate,
     onLoginSuccess: handleLoginSuccess,
   };
+
+  // Handle Android back button
+  useEffect(() => {
+    const backAction = () => {
+      if (modalScreen) {
+        closeModal();
+        return true; // Prevent default back behavior
+      } else if (currentScreen === 'ChatConversation' || currentScreen === 'EditProfile') {
+        // Let individual screens handle their own back navigation
+        // These screens have their own BackHandler implementations
+        return false; // Allow the screen's own back handler to take over
+      } else if (currentScreen === 'Register') {
+        setCurrentScreen('Login');
+        return true; // Prevent default back behavior
+      } else if (currentScreen === 'Main') {
+        // On main screen, allow app exit
+        return false; // Allow default back behavior (exit app)
+      }
+      return false; // Allow default back behavior for other cases
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [modalScreen, currentScreen]);
 
   // Show EditProfile screen as standalone
   if (isLoggedIn && currentScreen === 'EditProfile') {

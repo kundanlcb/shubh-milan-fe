@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   ScrollView,
   TextInput,
   Alert,
+  BackHandler,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Typography, Spacing, BorderRadius, Shadows, GlobalStyles } from '../constants/styles';
@@ -92,6 +93,21 @@ export const EditProfileScreen: React.FC<MainScreenProps<'EditProfile'>> = ({
       ]
     );
   };
+
+  const handleBackPress = useCallback(() => {
+    // For back gesture/button, directly go back without confirmation
+    navigation.goBack();
+    return true; // Prevent default back behavior
+  }, [navigation]);
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      handleBackPress
+    );
+
+    return () => backHandler.remove();
+  }, [handleBackPress]);
 
   const renderSection = (title: string, children: React.ReactNode) => (
     <View style={styles.section}>

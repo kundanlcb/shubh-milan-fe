@@ -11,6 +11,7 @@ import {
   Modal,
   Keyboard,
   KeyboardAvoidingView,
+  BackHandler,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Typography, Spacing, BorderRadius } from '../constants/styles';
@@ -93,7 +94,7 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
 
   useEffect(() => {
     // Keyboard event listeners with better handling
-    const keyboardDidShow = (event: any) => {
+    const keyboardDidShow = (_event: any) => {
       setIsKeyboardVisible(true);
       // Scroll to bottom when keyboard shows with delay
       setTimeout(() => {
@@ -105,7 +106,7 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
       setIsKeyboardVisible(false);
     };
 
-    const keyboardWillShow = (event: any) => {
+    const keyboardWillShow = (_event: any) => {
       if (Platform.OS === 'ios') {
         setIsKeyboardVisible(true);
       }
@@ -135,6 +136,26 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
       if (keyboardWillHideListener) keyboardWillHideListener.remove();
     };
   }, []);
+
+  // Handle Android back button
+  useEffect(() => {
+    const backAction = () => {
+      if (showAttachmentModal) {
+        setShowAttachmentModal(false);
+        return true; // Prevent default back behavior
+      } else {
+        navigation.goBack();
+        return true; // Prevent default back behavior
+      }
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [showAttachmentModal, navigation]);
 
   const sendMessage = () => {
     if (newMessage.trim() === '') return;
