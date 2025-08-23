@@ -72,7 +72,11 @@ const filterOptions = [
   { key: 'religion', label: 'Religion', iconConfig: AppIcons.religion },
 ];
 
-export const SearchScreen: React.FC = () => {
+interface SearchScreenProps {
+  navigation?: any;
+}
+
+export const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
@@ -85,8 +89,18 @@ export const SearchScreen: React.FC = () => {
     );
   };
 
+  const handleUserProfilePress = (user: typeof searchResults[0]) => {
+    if (navigation) {
+      navigation.navigate('UserProfile', { userId: user.id });
+    }
+  };
+
   const renderSearchResult = ({ item }: { item: typeof searchResults[0] }) => (
-    <TouchableOpacity style={styles.resultItem}>
+    <TouchableOpacity
+      style={styles.resultItem}
+      onPress={() => handleUserProfilePress(item)}
+      activeOpacity={0.7}
+    >
       {/* Main content row - Profile pic + User info */}
       <View style={styles.mainContentRow}>
         <View style={styles.resultImageContainer}>

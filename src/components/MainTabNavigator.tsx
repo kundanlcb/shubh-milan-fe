@@ -88,6 +88,19 @@ export const MainTabNavigator: React.FC<{ onNavigateToUserProfile: (userId: stri
       />;
     }
 
+    // Pass navigation callback to SearchScreen
+    if (activeTab === 'Search') {
+      return <Component
+        navigation={{
+          navigate: (screen: string, params?: any) => {
+            if (screen === 'UserProfile') {
+              onNavigateToUserProfile(params.userId);
+            }
+          }
+        }}
+      />;
+    }
+
     return <Component />;
   };
 
