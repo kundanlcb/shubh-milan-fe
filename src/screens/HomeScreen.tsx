@@ -22,7 +22,7 @@ const EmptyStateComponent: React.FC<{ onAdjustPreferences: () => void }> = ({ on
   <EmptyState onAdjustPreferences={onAdjustPreferences} />
 );
 
-export const HomeScreen: React.FC = () => {
+export const HomeScreen: React.FC<{ onNavigateToAddPost?: () => void }> = ({ onNavigateToAddPost }) => {
   // Filter posts based on user preferences
   const filteredPosts = filterPostsByPreferences(allUsers, currentUserPreferences);
   const [posts, setPosts] = useState(filteredPosts);
@@ -87,8 +87,6 @@ export const HomeScreen: React.FC = () => {
 
   // Header action handlers
   const handleHeartPress = () => console.log('Heart pressed');
-  const handleChatPress = () => console.log('Chat pressed');
-  const handleAddPress = () => console.log('Add pressed');
 
   // Stories action handlers
   const handleAddStory = () => console.log('Add story pressed');
@@ -120,8 +118,6 @@ export const HomeScreen: React.FC = () => {
       <HomeHeader
         userPreferences={userPreferences}
         onHeartPress={handleHeartPress}
-        onChatPress={handleChatPress}
-        onAddPress={handleAddPress}
         onFilterPress={handleFilterPress}
       />
 

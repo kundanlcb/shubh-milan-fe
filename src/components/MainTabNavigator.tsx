@@ -13,15 +13,17 @@ import { HomeScreen } from '../screens/HomeScreen';
 import { SearchScreen } from '../screens/SearchScreen';
 import { ChatScreen } from '../screens/ChatScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
+import { AddPostScreen } from '../screens/AddPostScreen';
 
-type TabKey = 'Home' | 'Search' | 'Chat' | 'Profile';
+type TabKey = 'Home' | 'Search' | 'AddPost' | 'Chat' | 'Profile';
 
 interface Tab {
   key: TabKey;
   label: string;
   iconConfig: { name: string; library: 'feather' | 'material' | 'material-community' | 'ionicons' };
   activeIconConfig: { name: string; library: 'feather' | 'material' | 'material-community' | 'ionicons' };
-  component: React.ComponentType;
+  component: React.ComponentType<any>;
+  isAddButton?: boolean;
 }
 
 const tabs: Tab[] = [
@@ -38,6 +40,14 @@ const tabs: Tab[] = [
     iconConfig: AppIcons.search,
     activeIconConfig: AppIcons.searchActive,
     component: SearchScreen,
+  },
+  {
+    key: 'AddPost',
+    label: 'Post',
+    iconConfig: { name: 'edit', library: 'feather' },
+    activeIconConfig: { name: 'edit', library: 'feather' },
+    component: AddPostScreen,
+    isAddButton: true,
   },
   {
     key: 'Chat',
@@ -64,12 +74,47 @@ export const MainTabNavigator: React.FC = () => {
     if (!activeTabData) return null;
 
     const Component = activeTabData.component;
+
+    // Pass navigation-like props to AddPostScreen
+    if (activeTab === 'AddPost') {
+      return <Component navigation={{ goBack: () => setActiveTab('Home') }} />;
+    }
+
+    // Pass navigation callback to HomeScreen
+    if (activeTab === 'Home') {
+      return <Component onNavigateToAddPost={() => setActiveTab('AddPost')} />;
+    }
+
     return <Component />;
   };
 
   const renderTabButton = (tab: Tab) => {
     const isActive = activeTab === tab.key;
     const iconConfig = isActive ? tab.activeIconConfig : tab.iconConfig;
+
+    // Special styling for the add button - but following same pattern as other tabs
+    if (tab.isAddButton) {
+      return (
+        <TouchableOpacity
+          key={tab.key}
+          style={[styles.tabButton, isActive && styles.activeTabButton]}
+          onPress={() => setActiveTab(tab.key)}
+        >
+          <View style={[styles.tabIconContainer, isActive && styles.activeTabIconContainer]}>
+            <Icon
+              name={iconConfig.name}
+              library={iconConfig.library}
+              size={22}
+              color={isActive ? Colors.white : Colors.textSecondary}
+            />
+          </View>
+          <Text style={[styles.tabLabel, isActive && styles.activeTabLabel]}>
+            {tab.label}
+          </Text>
+          {isActive && <View style={styles.activeIndicator} />}
+        </TouchableOpacity>
+      );
+    }
 
     return (
       <TouchableOpacity
