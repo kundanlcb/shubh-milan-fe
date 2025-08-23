@@ -25,7 +25,8 @@ export const HomeScreen: React.FC<{
   onNavigateToAddPost?: () => void;
   onNavigateToAddStory?: () => void;
   onNavigateToUserProfile?: (userId: string) => void;
-}> = ({ onNavigateToAddStory, onNavigateToUserProfile }) => {
+  onNavigateToStoryViewer?: (params: any) => void;
+}> = ({ onNavigateToAddStory, onNavigateToUserProfile, onNavigateToStoryViewer }) => {
   // Filter posts based on user preferences
   const [userPreferences] = useState(currentUserPreferences);
   const [activeFilters, setActiveFilters] = useState({
@@ -81,6 +82,27 @@ export const HomeScreen: React.FC<{
 
   const [posts, setPosts] = useState(getFilteredPosts());
 
+  // Mock story data - in real app this would come from API
+  const getStoriesForUser = (user: any) => {
+    return [
+      {
+        id: `${user.name}-1`,
+        uri: `https://picsum.photos/400/800?random=${Math.floor(Math.random() * 1000)}`,
+        type: 'image' as const,
+      },
+      {
+        id: `${user.name}-2`,
+        uri: `https://picsum.photos/400/800?random=${Math.floor(Math.random() * 1000)}`,
+        type: 'video' as const,
+      },
+      {
+        id: `${user.name}-3`,
+        uri: `https://picsum.photos/400/800?random=${Math.floor(Math.random() * 1000)}`,
+        type: 'image' as const,
+      },
+    ];
+  };
+
   const handleLike = (postId: string) => {
     setPosts(posts.map(post =>
       post.id === postId
@@ -95,28 +117,6 @@ export const HomeScreen: React.FC<{
       onNavigateToUserProfile(user.name);
     } else {
       console.log('Navigate to profile:', user.name);
-    }
-  };
-
-  const handleContactRequest = (user: { name: string; avatar: string; location: string; age: number; profession: string; }) => {
-    if (userPreferences.accountType === 'premium') {
-      // Show contact details directly
-      Alert.alert(
-        'Contact Information',
-        `Name: ${user.name}\nProfession: ${user.profession}\nLocation: ${user.location}\n\nPhone: +91 98765-43210\nEmail: ${user.name.toLowerCase().replace(' ', '.')}@email.com`,
-        [{ text: 'Message', onPress: () => console.log('Open chat') },
-         { text: 'Call', onPress: () => console.log('Initiate call') },
-         { text: 'Close' }]
-      );
-    } else {
-      // Prompt for premium upgrade
-      Alert.alert(
-        'Premium Feature 🌟',
-        'Upgrade to Premium to view contact details and send unlimited messages!\n\n✓ View phone numbers\n✓ See email addresses\n✓ Unlimited chat messages\n✓ Priority in others\' feeds',
-        [{ text: 'Upgrade Now', onPress: () => console.log('Show upgrade options') },
-         { text: 'Send Interest', onPress: () => console.log('Send basic interest') },
-         { text: 'Cancel' }]
-      );
     }
   };
 
@@ -196,22 +196,29 @@ export const HomeScreen: React.FC<{
       console.log('Add story pressed');
     }
   };
+
   const handleStoryPress = (user: any) => {
-    // Navigate to user profile when story is pressed
-    if (onNavigateToUserProfile) {
-      onNavigateToUserProfile(user.name);
-    } else {
-      console.log('Story pressed for:', user.name);
+    // Navigate to the standalone StoryViewer screen
+    console.log('Story pressed for:', user.name);
+
+    if (onNavigateToStoryViewer) {
+      // Get stories for this user and navigate to StoryViewer
+      const userStories = getStoriesForUser(user);
+      onNavigateToStoryViewer({
+        user: {
+          name: user.name,
+          avatar: user.avatar
+        },
+        stories: userStories
+      });
     }
   };
 
   const renderPost = ({ item }: { item: PostData }) => (
     <PostCard
         post={item}
-        userPreferences={userPreferences}
         onLike={handleLike}
         onProfile={handleProfile}
-        onContactRequest={handleContactRequest}
         onComment={handleChat}
         onShare={(postId: string) => console.log('Share post:', postId)}
         onSave={() => console.log('Save post')}

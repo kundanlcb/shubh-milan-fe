@@ -23,6 +23,8 @@ export const Stories: React.FC<StoriesProps> = ({
   const handleStoryPress = (user: User) => {
     // Mark this story as seen
     setSeenStories(prev => new Set(prev).add(user.name));
+
+    // Call the parent callback to handle story viewing
     onStoryPress(user);
   };
 

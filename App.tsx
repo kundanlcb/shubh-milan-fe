@@ -7,18 +7,17 @@
 
 import React, { useState, useEffect } from 'react';
 import { StatusBar, useColorScheme, BackHandler } from 'react-native';
-import {
-  SafeAreaProvider,
-} from 'react-native-safe-area-context';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { LoginScreen } from './src/screens/LoginScreen';
 import { RegisterScreen } from './src/screens/RegisterScreen';
 import { MainTabNavigator } from './src/components/MainTabNavigator';
 import { UserProfileScreen } from './src/screens/UserProfileScreen';
 import { ChatConversationScreen } from './src/screens/ChatConversationScreen';
 import { EditProfileScreen } from './src/screens/EditProfileScreen';
+import { StoryViewerScreen } from './src/screens/StoryViewerScreen';
 import { Colors } from './src/constants/colors';
 
-type CurrentScreen = 'Login' | 'Register' | 'ForgotPassword' | 'OTPVerification' | 'Main' | 'ChatConversation' | 'EditProfile';
+type CurrentScreen = 'Login' | 'Register' | 'ForgotPassword' | 'OTPVerification' | 'Main' | 'ChatConversation' | 'EditProfile' | 'StoryViewer';
 type ModalScreen = 'UserProfile' | null;
 
 function App(): React.JSX.Element {
@@ -28,9 +27,9 @@ function App(): React.JSX.Element {
   const [modalScreen, setModalScreen] = useState<ModalScreen>(null);
   const [modalParams, setModalParams] = useState<any>(null);
   const [chatConversationParams, setChatConversationParams] = useState<any>(null);
+  const [storyViewerParams, setStoryViewerParams] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<string>('Home');
 
-  // Enhanced navigation function that handles login flow and modals
   const navigate = (screen: string, params?: any) => {
     if (screen === 'Main') {
       setIsLoggedIn(true);
@@ -39,12 +38,15 @@ function App(): React.JSX.Element {
       setModalScreen('UserProfile');
       setModalParams(params);
     } else if (screen === 'ChatConversation') {
-      setActiveTab('Chat'); // Remember we came from Chat tab
+      setActiveTab('Chat');
       setCurrentScreen('ChatConversation');
       setChatConversationParams(params);
     } else if (screen === 'EditProfile') {
-      setActiveTab('Profile'); // Remember we came from Profile tab
+      setActiveTab('Profile');
       setCurrentScreen('EditProfile');
+    } else if (screen === 'StoryViewer') {
+      setCurrentScreen('StoryViewer');
+      setStoryViewerParams(params);
     } else {
       setCurrentScreen(screen as CurrentScreen);
     }
@@ -55,7 +57,6 @@ function App(): React.JSX.Element {
     setModalParams(null);
   };
 
-  // Simulate login success
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
     setCurrentScreen('Main');
@@ -66,35 +67,26 @@ function App(): React.JSX.Element {
     onLoginSuccess: handleLoginSuccess,
   };
 
-  // Handle Android back button
   useEffect(() => {
     const backAction = () => {
       if (modalScreen) {
         closeModal();
-        return true; // Prevent default back behavior
-      } else if (currentScreen === 'ChatConversation' || currentScreen === 'EditProfile') {
-        // Let individual screens handle their own back navigation
-        // These screens have their own BackHandler implementations
-        return false; // Allow the screen's own back handler to take over
+        return true;
+      } else if (currentScreen === 'ChatConversation' || currentScreen === 'EditProfile' || currentScreen === 'StoryViewer') {
+        return false;
       } else if (currentScreen === 'Register') {
         setCurrentScreen('Login');
-        return true; // Prevent default back behavior
+        return true;
       } else if (currentScreen === 'Main') {
-        // On main screen, allow app exit
-        return false; // Allow default back behavior (exit app)
+        return false;
       }
-      return false; // Allow default back behavior for other cases
+      return false;
     };
 
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction
-    );
-
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
     return () => backHandler.remove();
   }, [modalScreen, currentScreen]);
 
-  // Show EditProfile screen as standalone
   if (isLoggedIn && currentScreen === 'EditProfile') {
     return (
       <SafeAreaProvider>
@@ -117,7 +109,6 @@ function App(): React.JSX.Element {
     );
   }
 
-  // Show ChatConversation screen as standalone
   if (isLoggedIn && currentScreen === 'ChatConversation') {
     return (
       <SafeAreaProvider>
@@ -140,7 +131,25 @@ function App(): React.JSX.Element {
     );
   }
 
-  // Show main app if logged in
+  if (isLoggedIn && currentScreen === 'StoryViewer') {
+    return (
+      <SafeAreaProvider>
+        <StatusBar barStyle="light-content" backgroundColor="black" />
+        <StoryViewerScreen
+          navigation={{
+            goBack: () => setCurrentScreen('Main'),
+            navigate: (_screen: string, _params?: any) => {
+              if (_screen === 'Main') {
+                setCurrentScreen('Main');
+              }
+            }
+          }}
+          route={{ params: storyViewerParams }}
+        />
+      </SafeAreaProvider>
+    );
+  }
+
   if (isLoggedIn && currentScreen === 'Main') {
     return (
       <SafeAreaProvider>
@@ -154,9 +163,9 @@ function App(): React.JSX.Element {
           onNavigateToUserProfile={(userId: string) => navigate('UserProfile', { userId })}
           onNavigateToChatConversation={(params: any) => navigate('ChatConversation', params)}
           onNavigateToEditProfile={() => navigate('EditProfile')}
+          onNavigateToStoryViewer={(params: any) => navigate('StoryViewer', params)}
         />
 
-        {/* Modal Screens */}
         {modalScreen === 'UserProfile' && (
           <UserProfileScreen
             navigation={{ goBack: closeModal }}
@@ -167,7 +176,6 @@ function App(): React.JSX.Element {
     );
   }
 
-  // Show authentication screens if not logged in
   const renderAuthScreen = () => {
     switch (currentScreen) {
       case 'Register':

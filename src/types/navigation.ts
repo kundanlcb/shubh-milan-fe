@@ -16,6 +16,10 @@ export type MainStackParamList = {
   UserProfile: { userId: string };
   ProfileDetail: { userId: string };
   EditProfile: undefined;
+  StoryViewer: {
+    user: { name: string; avatar: string };
+    stories: { id: string; uri: string; type: 'image' | 'video' }[]
+  };
 };
 
 export type RootStackParamList = {
