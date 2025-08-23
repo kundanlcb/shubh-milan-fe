@@ -36,6 +36,33 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
   // Animation values for floating labels
   const emailLabelAnimation = useState(new Animated.Value(email ? 1 : 0))[0];
   const passwordLabelAnimation = useState(new Animated.Value(password ? 1 : 0))[0];
+  // Loading dots animation
+  const loadingAnimation = useState(new Animated.Value(0))[0];
+
+  // Start loading dots animation
+  const startLoadingAnimation = () => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(loadingAnimation, {
+          toValue: 1,
+          duration: 400,
+          useNativeDriver: true,
+        }),
+        Animated.timing(loadingAnimation, {
+          toValue: 0,
+          duration: 400,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  };
+
+  // Stop loading animation
+  const stopLoadingAnimation = () => {
+    loadingAnimation.stopAnimation(() => {
+      loadingAnimation.setValue(0);
+    });
+  };
 
   const animateLabel = (animation: Animated.Value, focused: boolean, value: string) => {
     Animated.timing(animation, {
@@ -77,15 +104,18 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleLogin = async () => {
     setIsLoading(true);
+    startLoadingAnimation();
     try {
       setTimeout(() => {
         setIsLoading(false);
+        stopLoadingAnimation();
         if (navigation.onLoginSuccess) {
           navigation.onLoginSuccess();
         }
       }, 500);
     } catch (error) {
       setIsLoading(false);
+      stopLoadingAnimation();
       Alert.alert('Error', 'Login failed. Please try again.');
     }
   };
@@ -183,9 +213,51 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
                   style={[styles.loginButton, isLoading && styles.disabledButton]}
                   onPress={handleLogin}
                   disabled={isLoading}>
-                  <Text style={styles.loginButtonText}>
-                    {isLoading ? 'Signing in...' : 'Sign In'}
-                  </Text>
+                  <View style={styles.loginButtonContent}>
+                    {isLoading && (
+                      <View style={styles.loadingIndicator}>
+                        <Animated.Text
+                          style={[
+                            styles.loadingDot,
+                            {
+                              opacity: loadingAnimation.interpolate({
+                                inputRange: [0, 0.5, 1],
+                                outputRange: [1, 0.5, 1],
+                              }),
+                            },
+                          ]}>
+                          ●
+                        </Animated.Text>
+                        <Animated.Text
+                          style={[
+                            styles.loadingDot,
+                            {
+                              opacity: loadingAnimation.interpolate({
+                                inputRange: [0, 0.5, 1],
+                                outputRange: [1, 0.5, 1],
+                              }),
+                            },
+                          ]}>
+                          ●
+                        </Animated.Text>
+                        <Animated.Text
+                          style={[
+                            styles.loadingDot,
+                            {
+                              opacity: loadingAnimation.interpolate({
+                                inputRange: [0, 0.5, 1],
+                                outputRange: [1, 0.5, 1],
+                              }),
+                            },
+                          ]}>
+                          ●
+                        </Animated.Text>
+                      </View>
+                    )}
+                    <Text style={[styles.loginButtonText, isLoading && styles.loadingText]}>
+                      Sign In
+                    </Text>
+                  </View>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.forgotPassword}>
@@ -200,11 +272,11 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
                   <Text style={styles.registerLink}>Create account</Text>
                 </TouchableOpacity>
               </View>
-            </View>
 
-            {/* Bottom Developer Credit */}
-            <View style={styles.creditContainer}>
-              <Text style={styles.creditText}>💻 Proudly developed by a Maithil 🇮🇳 ❤️</Text>
+              {/* Bottom Developer Credit - moved inside main content */}
+              <View style={styles.creditContainer}>
+                <Text style={styles.creditText}>💻 Proudly developed by a Maithil 🇮🇳 ❤️</Text>
+              </View>
             </View>
           </View>
         </ScrollView>
@@ -230,7 +302,6 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    justifyContent: 'space-between',
     maxWidth: 400,
     alignSelf: 'center',
     width: '100%',
@@ -238,6 +309,7 @@ const styles = StyleSheet.create({
   mainContent: {
     flex: 1,
     justifyContent: 'center',
+    paddingBottom: Spacing.lg,
   },
   header: {
     alignItems: 'flex-start',
@@ -327,6 +399,23 @@ const styles = StyleSheet.create({
     shadowOpacity: 0,
     elevation: 0,
   },
+  loginButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingIndicator: {
+    flexDirection: 'row',
+    marginRight: Spacing.sm,
+  },
+  loadingDot: {
+    fontSize: Typography.fontSize.lg,
+    color: Colors.textInverse,
+    marginHorizontal: 1,
+  },
+  loadingText: {
+    opacity: 0.8,
+  },
   loginButtonText: {
     fontSize: Typography.fontSize.base,
     fontWeight: Typography.fontWeight.semibold,
@@ -360,11 +449,15 @@ const styles = StyleSheet.create({
   creditContainer: {
     alignItems: 'center',
     marginTop: Spacing.lg,
-    paddingVertical: Spacing.xs,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.sm,
   },
   creditText: {
     fontSize: Typography.fontSize.sm,
-    color: Colors.textSecondary,
-    fontWeight: Typography.fontWeight.normal,
+    color: Colors.textPrimary,
+    fontWeight: Typography.fontWeight.medium,
+    textAlign: 'center',
+    opacity: 0.8,
+    letterSpacing: 0.5,
   },
 });

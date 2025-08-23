@@ -15,17 +15,6 @@ import { MainScreenProps } from '../types/navigation';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
-interface StoryItem {
-  id: string;
-  uri: string;
-  type: 'image' | 'video';
-}
-
-interface User {
-  name: string;
-  avatar: string;
-}
-
 export const StoryViewerScreen: React.FC<MainScreenProps<'StoryViewer'>> = ({
   navigation,
   route,
@@ -93,7 +82,21 @@ export const StoryViewerScreen: React.FC<MainScreenProps<'StoryViewer'>> = ({
     <View style={styles.container}>
       <StatusBar backgroundColor="black" barStyle="light-content" />
 
-      {/* Story Progress Bars */}
+      {/* Header with User Info */}
+      <SafeAreaView style={styles.header} edges={['top']}>
+        <View style={styles.userInfo}>
+          <Image source={{ uri: user.avatar }} style={styles.userAvatar} />
+          <View style={styles.userDetails}>
+            <Text style={styles.userName}>{user.name}</Text>
+            <Text style={styles.timeAgo}>2h ago</Text>
+          </View>
+        </View>
+        <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
+          <Icon name="x" library="feather" size={24} color="white" />
+        </TouchableOpacity>
+      </SafeAreaView>
+
+      {/* Story Progress Bars - Now below user section */}
       <View style={styles.progressContainer}>
         {stories.map((_, index) => (
           <View key={index} style={styles.progressBar}>
@@ -114,32 +117,20 @@ export const StoryViewerScreen: React.FC<MainScreenProps<'StoryViewer'>> = ({
         ))}
       </View>
 
-      {/* Header */}
-      <SafeAreaView style={styles.header}>
-        <View style={styles.userInfo}>
-          <Image source={{ uri: user.avatar }} style={styles.userAvatar} />
-          <Text style={styles.userName}>{user.name}</Text>
-          <Text style={styles.timeAgo}>2h ago</Text>
-        </View>
-        <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
-          <Icon name="x" library="feather" size={24} color="white" />
-        </TouchableOpacity>
-      </SafeAreaView>
-
       {/* Story Content */}
       <View style={styles.storyContent}>
         {currentStory.type === 'image' ? (
           <Image
             source={{ uri: currentStory.uri }}
             style={styles.storyImage}
-            resizeMode="contain"
+            resizeMode="cover"
           />
         ) : (
           <View style={styles.videoContainer}>
             <Image
               source={{ uri: currentStory.uri }}
               style={styles.storyImage}
-              resizeMode="contain"
+              resizeMode="cover"
             />
             <View style={styles.videoOverlay}>
               <TouchableOpacity style={styles.playButton}>
@@ -163,17 +154,14 @@ export const StoryViewerScreen: React.FC<MainScreenProps<'StoryViewer'>> = ({
       />
 
       {/* Bottom Actions */}
-      <View style={styles.bottomActions}>
+      <SafeAreaView style={styles.bottomActions} edges={['bottom']}>
         <TouchableOpacity style={styles.actionButton}>
           <Icon name="heart" library="feather" size={24} color="white" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>
-          <Icon name="message-circle" library="feather" size={24} color="white" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton}>
           <Icon name="share-2" library="feather" size={24} color="white" />
         </TouchableOpacity>
-      </View>
+      </SafeAreaView>
     </View>
   );
 };
@@ -183,30 +171,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'black',
   },
-  progressContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    gap: 4,
-  },
-  progressBar: {
-    flex: 1,
-    height: 2,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-    borderRadius: 1,
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: 'white',
-    borderRadius: 1,
-  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 16,
+    paddingBottom: 12,
   },
   userInfo: {
     flexDirection: 'row',
@@ -214,73 +184,110 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   userAvatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     marginRight: 12,
+  },
+  userDetails: {
+    flexDirection: 'column',
+    flex: 1,
   },
   userName: {
     color: 'white',
     fontSize: 16,
     fontWeight: '600',
-    marginRight: 8,
+    marginBottom: 2,
   },
   timeAgo: {
     color: 'rgba(255, 255, 255, 0.7)',
-    fontSize: 14,
+    fontSize: 12,
   },
   closeButton: {
     padding: 8,
+    marginLeft: 8,
+  },
+  progressContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    paddingTop: 20,
+    paddingBottom: 16,
+    gap: 4,
+  },
+  progressBar: {
+    flex: 1,
+    height: 3,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    borderRadius: 1.5,
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: 'white',
+    borderRadius: 1.5,
   },
   storyContent: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginVertical: 8,
   },
   storyImage: {
     width: screenWidth,
-    height: screenHeight * 0.7,
+    height: screenHeight * 0.65,
+    borderRadius: 8,
   },
   videoContainer: {
     width: screenWidth,
-    height: screenHeight * 0.7,
+    height: screenHeight * 0.65,
     justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 8,
+    overflow: 'hidden',
   },
   videoOverlay: {
     position: 'absolute',
     justifyContent: 'center',
     alignItems: 'center',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   playButton: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    borderRadius: 50,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    borderRadius: 35,
     padding: 20,
+    borderWidth: 2,
+    borderColor: 'white',
   },
   leftTouchArea: {
     position: 'absolute',
     left: 0,
-    top: 100,
-    bottom: 100,
+    top: 120,
+    bottom: 120,
     width: screenWidth * 0.3,
+    zIndex: 10,
   },
   rightTouchArea: {
     position: 'absolute',
     right: 0,
-    top: 100,
-    bottom: 100,
+    top: 120,
+    bottom: 120,
     width: screenWidth * 0.3,
+    zIndex: 10,
   },
   bottomActions: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-around',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingBottom: 32,
-    gap: 24,
+    paddingHorizontal: 24,
+    paddingTop: 16,
+    paddingBottom: 8,
   },
   actionButton: {
     padding: 12,
+    borderRadius: 25,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
   errorContainer: {
     flex: 1,

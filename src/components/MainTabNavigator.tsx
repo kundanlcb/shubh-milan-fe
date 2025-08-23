@@ -73,7 +73,8 @@ export const MainTabNavigator: React.FC<{
   onNavigateToChatConversation: (params: any) => void;
   onNavigateToEditProfile: () => void;
   onNavigateToStoryViewer: (params: any) => void;
-}> = ({ initialActiveTab = 'Home', onTabChange, onNavigateToUserProfile, onNavigateToChatConversation, onNavigateToEditProfile, onNavigateToStoryViewer }) => {
+  onLogout: () => void;
+}> = ({ initialActiveTab = 'Home', onTabChange, onNavigateToUserProfile, onNavigateToChatConversation, onNavigateToEditProfile, onNavigateToStoryViewer, onLogout }) => {
   const [activeTab, setActiveTab] = useState<TabKey>(initialActiveTab as TabKey);
   const [showAddStoryScreen, setShowAddStoryScreen] = useState(false);
   const insets = useSafeAreaInsets();
@@ -171,6 +172,7 @@ export const MainTabNavigator: React.FC<{
     if (activeTab === 'Profile') {
       return <Component
         onNavigateToEditProfile={onNavigateToEditProfile}
+        onLogout={onLogout}
       />;
     }
 

@@ -43,7 +43,10 @@ const menuItems = [
   { iconConfig: AppIcons.logout, title: 'Logout', description: 'Sign out of your account', isLogout: true },
 ];
 
-export const ProfileScreen: React.FC<{ onNavigateToEditProfile?: () => void }> = ({ onNavigateToEditProfile }) => {
+export const ProfileScreen: React.FC<{
+  onNavigateToEditProfile?: () => void;
+  onLogout?: () => void;
+}> = ({ onNavigateToEditProfile, onLogout }) => {
   const [profileCompletion] = useState(75);
 
   const handleSectionPress = (section: string) => {
@@ -57,7 +60,15 @@ export const ProfileScreen: React.FC<{ onNavigateToEditProfile?: () => void }> =
         'Are you sure you want to logout?',
         [
           { text: 'Cancel', style: 'cancel' },
-          { text: 'Logout', style: 'destructive' },
+          {
+            text: 'Logout',
+            style: 'destructive',
+            onPress: () => {
+              if (onLogout) {
+                onLogout();
+              }
+            }
+          },
         ]
       );
     } else {

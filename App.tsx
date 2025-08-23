@@ -52,6 +52,17 @@ function App(): React.JSX.Element {
     }
   };
 
+  // Logout function to clear session and return to login
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setCurrentScreen('Login');
+    setActiveTab('Home');
+    setModalScreen(null);
+    setModalParams(null);
+    setChatConversationParams(null);
+    setStoryViewerParams(null);
+  };
+
   const closeModal = () => {
     setModalScreen(null);
     setModalParams(null);
@@ -164,6 +175,7 @@ function App(): React.JSX.Element {
           onNavigateToChatConversation={(params: any) => navigate('ChatConversation', params)}
           onNavigateToEditProfile={() => navigate('EditProfile')}
           onNavigateToStoryViewer={(params: any) => navigate('StoryViewer', params)}
+          onLogout={handleLogout}
         />
 
         {modalScreen === 'UserProfile' && (
