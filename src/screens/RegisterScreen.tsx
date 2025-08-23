@@ -2,16 +2,17 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '../constants/styles';
+import { Colors, Typography, Spacing, BorderRadius } from '../constants/styles';
+import { FloatingInput } from '../components/FloatingInput';
 
 type NavigationProp = {
   navigate: (screen: string) => void;
@@ -77,6 +78,26 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+
+  // Focus states for floating labels
+  const [focusedFields, setFocusedFields] = useState<{[key: string]: boolean}>({});
+
+  // Animation values for floating labels
+  const [labelAnimations] = useState<{[key: string]: Animated.Value}>({
+    fullName: new Animated.Value(0),
+    email: new Animated.Value(0),
+    phone: new Animated.Value(0),
+    password: new Animated.Value(0),
+    confirmPassword: new Animated.Value(0),
+    age: new Animated.Value(0),
+    profession: new Animated.Value(0),
+    education: new Animated.Value(0),
+    location: new Animated.Value(0),
+    motherTongue: new Animated.Value(0),
+    religion: new Animated.Value(0),
+    partnerAgeMin: new Animated.Value(0),
+    partnerAgeMax: new Animated.Value(0),
+  });
 
   const professionOptions = [
     'Teacher', 'Software Engineer', 'Doctor', 'Business Owner', 'Government Employee',
@@ -217,69 +238,97 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
     }
   };
 
+  const animateLabel = (field: string, focused: boolean, value: string) => {
+    Animated.timing(labelAnimations[field], {
+      toValue: focused || value ? 1 : 0,
+      duration: 200,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const handleFocus = (field: string) => {
+    setFocusedFields(prev => ({ ...prev, [field]: true }));
+    animateLabel(field, true, formData[field as keyof RegistrationData] as string);
+  };
+
+  const handleBlur = (field: string) => {
+    setFocusedFields(prev => ({ ...prev, [field]: false }));
+    animateLabel(field, false, formData[field as keyof RegistrationData] as string);
+  };
+
+  const handleTextChange = (field: keyof RegistrationData, value: string) => {
+    updateFormData(field, value);
+    animateLabel(field, focusedFields[field] || false, value);
+  };
+
   const renderStep1 = () => (
     <View style={styles.form}>
       <Text style={styles.stepTitle}>Basic Information</Text>
       <Text style={styles.stepDescription}>Let's start with your basic details</Text>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Full Name *</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your full name"
-          value={formData.fullName}
-          onChangeText={(value) => updateFormData('fullName', value)}
-          autoCapitalize="words"
-        />
-      </View>
+      <FloatingInput
+        label="Full Name *"
+        placeholder="Enter your full name"
+        autoCapitalize="words"
+        value={formData.fullName}
+        onChangeText={(value) => handleTextChange('fullName', value)}
+        onFocus={() => handleFocus('fullName')}
+        onBlur={() => handleBlur('fullName')}
+        focused={focusedFields.fullName || false}
+        labelAnimation={labelAnimations.fullName}
+      />
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Email Address *</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your email"
-          value={formData.email}
-          onChangeText={(value) => updateFormData('email', value)}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-      </View>
+      <FloatingInput
+        label="Email Address *"
+        placeholder="Enter your email"
+        keyboardType="email-address"
+        autoCapitalize="none"
+        value={formData.email}
+        onChangeText={(value) => handleTextChange('email', value)}
+        onFocus={() => handleFocus('email')}
+        onBlur={() => handleBlur('email')}
+        focused={focusedFields.email || false}
+        labelAnimation={labelAnimations.email}
+      />
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Phone Number *</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter 10-digit phone number"
-          value={formData.phone}
-          onChangeText={(value) => updateFormData('phone', value)}
-          keyboardType="phone-pad"
-          maxLength={10}
-        />
-      </View>
+      <FloatingInput
+        label="Phone Number *"
+        placeholder="Enter 10-digit phone number"
+        keyboardType="phone-pad"
+        maxLength={10}
+        value={formData.phone}
+        onChangeText={(value) => handleTextChange('phone', value)}
+        onFocus={() => handleFocus('phone')}
+        onBlur={() => handleBlur('phone')}
+        focused={focusedFields.phone || false}
+        labelAnimation={labelAnimations.phone}
+      />
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Password *</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Create a password (min 6 characters)"
-          value={formData.password}
-          onChangeText={(value) => updateFormData('password', value)}
-          secureTextEntry
-          autoCapitalize="none"
-        />
-      </View>
+      <FloatingInput
+        label="Password *"
+        placeholder="Create a password (min 6 characters)"
+        secureTextEntry={true}
+        autoCapitalize="none"
+        value={formData.password}
+        onChangeText={(value) => handleTextChange('password', value)}
+        onFocus={() => handleFocus('password')}
+        onBlur={() => handleBlur('password')}
+        focused={focusedFields.password || false}
+        labelAnimation={labelAnimations.password}
+      />
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Confirm Password *</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Re-enter your password"
-          value={formData.confirmPassword}
-          onChangeText={(value) => updateFormData('confirmPassword', value)}
-          secureTextEntry
-          autoCapitalize="none"
-        />
-      </View>
+      <FloatingInput
+        label="Confirm Password *"
+        placeholder="Re-enter your password"
+        secureTextEntry={true}
+        autoCapitalize="none"
+        value={formData.confirmPassword}
+        onChangeText={(value) => handleTextChange('confirmPassword', value)}
+        onFocus={() => handleFocus('confirmPassword')}
+        onBlur={() => handleBlur('confirmPassword')}
+        focused={focusedFields.confirmPassword || false}
+        labelAnimation={labelAnimations.confirmPassword}
+      />
     </View>
   );
 
@@ -288,17 +337,18 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
       <Text style={styles.stepTitle}>About You</Text>
       <Text style={styles.stepDescription}>Help others know you better</Text>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Age *</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="25"
-          value={formData.age}
-          onChangeText={(value) => updateFormData('age', value)}
-          keyboardType="numeric"
-          maxLength={2}
-        />
-      </View>
+      <FloatingInput
+        label="Age *"
+        placeholder="25"
+        keyboardType="numeric"
+        maxLength={2}
+        value={formData.age}
+        onChangeText={(value) => handleTextChange('age', value)}
+        onFocus={() => handleFocus('age')}
+        onBlur={() => handleBlur('age')}
+        focused={focusedFields.age || false}
+        labelAnimation={labelAnimations.age}
+      />
 
       <View style={styles.inputContainer}>
         <Text style={styles.inputLabel}>Gender *</Text>
@@ -325,56 +375,63 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
         </View>
       </View>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Profession *</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="e.g., Software Engineer, Teacher, Doctor"
-          value={formData.profession}
-          onChangeText={(value) => updateFormData('profession', value)}
-        />
-      </View>
+      <FloatingInput
+        label="Profession *"
+        placeholder="e.g., Software Engineer, Teacher, Doctor"
+        value={formData.profession}
+        onChangeText={(value) => handleTextChange('profession', value)}
+        onFocus={() => handleFocus('profession')}
+        onBlur={() => handleBlur('profession')}
+        focused={focusedFields.profession || false}
+        labelAnimation={labelAnimations.profession}
+      />
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Education</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="e.g., Bachelor's Degree, Master's"
-          value={formData.education}
-          onChangeText={(value) => updateFormData('education', value)}
-        />
-      </View>
+      <FloatingInput
+        label="Education"
+        placeholder="e.g., Bachelor's Degree, Master's"
+        value={formData.education}
+        onChangeText={(value) => handleTextChange('education', value)}
+        onFocus={() => handleFocus('education')}
+        onBlur={() => handleBlur('education')}
+        focused={focusedFields.education || false}
+        labelAnimation={labelAnimations.education}
+      />
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Location *</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="e.g., Darbhanga, Bihar"
-          value={formData.location}
-          onChangeText={(value) => updateFormData('location', value)}
-        />
-      </View>
+      <FloatingInput
+        label="Location *"
+        placeholder="e.g., Darbhanga, Bihar"
+        value={formData.location}
+        onChangeText={(value) => handleTextChange('location', value)}
+        onFocus={() => handleFocus('location')}
+        onBlur={() => handleBlur('location')}
+        focused={focusedFields.location || false}
+        labelAnimation={labelAnimations.location}
+      />
 
       <View style={styles.row}>
-        <View style={[styles.inputContainer, styles.halfWidth]}>
-          <Text style={styles.inputLabel}>Mother Tongue</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Maithili"
-            value={formData.motherTongue}
-            onChangeText={(value) => updateFormData('motherTongue', value)}
-          />
-        </View>
+        <FloatingInput
+          label="Mother Tongue"
+          placeholder="Maithili"
+          style={styles.halfWidth}
+          value={formData.motherTongue}
+          onChangeText={(value) => handleTextChange('motherTongue', value)}
+          onFocus={() => handleFocus('motherTongue')}
+          onBlur={() => handleBlur('motherTongue')}
+          focused={focusedFields.motherTongue || false}
+          labelAnimation={labelAnimations.motherTongue}
+        />
 
-        <View style={[styles.inputContainer, styles.halfWidth]}>
-          <Text style={styles.inputLabel}>Religion</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Hindu"
-            value={formData.religion}
-            onChangeText={(value) => updateFormData('religion', value)}
-          />
-        </View>
+        <FloatingInput
+          label="Religion"
+          placeholder="Hindu"
+          style={styles.halfWidth}
+          value={formData.religion}
+          onChangeText={(value) => handleTextChange('religion', value)}
+          onFocus={() => handleFocus('religion')}
+          onBlur={() => handleBlur('religion')}
+          focused={focusedFields.religion || false}
+          labelAnimation={labelAnimations.religion}
+        />
       </View>
     </View>
   );
@@ -385,29 +442,33 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
       <Text style={styles.stepDescription}>We'll filter your feed to show relevant profiles</Text>
 
       <View style={styles.row}>
-        <View style={[styles.inputContainer, styles.halfWidth]}>
-          <Text style={styles.inputLabel}>Min Age *</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="22"
-            value={formData.partnerAgeMin}
-            onChangeText={(value) => updateFormData('partnerAgeMin', value)}
-            keyboardType="numeric"
-            maxLength={2}
-          />
-        </View>
+        <FloatingInput
+          label="Min Age *"
+          placeholder="22"
+          keyboardType="numeric"
+          maxLength={2}
+          style={styles.halfWidth}
+          value={formData.partnerAgeMin}
+          onChangeText={(value) => handleTextChange('partnerAgeMin', value)}
+          onFocus={() => handleFocus('partnerAgeMin')}
+          onBlur={() => handleBlur('partnerAgeMin')}
+          focused={focusedFields.partnerAgeMin || false}
+          labelAnimation={labelAnimations.partnerAgeMin}
+        />
 
-        <View style={[styles.inputContainer, styles.halfWidth]}>
-          <Text style={styles.inputLabel}>Max Age *</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="30"
-            value={formData.partnerAgeMax}
-            onChangeText={(value) => updateFormData('partnerAgeMax', value)}
-            keyboardType="numeric"
-            maxLength={2}
-          />
-        </View>
+        <FloatingInput
+          label="Max Age *"
+          placeholder="30"
+          keyboardType="numeric"
+          maxLength={2}
+          style={styles.halfWidth}
+          value={formData.partnerAgeMax}
+          onChangeText={(value) => handleTextChange('partnerAgeMax', value)}
+          onFocus={() => handleFocus('partnerAgeMax')}
+          onBlur={() => handleBlur('partnerAgeMax')}
+          focused={focusedFields.partnerAgeMax || false}
+          labelAnimation={labelAnimations.partnerAgeMax}
+        />
       </View>
 
       <View style={styles.inputContainer}>
@@ -573,234 +634,227 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: Colors.background,
   },
   scrollView: {
     flex: 1,
   },
   header: {
-    paddingHorizontal: 24,
-    paddingVertical: 32,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.xl,
     alignItems: 'center',
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
+    fontSize: Typography.fontSize['2xl'],
+    fontWeight: Typography.fontWeight.bold,
     color: Colors.primary,
-    marginBottom: 8,
+    marginBottom: Spacing.xs,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#666',
+    fontSize: Typography.fontSize.base,
+    color: Colors.textSecondary,
     textAlign: 'center',
   },
   progressContainer: {
-    paddingHorizontal: 24,
-    marginBottom: 24,
+    paddingHorizontal: Spacing.lg,
+    marginBottom: Spacing.lg,
   },
   progressBar: {
     height: 4,
-    backgroundColor: '#E0E0E0',
-    borderRadius: 2,
-    marginBottom: 8,
+    backgroundColor: Colors.border,
+    borderRadius: BorderRadius.sm,
+    overflow: 'hidden',
+    marginBottom: Spacing.xs,
   },
   progressFill: {
     height: '100%',
     backgroundColor: Colors.primary,
-    borderRadius: 2,
+    borderRadius: BorderRadius.sm,
   },
   progressText: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: Typography.fontSize.sm,
+    color: Colors.textSecondary,
     textAlign: 'center',
   },
   form: {
-    paddingHorizontal: 24,
+    paddingHorizontal: Spacing.lg,
+    marginBottom: Spacing.lg,
   },
   stepTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
+    fontSize: Typography.fontSize.xl,
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.textPrimary,
+    marginBottom: Spacing.xs,
   },
   stepDescription: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 24,
+    fontSize: Typography.fontSize.sm,
+    color: Colors.textSecondary,
+    marginBottom: Spacing.xl,
   },
   inputContainer: {
-    marginBottom: 20,
+    marginBottom: Spacing.lg,
   },
   inputLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 8,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderRadius: 8,
-    padding: 16,
-    fontSize: 16,
-    backgroundColor: 'white',
+    fontSize: Typography.fontSize.sm,
+    fontWeight: Typography.fontWeight.medium,
+    color: Colors.textPrimary,
+    marginBottom: Spacing.sm,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    gap: Spacing.md,
   },
   halfWidth: {
-    width: '48%',
+    flex: 1,
   },
   radioContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    gap: Spacing.lg,
   },
   radioOption: {
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 1,
-    paddingVertical: 12,
+    gap: Spacing.sm,
   },
   radioButton: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
     borderWidth: 2,
-    borderColor: '#E0E0E0',
+    borderColor: Colors.border,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
-    backgroundColor: 'white',
   },
   radioButtonSelected: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
     backgroundColor: Colors.primary,
   },
   radioText: {
-    fontSize: 16,
-    color: '#333',
-    fontWeight: '500',
+    fontSize: Typography.fontSize.base,
+    color: Colors.textPrimary,
   },
   tagContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginTop: 8,
+    gap: Spacing.sm,
   },
   tag: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.full,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
-    backgroundColor: 'white',
-    marginRight: 8,
-    marginBottom: 8,
+    borderColor: Colors.border,
+    backgroundColor: Colors.backgroundCard,
   },
   tagSelected: {
-    borderColor: Colors.primary,
     backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
   },
   tagText: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: Typography.fontSize.sm,
+    color: Colors.textPrimary,
   },
   tagTextSelected: {
-    color: 'white',
-    fontWeight: '600',
+    color: Colors.textInverse,
   },
   accountTypeContainer: {
-    marginTop: 12,
+    gap: Spacing.md,
   },
   accountOption: {
-    padding: 16,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderRadius: 12,
-    backgroundColor: 'white',
-    marginBottom: 12,
+    borderColor: Colors.border,
+    backgroundColor: Colors.backgroundCard,
   },
   accountSelected: {
     borderColor: Colors.primary,
-    backgroundColor: Colors.primary + '10',
+    backgroundColor: Colors.primaryLight,
   },
   accountTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
+    fontSize: Typography.fontSize.base,
+    fontWeight: Typography.fontWeight.semibold,
+    color: Colors.textPrimary,
+    marginBottom: Spacing.xs,
   },
   accountFeatures: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: Typography.fontSize.sm,
+    color: Colors.textSecondary,
     lineHeight: 20,
   },
   summaryContainer: {
-    padding: 16,
-    backgroundColor: Colors.primary + '10',
-    borderRadius: 12,
-    marginTop: 20,
+    padding: Spacing.md,
+    backgroundColor: Colors.backgroundCard,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    marginTop: Spacing.lg,
   },
   summaryTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
+    fontSize: Typography.fontSize.base,
+    fontWeight: Typography.fontWeight.semibold,
+    color: Colors.textPrimary,
+    marginBottom: Spacing.sm,
   },
   summaryText: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: Typography.fontSize.sm,
+    color: Colors.textSecondary,
     lineHeight: 20,
   },
   buttonContainer: {
     flexDirection: 'row',
-    paddingHorizontal: 24,
-    paddingVertical: 24,
     justifyContent: 'space-between',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.lg,
+    gap: Spacing.md,
   },
   primaryButton: {
     flex: 1,
     backgroundColor: Colors.primary,
-    paddingVertical: 16,
-    borderRadius: 8,
+    paddingVertical: Spacing.md,
+    borderRadius: BorderRadius.lg,
     alignItems: 'center',
-    marginLeft: 8,
+    justifyContent: 'center',
+    minHeight: 52,
   },
   primaryButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: Typography.fontSize.base,
+    fontWeight: Typography.fontWeight.semibold,
+    color: Colors.textInverse,
   },
   secondaryButton: {
     flex: 1,
+    backgroundColor: 'transparent',
+    paddingVertical: Spacing.md,
+    borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    borderColor: Colors.primary,
-    paddingVertical: 16,
-    borderRadius: 8,
+    borderColor: Colors.border,
     alignItems: 'center',
-    marginRight: 8,
+    justifyContent: 'center',
+    minHeight: 52,
   },
   secondaryButtonText: {
-    color: Colors.primary,
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: Typography.fontSize.base,
+    fontWeight: Typography.fontWeight.medium,
+    color: Colors.textPrimary,
   },
   disabledButton: {
-    opacity: 0.6,
+    backgroundColor: Colors.buttonDisabled,
   },
   loginLink: {
     alignItems: 'center',
-    paddingVertical: 16,
-    marginBottom: 32,
+    paddingVertical: Spacing.lg,
+    paddingHorizontal: Spacing.lg,
   },
   loginLinkText: {
-    fontSize: 16,
-    color: '#666',
+    fontSize: Typography.fontSize.sm,
+    color: Colors.textSecondary,
   },
   loginLinkTextBold: {
     color: Colors.primary,
-    fontWeight: '600',
+    fontWeight: Typography.fontWeight.semibold,
   },
 });

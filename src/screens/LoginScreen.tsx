@@ -101,100 +101,110 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
         style={styles.keyboardContainer}>
         <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
           <View style={styles.content}>
-            {/* Left-aligned Header */}
-            <View style={styles.header}>
-              <View style={styles.logoContainer}>
-                <Image
-                  source={require('../../subh-milan.png')}
-                  style={styles.logo}
-                  resizeMode="contain"
-                />
+            {/* Main Content Area */}
+            <View style={styles.mainContent}>
+              {/* Left-aligned Header */}
+              <View style={styles.header}>
+                <View style={styles.logoContainer}>
+                  <Image
+                    source={require('../../subh-milan.png')}
+                    style={styles.logo}
+                    resizeMode="contain"
+                  />
+                </View>
+                <View style={styles.welcomeSection}>
+                  <Text style={styles.welcomeText}>Welcome back! 🙏</Text>
+                  <Text style={styles.subtitle}>आपका स्वागत है - Find your perfect जीवनसाथी</Text>
+                </View>
               </View>
-              <Text style={styles.welcomeText}>Welcome back</Text>
-              <Text style={styles.subtitle}>Sign in to continue</Text>
+
+              {/* Floating Label Form */}
+              <View style={styles.form}>
+                <View style={styles.floatingInputContainer}>
+                  <Animated.Text
+                    style={[
+                      styles.floatingLabel,
+                      {
+                        top: emailLabelAnimation.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [20, 0],
+                        }),
+                        fontSize: emailLabelAnimation.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [16, 12],
+                        }),
+                        color: emailFocused ? Colors.primary : Colors.textSecondary,
+                      },
+                    ]}>
+                    Email
+                  </Animated.Text>
+                  <TextInput
+                    style={[styles.floatingInput, emailFocused && styles.floatingInputFocused]}
+                    value={email}
+                    onChangeText={handleEmailChange}
+                    onFocus={handleEmailFocus}
+                    onBlur={handleEmailBlur}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                  />
+                </View>
+
+                <View style={styles.floatingInputContainer}>
+                  <Animated.Text
+                    style={[
+                      styles.floatingLabel,
+                      {
+                        top: passwordLabelAnimation.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [20, 0],
+                        }),
+                        fontSize: passwordLabelAnimation.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [16, 12],
+                        }),
+                        color: passwordFocused ? Colors.primary : Colors.textSecondary,
+                      },
+                    ]}>
+                    Password
+                  </Animated.Text>
+                  <TextInput
+                    style={[styles.floatingInput, passwordFocused && styles.floatingInputFocused]}
+                    value={password}
+                    onChangeText={handlePasswordChange}
+                    onFocus={handlePasswordFocus}
+                    onBlur={handlePasswordBlur}
+                    secureTextEntry
+                    autoCapitalize="none"
+                  />
+                </View>
+
+                <TouchableOpacity
+                  style={[styles.loginButton, isLoading && styles.disabledButton]}
+                  onPress={handleLogin}
+                  disabled={isLoading}>
+                  <Text style={styles.loginButtonText}>
+                    {isLoading ? 'Signing in...' : 'Sign In'}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.forgotPassword}>
+                  <Text style={styles.forgotPasswordText}>Forgot your password?</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Register Link */}
+              <View style={styles.registerContainer}>
+                <Text style={styles.registerText}>New to Shubh Milan? </Text>
+                <TouchableOpacity onPress={navigateToRegister}>
+                  <Text style={styles.registerLink}>Create account</Text>
+                </TouchableOpacity>
+              </View>
             </View>
 
-            {/* Floating Label Form */}
-            <View style={styles.form}>
-              <View style={styles.floatingInputContainer}>
-                <Animated.Text
-                  style={[
-                    styles.floatingLabel,
-                    {
-                      top: emailLabelAnimation.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [20, 0],
-                      }),
-                      fontSize: emailLabelAnimation.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [16, 12],
-                      }),
-                      color: emailFocused ? Colors.primary : Colors.textSecondary,
-                    },
-                  ]}>
-                  Email
-                </Animated.Text>
-                <TextInput
-                  style={[styles.floatingInput, emailFocused && styles.floatingInputFocused]}
-                  value={email}
-                  onChangeText={handleEmailChange}
-                  onFocus={handleEmailFocus}
-                  onBlur={handleEmailBlur}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                />
-              </View>
-
-              <View style={styles.floatingInputContainer}>
-                <Animated.Text
-                  style={[
-                    styles.floatingLabel,
-                    {
-                      top: passwordLabelAnimation.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [20, 0],
-                      }),
-                      fontSize: passwordLabelAnimation.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [16, 12],
-                      }),
-                      color: passwordFocused ? Colors.primary : Colors.textSecondary,
-                    },
-                  ]}>
-                  Password
-                </Animated.Text>
-                <TextInput
-                  style={[styles.floatingInput, passwordFocused && styles.floatingInputFocused]}
-                  value={password}
-                  onChangeText={handlePasswordChange}
-                  onFocus={handlePasswordFocus}
-                  onBlur={handlePasswordBlur}
-                  secureTextEntry
-                  autoCapitalize="none"
-                />
-              </View>
-
-              <TouchableOpacity
-                style={[styles.loginButton, isLoading && styles.disabledButton]}
-                onPress={handleLogin}
-                disabled={isLoading}>
-                <Text style={styles.loginButtonText}>
-                  {isLoading ? 'Signing in...' : 'Sign In'}
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.forgotPassword}>
-                <Text style={styles.forgotPasswordText}>Forgot your password?</Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Register Link */}
-            <View style={styles.registerContainer}>
-              <Text style={styles.registerText}>New to Shubh Milan? </Text>
-              <TouchableOpacity onPress={navigateToRegister}>
-                <Text style={styles.registerLink}>Create account</Text>
-              </TouchableOpacity>
+            {/* Bottom Developer Credit */}
+            <View style={styles.creditContainer}>
+              <Text style={styles.creditText}>💻 Proudly developed by a Maithil 🇮🇳 ❤️</Text>
             </View>
           </View>
         </ScrollView>
@@ -215,14 +225,19 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing['2xl'],
-    paddingBottom: Spacing.sm,
+    paddingBottom: Spacing.lg,
+    minHeight: '100%',
   },
   content: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     maxWidth: 400,
     alignSelf: 'center',
     width: '100%',
+  },
+  mainContent: {
+    flex: 1,
+    justifyContent: 'center',
   },
   header: {
     alignItems: 'flex-start',
@@ -235,15 +250,31 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
   },
+  welcomeSection: {
+    alignItems: 'flex-start',
+    width: '100%',
+  },
   welcomeText: {
-    fontSize: Typography.fontSize['2xl'],
+    fontSize: Typography.fontSize['3xl'],
     fontWeight: Typography.fontWeight.bold,
     color: Colors.textPrimary,
     marginBottom: Spacing.xs,
+    lineHeight: 36,
+    letterSpacing: -0.5,
   },
   subtitle: {
+    fontSize: Typography.fontSize.lg,
+    fontWeight: Typography.fontWeight.medium,
+    color: Colors.primary,
+    marginBottom: Spacing.xs,
+    lineHeight: 24,
+  },
+  description: {
     fontSize: Typography.fontSize.base,
     color: Colors.textSecondary,
+    fontWeight: Typography.fontWeight.normal,
+    lineHeight: 22,
+    opacity: 0.8,
   },
   form: {
     marginBottom: Spacing.sm,
@@ -325,5 +356,15 @@ const styles = StyleSheet.create({
     fontSize: Typography.fontSize.sm,
     color: Colors.primary,
     fontWeight: Typography.fontWeight.semibold,
+  },
+  creditContainer: {
+    alignItems: 'center',
+    marginTop: Spacing.lg,
+    paddingVertical: Spacing.xs,
+  },
+  creditText: {
+    fontSize: Typography.fontSize.sm,
+    color: Colors.textSecondary,
+    fontWeight: Typography.fontWeight.normal,
   },
 });
