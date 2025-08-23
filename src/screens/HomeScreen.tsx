@@ -24,7 +24,7 @@ const EmptyStateComponent: React.FC<{ onAdjustPreferences: () => void }> = ({ on
 export const HomeScreen: React.FC<{
   onNavigateToAddPost?: () => void;
   onNavigateToUserProfile?: (userId: string) => void;
-}> = ({ onNavigateToAddPost, onNavigateToUserProfile }) => {
+}> = ({onNavigateToUserProfile }) => {
   // Filter posts based on user preferences
   const [userPreferences] = useState(currentUserPreferences);
   const [activeFilters, setActiveFilters] = useState({

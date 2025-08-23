@@ -87,30 +87,43 @@ export const SearchScreen: React.FC = () => {
 
   const renderSearchResult = ({ item }: { item: typeof searchResults[0] }) => (
     <TouchableOpacity style={styles.resultItem}>
-      <View style={styles.resultImageContainer}>
-        <View style={styles.resultProfileImage}>
-          <Text style={styles.resultProfileImageText}>{item.name.charAt(0)}</Text>
-        </View>
-        {/* Badges */}
-        {item.verified && (
-          <View style={styles.resultVerifiedBadge}>
-            <Icon name="check" library="feather" size={8} color={Colors.white} />
+      {/* Main content row - Profile pic + User info */}
+      <View style={styles.mainContentRow}>
+        <View style={styles.resultImageContainer}>
+          <View style={styles.resultProfileImage}>
+            <Text style={styles.resultProfileImageText}>{item.name.charAt(0)}</Text>
           </View>
-        )}
-        <View style={styles.resultCompatibilityBadge}>
-          <Text style={styles.resultCompatibilityText}>{item.compatibility}%</Text>
+        </View>
+
+        {/* User Info */}
+        <View style={styles.resultContent}>
+          <View style={styles.resultInfo}>
+            <Text style={styles.resultName}>{item.name}</Text>
+            <Text style={styles.resultDetails}>{item.age} years • {item.profession}</Text>
+            <Text style={styles.resultLocation}>
+              <Icon name="map-pin" library="feather" size={12} color={Colors.textSecondary} />
+              {' '}{item.location}
+            </Text>
+          </View>
         </View>
       </View>
 
-      {/* Content */}
-      <View style={styles.resultContent}>
-        <View style={styles.resultInfo}>
-          <Text style={styles.resultName}>{item.name}</Text>
-          <Text style={styles.resultDetails}>{item.age} years • {item.profession}</Text>
-          <Text style={styles.resultLocation}>
-            <Icon name="map-pin" library="feather" size={12} color={Colors.textSecondary} />
-            {' '}{item.location}
-          </Text>
+      {/* Horizontal line separator */}
+      <View style={styles.separator} />
+
+      {/* Bottom badges row - completely independent */}
+      <View style={styles.badgesRow}>
+        <View style={styles.compatibilityInfo}>
+          <Text style={styles.compatibilityText}>{item.compatibility}% Match</Text>
+        </View>
+        {item.verified && (
+          <View style={styles.verifiedInfo}>
+            <Icon name="check" library="feather" size={8} color="#16a34a" />
+            <Text style={styles.verifiedText}>Verified</Text>
+          </View>
+        )}
+        <View style={styles.lastSeenInfo}>
+          <Text style={styles.lastSeenText}>{item.lastSeen}</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -317,8 +330,7 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
   },
   resultItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    flexDirection: 'column',
     backgroundColor: Colors.backgroundCard,
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
@@ -326,18 +338,22 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.border,
   },
+  mainContentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
   resultImageContainer: {
-    position: 'relative',
     width: 80,
     height: 80,
-    borderRadius: BorderRadius.md,
+    borderRadius: 40,
     overflow: 'hidden',
     marginRight: Spacing.md,
   },
   resultProfileImage: {
     width: '100%',
     height: '100%',
-    borderRadius: BorderRadius.md,
+    borderRadius: 40,
     backgroundColor: Colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
@@ -347,32 +363,63 @@ const styles = StyleSheet.create({
     fontWeight: Typography.fontWeight.bold,
     color: Colors.white,
   },
-  resultVerifiedBadge: {
-    position: 'absolute',
-    top: 4,
-    right: 4,
-    width: 16,
-    height: 16,
-    backgroundColor: Colors.success,
-    borderRadius: BorderRadius.full,
-    justifyContent: 'center',
+  separator: {
+    height: 1,
+    width: '100%',
+    backgroundColor: Colors.border,
+    marginVertical: 8,
+  },
+  badgesRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: Colors.backgroundCard,
+    flexWrap: 'wrap',
   },
-  resultCompatibilityBadge: {
-    position: 'absolute',
-    top: 4,
-    left: 4,
-    backgroundColor: Colors.info,
-    borderRadius: BorderRadius.md,
-    paddingVertical: Spacing.xs,
-    paddingHorizontal: Spacing.sm,
+  compatibilityInfo: {
+    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    borderRadius: 6,
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    marginRight: 6,
+    marginBottom: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(59, 130, 246, 0.2)',
   },
-  resultCompatibilityText: {
-    fontSize: Typography.fontSize.sm,
-    fontWeight: Typography.fontWeight.bold,
-    color: Colors.white,
+  compatibilityText: {
+    fontSize: 11,
+    color: '#2563eb',
+    fontWeight: '500',
+  },
+  verifiedInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+    borderRadius: 6,
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    marginRight: 6,
+    marginBottom: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.2)',
+  },
+  verifiedText: {
+    fontSize: 11,
+    color: '#16a34a',
+    marginLeft: 3,
+    fontWeight: '500',
+  },
+  lastSeenInfo: {
+    backgroundColor: 'rgba(107, 114, 128, 0.1)',
+    borderRadius: 6,
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    marginBottom: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(107, 114, 128, 0.2)',
+  },
+  lastSeenText: {
+    fontSize: 11,
+    color: '#6b7280',
+    fontWeight: '500',
   },
   resultContent: {
     flex: 1,

@@ -8,13 +8,9 @@ import {
   ScrollView,
   Image,
   Alert,
-  Dimensions,
 } from 'react-native';
 import { launchImageLibrary, launchCamera, MediaType, ImagePickerResponse } from 'react-native-image-picker';
 import { Colors } from '../constants/styles';
-
-const { width } = Dimensions.get('window');
-
 interface AddPostScreenProps {
   navigation: any;
 }
@@ -47,7 +43,7 @@ export const AddPostScreen: React.FC<AddPostScreenProps> = ({ navigation }) => {
       includeBase64: false,
       maxHeight: 2000,
       maxWidth: 2000,
-      quality: 0.8,
+      quality: 0.8 as const,
     };
 
     launchCamera(options, (response: ImagePickerResponse) => {
@@ -73,7 +69,7 @@ export const AddPostScreen: React.FC<AddPostScreenProps> = ({ navigation }) => {
       includeBase64: false,
       maxHeight: 2000,
       maxWidth: 2000,
-      quality: 0.8,
+      quality: 0.8 as const,
     };
 
     launchImageLibrary(options, (response: ImagePickerResponse) => {
@@ -107,7 +103,7 @@ export const AddPostScreen: React.FC<AddPostScreenProps> = ({ navigation }) => {
 
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise<void>(resolve => setTimeout(() => resolve(), 2000));
 
       Alert.alert(
         'Success!',

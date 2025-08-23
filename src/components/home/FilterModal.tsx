@@ -6,13 +6,10 @@ import {
   StyleSheet,
   Modal,
   ScrollView,
-  Dimensions,
+
 } from 'react-native';
 import { Colors } from '../../constants/styles';
 import { Icon } from '../Icon';
-
-const { width } = Dimensions.get('window');
-
 interface FilterModalProps {
   visible: boolean;
   onClose: () => void;

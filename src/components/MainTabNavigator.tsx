@@ -14,7 +14,6 @@ import { SearchScreen } from '../screens/SearchScreen';
 import { ChatScreen } from '../screens/ChatScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { AddPostScreen } from '../screens/AddPostScreen';
-import { UserProfileScreen } from '../screens/UserProfileScreen';
 
 type TabKey = 'Home' | 'Search' | 'AddPost' | 'Chat' | 'Profile';
 

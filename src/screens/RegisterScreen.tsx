@@ -100,6 +100,11 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const validateStep1 = () => {
+    // Validation disabled for UI testing
+    return true;
+
+    // Original validation code commented out:
+    /*
     if (!formData.fullName.trim() || !formData.email.trim() || !formData.phone.trim()) {
       Alert.alert('Error', 'Please fill all required fields');
       return false;
@@ -122,17 +127,29 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
     }
 
     return true;
+    */
   };
 
   const validateStep2 = () => {
+    // Validation disabled for UI testing
+    return true;
+
+    // Original validation code commented out:
+    /*
     if (!formData.age || !formData.gender || !formData.profession || !formData.location) {
       Alert.alert('Error', 'Please fill all required fields');
       return false;
     }
     return true;
+    */
   };
 
   const validateStep3 = () => {
+    // Validation disabled for UI testing
+    return true;
+
+    // Original validation code commented out:
+    /*
     if (!formData.partnerAgeMin || !formData.partnerAgeMax) {
       Alert.alert('Error', 'Please specify partner age preferences');
       return false;
@@ -142,6 +159,7 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
       return false;
     }
     return true;
+    */
   };
 
   const handleNextStep = () => {
@@ -188,7 +206,7 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
           [
             {
               text: 'Start Exploring',
-              onPress: () => navigation.navigate('Login'),
+              onPress: () => navigation.navigate('Main'),
             },
           ]
         );
@@ -270,35 +288,40 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
       <Text style={styles.stepTitle}>About You</Text>
       <Text style={styles.stepDescription}>Help others know you better</Text>
 
-      <View style={styles.row}>
-        <View style={[styles.inputContainer, styles.halfWidth]}>
-          <Text style={styles.inputLabel}>Age *</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="25"
-            value={formData.age}
-            onChangeText={(value) => updateFormData('age', value)}
-            keyboardType="numeric"
-            maxLength={2}
-          />
-        </View>
+      <View style={styles.inputContainer}>
+        <Text style={styles.inputLabel}>Age *</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="25"
+          value={formData.age}
+          onChangeText={(value) => updateFormData('age', value)}
+          keyboardType="numeric"
+          maxLength={2}
+        />
+      </View>
 
-        <View style={[styles.inputContainer, styles.halfWidth]}>
-          <Text style={styles.inputLabel}>Gender *</Text>
-          <View style={styles.genderContainer}>
-            <TouchableOpacity
-              style={[styles.genderOption, formData.gender === 'male' && styles.genderSelected]}
-              onPress={() => updateFormData('gender', 'male')}
-            >
-              <Text style={[styles.genderText, formData.gender === 'male' && styles.genderTextSelected]}>Male</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.genderOption, formData.gender === 'female' && styles.genderSelected]}
-              onPress={() => updateFormData('gender', 'female')}
-            >
-              <Text style={[styles.genderText, formData.gender === 'female' && styles.genderTextSelected]}>Female</Text>
-            </TouchableOpacity>
-          </View>
+      <View style={styles.inputContainer}>
+        <Text style={styles.inputLabel}>Gender *</Text>
+        <View style={styles.radioContainer}>
+          <TouchableOpacity
+            style={styles.radioOption}
+            onPress={() => updateFormData('gender', 'male')}
+          >
+            <View style={styles.radioButton}>
+              {formData.gender === 'male' && <View style={styles.radioButtonSelected} />}
+            </View>
+            <Text style={styles.radioText}>Male</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.radioOption}
+            onPress={() => updateFormData('gender', 'female')}
+          >
+            <View style={styles.radioButton}>
+              {formData.gender === 'female' && <View style={styles.radioButtonSelected} />}
+            </View>
+            <Text style={styles.radioText}>Female</Text>
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -530,7 +553,7 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
                 disabled={isLoading}
               >
                 <Text style={styles.primaryButtonText}>
-                  {isLoading ? 'Creating Account...' : 'Complete Registration'}
+                  {isLoading ? 'Creating...' : 'Register'}
                 </Text>
               </TouchableOpacity>
             )}
@@ -629,31 +652,37 @@ const styles = StyleSheet.create({
   halfWidth: {
     width: '48%',
   },
-  genderContainer: {
+  radioContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  genderOption: {
-    flex: 1,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderRadius: 8,
-    backgroundColor: 'white',
+  radioOption: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: 4,
+    flex: 1,
+    paddingVertical: 12,
   },
-  genderSelected: {
-    borderColor: Colors.primary,
-    backgroundColor: Colors.primary + '10',
+  radioButton: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#E0E0E0',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+    backgroundColor: 'white',
   },
-  genderText: {
-    fontSize: 14,
-    color: '#666',
+  radioButtonSelected: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: Colors.primary,
   },
-  genderTextSelected: {
-    color: Colors.primary,
-    fontWeight: '600',
+  radioText: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: '500',
   },
   tagContainer: {
     flexDirection: 'row',
