@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { Colors } from '../../constants/styles';
 import { Icon } from '../Icon';
 
@@ -18,10 +18,19 @@ export const HomeHeader: React.FC<HomeHeaderProps> = ({
   return (
     <View style={styles.header}>
       <View style={styles.headerLeft}>
-        <Text style={styles.greeting}>नमस्ते, {userPreferences.name}!</Text>
-        <Text style={styles.subtitle}>
-          {userPreferences.accountType === 'premium' ? 'Premium Member ⭐' : 'Filtered Feed'}
-        </Text>
+        <View style={styles.greetingContainer}>
+          <Image
+            source={require('../../../shubh-milan-icon.png')}
+            style={styles.appIcon}
+            resizeMode="contain"
+          />
+          <View style={styles.textContainer}>
+            <Text style={styles.greeting}>नमस्ते, {userPreferences.name}!</Text>
+            <Text style={styles.subtitle}>
+              {userPreferences.accountType === 'premium' ? 'Premium Member ⭐' : 'Filtered Feed'}
+            </Text>
+          </View>
+        </View>
       </View>
       <View style={styles.headerRight}>
         <TouchableOpacity style={styles.iconButton} onPress={onFilterPress}>
@@ -53,6 +62,18 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   headerLeft: {
+    flex: 1,
+  },
+  greetingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  appIcon: {
+    width: 40,
+    height: 40,
+    marginRight: 12,
+  },
+  textContainer: {
     flex: 1,
   },
   greeting: {

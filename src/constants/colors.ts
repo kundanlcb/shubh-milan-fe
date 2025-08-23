@@ -1,9 +1,9 @@
 // Mithila-inspired color palette
 export const Colors = {
-  // Primary Colors - Inspired by traditional Mithila art
-  primary: '#D32F2F', // Deep red - traditional Mithila color
-  primaryLight: '#FF6659',
-  primaryDark: '#9A0007',
+  // Primary Colors - Beautiful magenta from the app icon
+  primary: '#E91E63', // Beautiful magenta - inspired by the app icon
+  primaryLight: '#F48FB1',
+  primaryDark: '#AD1457',
 
   // Secondary Colors
   secondary: '#FF9800', // Golden orange - auspicious color
@@ -23,6 +23,7 @@ export const Colors = {
     green: '#388E3C',
     blue: '#1976D2',
     black: '#212121',
+    magenta: '#E91E63', // Added the beautiful magenta from icon
   },
 
   // Background Colors
@@ -51,7 +52,7 @@ export const Colors = {
   info: '#2196F3',
 
   // Button Colors
-  buttonPrimary: '#D32F2F',
+  buttonPrimary: '#E91E63', // Updated to beautiful magenta
   buttonSecondary: '#FF9800',
   buttonDisabled: '#BDBDBD',
   buttonText: '#FFFFFF',
