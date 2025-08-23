@@ -15,9 +15,10 @@ import { RegisterScreen } from './src/screens/RegisterScreen';
 import { MainTabNavigator } from './src/components/MainTabNavigator';
 import { UserProfileScreen } from './src/screens/UserProfileScreen';
 import { ChatConversationScreen } from './src/screens/ChatConversationScreen';
+import { EditProfileScreen } from './src/screens/EditProfileScreen';
 import { Colors } from './src/constants/colors';
 
-type CurrentScreen = 'Login' | 'Register' | 'ForgotPassword' | 'OTPVerification' | 'Main' | 'ChatConversation';
+type CurrentScreen = 'Login' | 'Register' | 'ForgotPassword' | 'OTPVerification' | 'Main' | 'ChatConversation' | 'EditProfile';
 type ModalScreen = 'UserProfile' | null;
 
 function App(): React.JSX.Element {
@@ -41,6 +42,9 @@ function App(): React.JSX.Element {
       setActiveTab('Chat'); // Remember we came from Chat tab
       setCurrentScreen('ChatConversation');
       setChatConversationParams(params);
+    } else if (screen === 'EditProfile') {
+      setActiveTab('Profile'); // Remember we came from Profile tab
+      setCurrentScreen('EditProfile');
     } else {
       setCurrentScreen(screen as CurrentScreen);
     }
@@ -61,6 +65,29 @@ function App(): React.JSX.Element {
     navigate,
     onLoginSuccess: handleLoginSuccess,
   };
+
+  // Show EditProfile screen as standalone
+  if (isLoggedIn && currentScreen === 'EditProfile') {
+    return (
+      <SafeAreaProvider>
+        <StatusBar
+          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+          backgroundColor={Colors.background}
+        />
+        <EditProfileScreen
+          navigation={{
+            goBack: () => setCurrentScreen('Main'),
+            navigate: (_screen: string, _params?: any) => {
+              if (_screen === 'Main') {
+                setCurrentScreen('Main');
+              }
+            }
+          }}
+          route={{ params: undefined }}
+        />
+      </SafeAreaProvider>
+    );
+  }
 
   // Show ChatConversation screen as standalone
   if (isLoggedIn && currentScreen === 'ChatConversation') {
@@ -98,6 +125,7 @@ function App(): React.JSX.Element {
           onTabChange={setActiveTab}
           onNavigateToUserProfile={(userId: string) => navigate('UserProfile', { userId })}
           onNavigateToChatConversation={(params: any) => navigate('ChatConversation', params)}
+          onNavigateToEditProfile={() => navigate('EditProfile')}
         />
 
         {/* Modal Screens */}
