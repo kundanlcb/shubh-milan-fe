@@ -101,20 +101,10 @@ export const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ navigation
             <Text style={styles.headerTitle}>Profile</Text>
           </View>
           <View style={styles.headerActions}>
-            <TouchableOpacity
-              style={[styles.headerInterestButton,
-                followStatus === 'following' && styles.headerFollowingButton,
-                followStatus === 'requested' && styles.headerRequestedButton
-              ]}
-              onPress={handleFollow}
-            >
-              <Icon
-                name={followStatus === 'follow' ? 'heart' : followStatus === 'following' ? 'check' : 'clock'}
-                library="feather"
-                size={20}
-                color={followStatus === 'follow' ? Colors.primary : followStatus === 'following' ? '#4CAF50' : '#FF9800'}
-              />
-            </TouchableOpacity>
+            <View style={styles.compatibilityBadgeHeader}>
+              <Icon name="star" library="feather" size={16} color={Colors.primary} />
+              <Text style={styles.compatibilityTextHeader}>{getCompatibilityScore()}%</Text>
+            </View>
             <TouchableOpacity style={styles.moreButton}>
               <Icon name="more-vertical" library="feather" size={24} color="#333" />
             </TouchableOpacity>
@@ -146,26 +136,42 @@ export const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ navigation
             </View>
           </View>
 
-          {/* Action Row - Match percentage on left, action icons on right */}
+          {/* Action Row - Big follow button with chat and call icons */}
           <View style={styles.actionRow}>
-            <View style={styles.compatibilityBadgeProfile}>
-              <Icon name="heart" library="feather" size={16} color={Colors.primary} />
-              <Text style={styles.compatibilityTextProfile}>{getCompatibilityScore()}%</Text>
-            </View>
+            <TouchableOpacity
+              style={[styles.followButton,
+                followStatus === 'following' && styles.followButtonFollowing,
+                followStatus === 'requested' && styles.followButtonRequested
+              ]}
+              onPress={handleFollow}
+            >
+              <Icon
+                name={followStatus === 'follow' ? 'heart' : followStatus === 'following' ? 'check' : 'clock'}
+                library="feather"
+                size={20}
+                color={followStatus === 'follow' ? Colors.primary : followStatus === 'following' ? '#4CAF50' : '#FF9800'}
+              />
+              <Text style={[styles.followButtonText,
+                followStatus === 'following' && styles.followButtonTextFollowing,
+                followStatus === 'requested' && styles.followButtonTextRequested
+              ]}>
+                {followStatus === 'follow' ? 'Send Interest' : followStatus === 'following' ? 'Following' : 'Interest Sent'}
+              </Text>
+            </TouchableOpacity>
 
-            <View style={styles.actionIconsRow}>
-              <TouchableOpacity style={styles.actionIcon} onPress={handleMessage}>
-                <Icon name="message-circle" library="feather" size={20} color={Colors.primary} />
+            <View style={styles.compactIconsRow}>
+              <TouchableOpacity style={styles.compactIcon} onPress={handleMessage}>
+                <Icon name="message-circle" library="feather" size={24} color={Colors.primary} />
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.actionIcon} onPress={handleCall}>
-                <Icon name="phone" library="feather" size={20} color={Colors.primary} />
+              <TouchableOpacity style={styles.compactIcon} onPress={handleCall}>
+                <Icon name="phone" library="feather" size={24} color={Colors.primary} />
               </TouchableOpacity>
             </View>
           </View>
 
           {/* Stats Cards - Redesigned with better proportions */}
-          <View style={styles.statsContainer}>
+          {/* <View style={styles.statsContainer}>
             <View style={styles.statCard}>
               <Text style={styles.statNumber}>{userPosts.length}</Text>
               <Text style={styles.statLabel}>Posts</Text>
@@ -178,7 +184,7 @@ export const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ navigation
               <Text style={styles.statNumber}>89%</Text>
               <Text style={styles.statLabel}>Response</Text>
             </View>
-          </View>
+          </View> */}
         </View>
 
         {/* Tab Navigation */}
@@ -327,7 +333,7 @@ const styles = StyleSheet.create({
   },
   profileSection: {
     backgroundColor: 'white',
-    paddingVertical: 24,
+    paddingVertical: 16,
     alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: '#E0E0E0',
@@ -338,7 +344,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     paddingHorizontal: 20,
-    marginBottom: 16,
+    marginBottom: 24,
   },
   profileImageContainer: {
     position: 'relative',
@@ -399,7 +405,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     paddingHorizontal: 20,
-    marginBottom: 24,
+    marginBottom: 12,
   },
   compatibilityBadgeProfile: {
     flexDirection: 'row',
@@ -410,16 +416,48 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   compatibilityTextProfile: {
-    fontSize: 12,
+    fontSize: 16,
     fontWeight: '600',
     color: Colors.primary,
-    marginLeft: 4,
+    marginLeft: 6,
   },
-  actionIconsRow: {
+  followButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    borderRadius: 24,
+    backgroundColor: '#F1F1F1',
+    borderWidth: 2,
+    borderColor: Colors.primary,
+    marginRight: 8,
+  },
+  followButtonFollowing: {
+    backgroundColor: '#F1F1F1',
+    borderColor: '#4CAF50',
+  },
+  followButtonRequested: {
+    backgroundColor: '#F1F1F1',
+    borderColor: '#FF9800',
+  },
+  followButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.primary,
+    marginLeft: 8,
+  },
+  followButtonTextFollowing: {
+    color: '#4CAF50',
+  },
+  followButtonTextRequested: {
+    color: '#FF9800',
+  },
+  compactIconsRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  actionIcon: {
+  compactIcon: {
     padding: 8,
     borderRadius: 24,
     marginLeft: 8,
@@ -623,5 +661,20 @@ const styles = StyleSheet.create({
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  compatibilityBadgeHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#E8F5E9',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+    marginRight: 12,
+  },
+  compatibilityTextHeader: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.primary,
+    marginLeft: 4,
   },
 });
