@@ -9,9 +9,11 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Image,
+  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors, GlobalStyles, Typography, Spacing } from '../constants/styles';
+import { Colors, Typography, Spacing, BorderRadius } from '../constants/styles';
 import type { AuthStackParamList } from '../types/navigation';
 
 // Temporary navigation type until React Navigation is properly set up
@@ -28,27 +30,60 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [emailFocused, setEmailFocused] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
+
+  // Animation values for floating labels
+  const emailLabelAnimation = useState(new Animated.Value(email ? 1 : 0))[0];
+  const passwordLabelAnimation = useState(new Animated.Value(password ? 1 : 0))[0];
+
+  const animateLabel = (animation: Animated.Value, focused: boolean, value: string) => {
+    Animated.timing(animation, {
+      toValue: focused || value ? 1 : 0,
+      duration: 200,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const handleEmailFocus = () => {
+    setEmailFocused(true);
+    animateLabel(emailLabelAnimation, true, email);
+  };
+
+  const handleEmailBlur = () => {
+    setEmailFocused(false);
+    animateLabel(emailLabelAnimation, false, email);
+  };
+
+  const handlePasswordFocus = () => {
+    setPasswordFocused(true);
+    animateLabel(passwordLabelAnimation, true, password);
+  };
+
+  const handlePasswordBlur = () => {
+    setPasswordFocused(false);
+    animateLabel(passwordLabelAnimation, false, password);
+  };
+
+  const handleEmailChange = (text: string) => {
+    setEmail(text);
+    animateLabel(emailLabelAnimation, emailFocused, text);
+  };
+
+  const handlePasswordChange = (text: string) => {
+    setPassword(text);
+    animateLabel(passwordLabelAnimation, passwordFocused, text);
+  };
 
   const handleLogin = async () => {
-    // TODO: Uncomment validation later
-    // if (!email || !password) {
-    //   Alert.alert('Error', 'Please fill in all fields');
-    //   return;
-    // }
-
     setIsLoading(true);
     try {
-      // TODO: Implement actual login logic here
-      // For now, we'll simulate a login without validation
       setTimeout(() => {
         setIsLoading(false);
-        // Navigate to main app after successful login
         if (navigation.onLoginSuccess) {
           navigation.onLoginSuccess();
         }
-        // Commented out success alert for smoother UX during development
-        // Alert.alert('Success', 'Login successful! Welcome to शुभ मिलन');
-      }, 500); // Reduced delay for faster testing
+      }, 500);
     } catch (error) {
       setIsLoading(false);
       Alert.alert('Error', 'Login failed. Please try again.');
@@ -64,57 +99,101 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardContainer}>
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
           <View style={styles.content}>
-            {/* Header */}
+            {/* Left-aligned Header */}
             <View style={styles.header}>
-              <Text style={styles.title}>शुभ मिलन</Text>
-              <Text style={styles.subtitle}>Shubh Milan</Text>
-              <Text style={styles.tagline}>मिथिला में रिश्ते बनाएं</Text>
+              <View style={styles.logoContainer}>
+                <Image
+                  source={require('../../subh-milan.png')}
+                  style={styles.logo}
+                  resizeMode="contain"
+                />
+              </View>
+              <Text style={styles.welcomeText}>Welcome back</Text>
+              <Text style={styles.subtitle}>Sign in to continue</Text>
             </View>
 
-            {/* Login Form */}
+            {/* Floating Label Form */}
             <View style={styles.form}>
-              <TextInput
-                style={styles.input}
-                placeholder="Email Address"
-                placeholderTextColor={Colors.inputPlaceholder}
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-              />
+              <View style={styles.floatingInputContainer}>
+                <Animated.Text
+                  style={[
+                    styles.floatingLabel,
+                    {
+                      top: emailLabelAnimation.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [20, 0],
+                      }),
+                      fontSize: emailLabelAnimation.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [16, 12],
+                      }),
+                      color: emailFocused ? Colors.primary : Colors.textSecondary,
+                    },
+                  ]}>
+                  Email
+                </Animated.Text>
+                <TextInput
+                  style={[styles.floatingInput, emailFocused && styles.floatingInputFocused]}
+                  value={email}
+                  onChangeText={handleEmailChange}
+                  onFocus={handleEmailFocus}
+                  onBlur={handleEmailBlur}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                />
+              </View>
 
-              <TextInput
-                style={styles.input}
-                placeholder="Password"
-                placeholderTextColor={Colors.inputPlaceholder}
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                autoCapitalize="none"
-              />
+              <View style={styles.floatingInputContainer}>
+                <Animated.Text
+                  style={[
+                    styles.floatingLabel,
+                    {
+                      top: passwordLabelAnimation.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [20, 0],
+                      }),
+                      fontSize: passwordLabelAnimation.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [16, 12],
+                      }),
+                      color: passwordFocused ? Colors.primary : Colors.textSecondary,
+                    },
+                  ]}>
+                  Password
+                </Animated.Text>
+                <TextInput
+                  style={[styles.floatingInput, passwordFocused && styles.floatingInputFocused]}
+                  value={password}
+                  onChangeText={handlePasswordChange}
+                  onFocus={handlePasswordFocus}
+                  onBlur={handlePasswordBlur}
+                  secureTextEntry
+                  autoCapitalize="none"
+                />
+              </View>
 
               <TouchableOpacity
                 style={[styles.loginButton, isLoading && styles.disabledButton]}
                 onPress={handleLogin}
                 disabled={isLoading}>
                 <Text style={styles.loginButtonText}>
-                  {isLoading ? 'Logging in...' : 'Login'}
+                  {isLoading ? 'Signing in...' : 'Sign In'}
                 </Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.forgotPassword}>
-                <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+                <Text style={styles.forgotPasswordText}>Forgot your password?</Text>
               </TouchableOpacity>
             </View>
 
             {/* Register Link */}
             <View style={styles.registerContainer}>
-              <Text style={styles.registerText}>Don't have an account? </Text>
+              <Text style={styles.registerText}>New to Shubh Milan? </Text>
               <TouchableOpacity onPress={navigateToRegister}>
-                <Text style={styles.registerLink}>Register here</Text>
+                <Text style={styles.registerLink}>Create account</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -134,57 +213,98 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    justifyContent: 'center',
-    padding: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing['2xl'],
+    paddingBottom: Spacing.sm,
   },
   content: {
     flex: 1,
     justifyContent: 'center',
+    maxWidth: 400,
+    alignSelf: 'center',
+    width: '100%',
   },
   header: {
-    alignItems: 'center',
-    marginBottom: Spacing.xl,
+    alignItems: 'flex-start',
+    marginBottom: Spacing['2xl'],
   },
-  title: {
-    fontSize: Typography.fontSize['4xl'],
+  logoContainer: {
+    marginBottom: Spacing.lg,
+  },
+  logo: {
+    width: 80,
+    height: 80,
+  },
+  welcomeText: {
+    fontSize: Typography.fontSize['2xl'],
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.primary,
-    fontFamily: Typography.fontFamily.hindi,
-    marginBottom: Spacing.xs,
-  },
-  subtitle: {
-    fontSize: Typography.fontSize.xl,
-    fontWeight: Typography.fontWeight.semibold,
     color: Colors.textPrimary,
     marginBottom: Spacing.xs,
   },
-  tagline: {
-    fontSize: Typography.fontSize.sm,
+  subtitle: {
+    fontSize: Typography.fontSize.base,
     color: Colors.textSecondary,
-    textAlign: 'center',
-    fontFamily: Typography.fontFamily.hindi,
   },
   form: {
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing.sm,
   },
-  input: {
-    ...GlobalStyles.input,
-    marginBottom: Spacing.md,
+  floatingInputContainer: {
+    marginBottom: Spacing.lg,
+    position: 'relative',
+    paddingTop: Spacing.sm,
+  },
+  floatingLabel: {
+    position: 'absolute',
+    left: 0,
+    fontWeight: Typography.fontWeight.medium,
+    backgroundColor: Colors.background,
+    paddingHorizontal: 4,
+    zIndex: 1,
+  },
+  floatingInput: {
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+    paddingVertical: Spacing.md,
+    fontSize: Typography.fontSize.base,
+    color: Colors.textPrimary,
+    backgroundColor: 'transparent',
+    minHeight: 52,
+  },
+  floatingInputFocused: {
+    borderBottomColor: Colors.primary,
+    borderBottomWidth: 2,
   },
   loginButton: {
-    ...GlobalStyles.button,
-    ...GlobalStyles.buttonPrimary,
+    backgroundColor: Colors.primary,
+    borderRadius: BorderRadius.lg,
+    paddingVertical: Spacing.md,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginTop: Spacing.md,
+    minHeight: 52,
+    shadowColor: Colors.primary,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
   disabledButton: {
     backgroundColor: Colors.buttonDisabled,
+    shadowOpacity: 0,
+    elevation: 0,
   },
   loginButtonText: {
-    ...GlobalStyles.buttonText,
+    fontSize: Typography.fontSize.base,
+    fontWeight: Typography.fontWeight.semibold,
+    color: Colors.textInverse,
   },
   forgotPassword: {
     alignItems: 'center',
-    marginTop: Spacing.md,
+    marginTop: Spacing.xl,
+    paddingVertical: Spacing.xs,
   },
   forgotPasswordText: {
     fontSize: Typography.fontSize.sm,
@@ -195,6 +315,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    paddingTop: Spacing.md,
   },
   registerText: {
     fontSize: Typography.fontSize.sm,
