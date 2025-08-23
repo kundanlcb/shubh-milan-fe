@@ -5,17 +5,13 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  Image,
-  Dimensions,
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../constants/styles';
 import { Icon } from '../components/Icon';
 import { PostCard } from '../components/home/PostCard';
-import { allUsers, PostData } from '../utils/homeData';
-
-const { width } = Dimensions.get('window');
+import { allUsers } from '../utils/homeData';
 
 interface UserProfileScreenProps {
   navigation: any;
@@ -86,7 +82,6 @@ export const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ navigation
     );
   };
 
-  const calculateAge = (age: number) => age;
   const formatSalary = (salary: number) => {
     const lpa = salary / 100000;
     return `${lpa.toFixed(1)} LPA`;
@@ -99,78 +94,90 @@ export const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ navigation
       {/* Header */}
       <SafeAreaView style={styles.safeAreaHeader} edges={['top']}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <Icon name="arrow-left" library="feather" size={24} color="#333" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>{user.name}</Text>
-          <TouchableOpacity style={styles.moreButton}>
-            <Icon name="more-vertical" library="feather" size={24} color="#333" />
-          </TouchableOpacity>
+          <View style={styles.headerLeft}>
+            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+              <Icon name="arrow-left" library="feather" size={24} color="#333" />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>Profile</Text>
+          </View>
+          <View style={styles.headerActions}>
+            <View style={styles.compatibilityBadge}>
+              <Icon name="heart" library="feather" size={12} color={Colors.primary} />
+              <Text style={styles.compatibilityText}>{getCompatibilityScore()}%</Text>
+            </View>
+            <TouchableOpacity
+              style={[styles.headerInterestButton,
+                followStatus === 'following' && styles.headerFollowingButton,
+                followStatus === 'requested' && styles.headerRequestedButton
+              ]}
+              onPress={handleFollow}
+            >
+              <Icon
+                name={followStatus === 'follow' ? 'heart' : followStatus === 'following' ? 'check' : 'clock'}
+                library="feather"
+                size={20}
+                color={followStatus === 'follow' ? Colors.primary : followStatus === 'following' ? '#4CAF50' : '#FF9800'}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.moreButton}>
+              <Icon name="more-vertical" library="feather" size={24} color="#333" />
+            </TouchableOpacity>
+          </View>
         </View>
       </SafeAreaView>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Profile Section */}
+        {/* Modern Profile Section */}
         <View style={styles.profileSection}>
-          <View style={styles.profileImageContainer}>
-            <View style={styles.profileImage}>
-              <Text style={styles.profileImageText}>{user.avatar}</Text>
+          {/* Profile Header with Image and Basic Info */}
+          <View style={styles.profileHeader}>
+            <View style={styles.profileImageContainer}>
+              <View style={styles.profileImage}>
+                <Text style={styles.profileImageText}>{user.avatar}</Text>
+              </View>
+              <View style={styles.verifiedBadge}>
+                <Icon name="check" library="feather" size={12} color="white" />
+              </View>
             </View>
-            <View style={styles.verifiedBadge}>
-              <Icon name="check" library="feather" size={16} color="white" />
+
+            <View style={styles.profileInfo}>
+              <Text style={styles.userName}>{user.name}</Text>
+              <Text style={styles.userAge}>{user.age} years • {user.profession}</Text>
+              <View style={styles.locationContainer}>
+                <Icon name="map-pin" library="feather" size={14} color="#666" />
+                <Text style={styles.userLocation}>{user.location}</Text>
+              </View>
             </View>
           </View>
 
-          <Text style={styles.userName}>{user.name}</Text>
-          <Text style={styles.userLocation}>📍 {user.location}</Text>
+          {/* Action Buttons - Simplified without interest button */}
+          <View style={styles.actionButtonsContainer}>
+            <View style={styles.secondaryButtonsRow}>
+              <TouchableOpacity style={styles.secondaryButton} onPress={handleMessage}>
+                <Icon name="message-circle" library="feather" size={18} color={Colors.primary} />
+                <Text style={styles.secondaryButtonText}>Message</Text>
+              </TouchableOpacity>
 
-          {/* Compatibility Score */}
-          <View style={styles.compatibilityContainer}>
-            <Text style={styles.compatibilityScore}>{getCompatibilityScore()}% Match</Text>
-            <Text style={styles.compatibilityText}>High Compatibility</Text>
+              <TouchableOpacity style={styles.secondaryButton} onPress={handleCall}>
+                <Icon name="phone" library="feather" size={18} color={Colors.primary} />
+                <Text style={styles.secondaryButtonText}>Call</Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
-          {/* Action Buttons */}
-          <View style={styles.actionButtons}>
-            <TouchableOpacity
-              style={[styles.actionButton, styles.followButton,
-                followStatus === 'following' && styles.followingButton,
-                followStatus === 'requested' && styles.requestedButton
-              ]}
-              onPress={handleFollow}
-            >
-              <Text style={[styles.actionButtonText,
-                followStatus === 'following' && styles.followingButtonText,
-                followStatus === 'requested' && styles.requestedButtonText
-              ]}>
-                {followStatus === 'follow' ? 'Send Interest' :
-                 followStatus === 'following' ? 'Following' : 'Interest Sent'}
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={[styles.actionButton, styles.messageButton]} onPress={handleMessage}>
-              <Icon name="message-circle" library="feather" size={18} color="white" />
-              <Text style={styles.actionButtonText}>Message</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={[styles.actionButton, styles.callButton]} onPress={handleCall}>
-              <Icon name="phone" library="feather" size={18} color="white" />
-            </TouchableOpacity>
-          </View>
-
-          {/* Stats */}
+          {/* Stats Cards - Redesigned with better proportions */}
           <View style={styles.statsContainer}>
-            <View style={styles.statItem}>
+            <View style={styles.statCard}>
               <Text style={styles.statNumber}>{userPosts.length}</Text>
               <Text style={styles.statLabel}>Posts</Text>
             </View>
-            <View style={styles.statItem}>
+            <View style={styles.statCard}>
               <Text style={styles.statNumber}>2.5K</Text>
               <Text style={styles.statLabel}>Connections</Text>
             </View>
-            <View style={styles.statItem}>
+            <View style={styles.statCard}>
               <Text style={styles.statNumber}>89%</Text>
-              <Text style={styles.statLabel}>Response Rate</Text>
+              <Text style={styles.statLabel}>Response</Text>
             </View>
           </View>
         </View>
@@ -199,7 +206,7 @@ export const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ navigation
         {activeTab === 'posts' ? (
           <View style={styles.postsContainer}>
             {userPosts.length > 0 ? (
-              userPosts.map((post, index) => (
+              userPosts.map((post) => (
                 <PostCard
                   key={post.id}
                   post={post}
@@ -326,75 +333,84 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#E0E0E0',
   },
-  profileImageContainer: {
-    position: 'relative',
+  profileHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingHorizontal: 16,
     marginBottom: 16,
   },
+  profileImageContainer: {
+    position: 'relative',
+  },
   profileImage: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     backgroundColor: Colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
   },
   profileImageText: {
-    fontSize: 36,
+    fontSize: 24,
     fontWeight: 'bold',
     color: 'white',
   },
   verifiedBadge: {
     position: 'absolute',
-    bottom: 8,
-    right: 8,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    bottom: 4,
+    right: 4,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
     backgroundColor: '#4CAF50',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
     borderColor: 'white',
   },
+  profileInfo: {
+    flex: 1,
+    marginLeft: 12,
+  },
   userName: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: '600',
     color: '#333',
     marginBottom: 4,
   },
-  userLocation: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 16,
-  },
-  compatibilityContainer: {
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  compatibilityScore: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: Colors.primary,
-  },
-  compatibilityText: {
+  userAge: {
     fontSize: 14,
     color: '#666',
+    marginBottom: 8,
   },
-  actionButtons: {
+  locationContainer: {
     flexDirection: 'row',
-    gap: 12,
+    alignItems: 'center',
+  },
+  userLocation: {
+    fontSize: 14,
+    color: '#666',
+    marginLeft: 4,
+  },
+  actionButtonsContainer: {
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    justifyContent: 'center',
+    width: '100%',
+    paddingHorizontal: 16,
     marginBottom: 24,
   },
-  actionButton: {
+  primaryButton: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 12,
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     borderRadius: 25,
-    gap: 8,
-  },
-  followButton: {
     backgroundColor: Colors.primary,
+    flex: 1,
+    marginBottom: 12,
   },
   followingButton: {
     backgroundColor: '#E0E0E0',
@@ -404,17 +420,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#FF9800',
   },
-  messageButton: {
-    backgroundColor: '#2196F3',
-  },
-  callButton: {
-    backgroundColor: '#4CAF50',
-    paddingHorizontal: 16,
-  },
-  actionButtonText: {
+  primaryButtonText: {
     color: 'white',
     fontWeight: '600',
     fontSize: 14,
+    marginLeft: 8,
   },
   followingButtonText: {
     color: '#666',
@@ -422,24 +432,83 @@ const styles = StyleSheet.create({
   requestedButtonText: {
     color: '#FF9800',
   },
+  secondaryButtonsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  secondaryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 25,
+    backgroundColor: '#F1F1F1',
+    flex: 1,
+    marginLeft: 8,
+  },
+  secondaryButtonText: {
+    color: Colors.primary,
+    fontWeight: '500',
+    fontSize: 14,
+    marginLeft: 8,
+  },
+  compatibilityBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#E8F5E9',
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 12,
+    marginRight: 12,
+  },
+  compatibilityText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: Colors.primary,
+    marginLeft: 4,
+  },
   statsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
+    alignItems: 'stretch',
     width: '100%',
-    paddingHorizontal: 40,
+    paddingHorizontal: 20,
+    gap: 12,
   },
-  statItem: {
+  statCard: {
     alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+    paddingVertical: 16,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E8E8E8',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
   statNumber: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#333',
+    color: Colors.primary,
+    textAlign: 'center',
+    lineHeight: 24,
   },
   statLabel: {
-    fontSize: 12,
-    color: '#666',
+    fontSize: 11,
+    color: '#777',
     marginTop: 4,
+    textAlign: 'center',
+    fontWeight: '500',
+    lineHeight: 13,
   },
   tabContainer: {
     flexDirection: 'row',
@@ -576,5 +645,26 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
     zIndex: 1000,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerInterestButton: {
+    padding: 8,
+    borderRadius: 24,
+    marginRight: 8,
+  },
+  headerFollowingButton: {
+    backgroundColor: '#E0E0E0',
+  },
+  headerRequestedButton: {
+    backgroundColor: '#FFF3E0',
+    borderWidth: 1,
+    borderColor: '#FF9800',
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
