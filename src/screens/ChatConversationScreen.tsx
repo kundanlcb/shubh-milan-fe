@@ -59,7 +59,7 @@ const mockMessages: Message[] = [
     id: '3',
     media: {
       id: 'img1',
-      uri: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=300&h=300&fit=crop&crop=face',
+      uri: 'https://picsum.photos/300/300?random=1',
       type: 'image',
     },
     text: 'Here is a recent photo of mine from a family function.',
@@ -80,7 +80,7 @@ const mockMessages: Message[] = [
     id: '5',
     media: {
       id: 'img2',
-      uri: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face',
+      uri: 'https://picsum.photos/300/300?random=2',
       type: 'image',
     },
     text: 'That sounds wonderful. Family values are very important to me too. Here is my family photo.',
@@ -109,9 +109,9 @@ const mockMessages: Message[] = [
     id: '8',
     media: {
       id: 'vid1',
-      uri: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
+      uri: 'https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4',
       type: 'video',
-      thumbnail: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=225&fit=crop',
+      thumbnail: 'https://picsum.photos/400/225?random=3',
       duration: 30,
     },
     text: 'Here is a video from my recent trip to the mountains.',
@@ -124,7 +124,7 @@ const mockMessages: Message[] = [
     id: '9',
     media: {
       id: 'img3',
-      uri: 'https://images.unsplash.com/photo-1464822759844-d150baef493e?w=400&h=300&fit=crop',
+      uri: 'https://picsum.photos/400/300?random=4',
       type: 'image',
     },
     timestamp: new Date(Date.now() - 3000000),
@@ -144,9 +144,9 @@ const mockMessages: Message[] = [
     id: '11',
     media: {
       id: 'vid2',
-      uri: 'https://sample-videos.com/zip/10/mp4/SampleVideo_640x360_1mb.mp4',
+      uri: 'https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4',
       type: 'video',
-      thumbnail: 'https://images.unsplash.com/photo-1511593358241-7eea1f3c84e5?w=400&h=225&fit=crop',
+      thumbnail: 'https://picsum.photos/400/225?random=5',
       duration: 45,
     },
     text: 'This is a video from my cooking session. I made traditional Mithila cuisine.',
@@ -167,7 +167,7 @@ const mockMessages: Message[] = [
     id: '13',
     media: {
       id: 'img4',
-      uri: 'https://images.unsplash.com/photo-1544531586-fbd0515f65e1?w=400&h=300&fit=crop',
+      uri: 'https://picsum.photos/400/300?random=6',
       type: 'image',
     },
     text: 'Here is my art collection. I love traditional Mithila paintings.',
