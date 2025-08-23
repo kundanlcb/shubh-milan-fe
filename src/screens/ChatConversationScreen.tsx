@@ -12,18 +12,29 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   BackHandler,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Typography, Spacing, BorderRadius } from '../constants/styles';
 import { Icon } from '../components/Icon';
 import { MainScreenProps } from '../types/navigation';
 
+interface MediaItem {
+  id: string;
+  uri: string;
+  type: 'image' | 'video';
+  thumbnail?: string; // For videos
+  duration?: number; // For videos in seconds
+}
+
 interface Message {
   id: string;
-  text: string;
+  text?: string;
+  media?: MediaItem;
   timestamp: Date;
   isOwn: boolean;
   status: 'sending' | 'sent' | 'delivered' | 'read';
+  type: 'text' | 'image' | 'video';
 }
 
 // Mock messages data
@@ -34,6 +45,7 @@ const mockMessages: Message[] = [
     timestamp: new Date(Date.now() - 3600000),
     isOwn: false,
     status: 'read',
+    type: 'text',
   },
   {
     id: '2',
@@ -41,34 +53,144 @@ const mockMessages: Message[] = [
     timestamp: new Date(Date.now() - 3500000),
     isOwn: true,
     status: 'read',
+    type: 'text',
   },
   {
     id: '3',
+    media: {
+      id: 'img1',
+      uri: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=300&h=300&fit=crop&crop=face',
+      type: 'image',
+    },
+    text: 'Here is a recent photo of mine from a family function.',
+    timestamp: new Date(Date.now() - 3450000),
+    isOwn: false,
+    status: 'read',
+    type: 'image',
+  },
+  {
+    id: '4',
     text: 'I come from a traditional family. My father is a teacher and my mother is a homemaker.',
     timestamp: new Date(Date.now() - 3400000),
     isOwn: false,
     status: 'read',
-  },
-  {
-    id: '4',
-    text: 'That sounds wonderful. Family values are very important to me too. What are your hobbies?',
-    timestamp: new Date(Date.now() - 3300000),
-    isOwn: true,
-    status: 'read',
+    type: 'text',
   },
   {
     id: '5',
+    media: {
+      id: 'img2',
+      uri: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face',
+      type: 'image',
+    },
+    text: 'That sounds wonderful. Family values are very important to me too. Here is my family photo.',
+    timestamp: new Date(Date.now() - 3300000),
+    isOwn: true,
+    status: 'read',
+    type: 'image',
+  },
+  {
+    id: '6',
+    text: 'What are your hobbies?',
+    timestamp: new Date(Date.now() - 3250000),
+    isOwn: true,
+    status: 'read',
+    type: 'text',
+  },
+  {
+    id: '7',
     text: 'I enjoy reading, cooking, and classical music. I also love traveling and exploring new places.',
     timestamp: new Date(Date.now() - 3200000),
     isOwn: false,
     status: 'read',
+    type: 'text',
   },
   {
-    id: '6',
+    id: '8',
+    media: {
+      id: 'vid1',
+      uri: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
+      type: 'video',
+      thumbnail: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=225&fit=crop',
+      duration: 30,
+    },
+    text: 'Here is a video from my recent trip to the mountains.',
+    timestamp: new Date(Date.now() - 3100000),
+    isOwn: false,
+    status: 'read',
+    type: 'video',
+  },
+  {
+    id: '9',
+    media: {
+      id: 'img3',
+      uri: 'https://images.unsplash.com/photo-1464822759844-d150baef493e?w=400&h=300&fit=crop',
+      type: 'image',
+    },
+    timestamp: new Date(Date.now() - 3000000),
+    isOwn: true,
+    status: 'read',
+    type: 'image',
+  },
+  {
+    id: '10',
+    text: 'Beautiful! I love nature photography too.',
+    timestamp: new Date(Date.now() - 2900000),
+    isOwn: true,
+    status: 'read',
+    type: 'text',
+  },
+  {
+    id: '11',
+    media: {
+      id: 'vid2',
+      uri: 'https://sample-videos.com/zip/10/mp4/SampleVideo_640x360_1mb.mp4',
+      type: 'video',
+      thumbnail: 'https://images.unsplash.com/photo-1511593358241-7eea1f3c84e5?w=400&h=225&fit=crop',
+      duration: 45,
+    },
+    text: 'This is a video from my cooking session. I made traditional Mithila cuisine.',
+    timestamp: new Date(Date.now() - 2800000),
+    isOwn: false,
+    status: 'read',
+    type: 'video',
+  },
+  {
+    id: '12',
+    text: 'That looks delicious! I would love to try your cooking someday.',
+    timestamp: new Date(Date.now() - 2700000),
+    isOwn: true,
+    status: 'read',
+    type: 'text',
+  },
+  {
+    id: '13',
+    media: {
+      id: 'img4',
+      uri: 'https://images.unsplash.com/photo-1544531586-fbd0515f65e1?w=400&h=300&fit=crop',
+      type: 'image',
+    },
+    text: 'Here is my art collection. I love traditional Mithila paintings.',
+    timestamp: new Date(Date.now() - 2600000),
+    isOwn: false,
+    status: 'read',
+    type: 'image',
+  },
+  {
+    id: '14',
+    text: 'Wow! These are absolutely stunning. You have great artistic taste.',
+    timestamp: new Date(Date.now() - 2500000),
+    isOwn: true,
+    status: 'read',
+    type: 'text',
+  },
+  {
+    id: '15',
     text: 'We have similar interests! Would you like to have a video call sometime this week?',
     timestamp: new Date(Date.now() - 120000),
     isOwn: true,
     status: 'delivered',
+    type: 'text',
   },
 ];
 
@@ -166,6 +288,7 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
       timestamp: new Date(),
       isOwn: true,
       status: 'sending',
+      type: 'text',
     };
 
     setMessages(prev => [...prev, message]);
@@ -190,6 +313,12 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
     }, 2000);
   };
 
+  const formatDuration = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
@@ -209,6 +338,14 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
     }
   };
 
+  const handleImagePress = (_uri: string) => {
+    Alert.alert('Image Viewer', 'This would open a full-screen image viewer');
+  };
+
+  const handleVideoPress = (_uri: string) => {
+    Alert.alert('Video Player', 'This would open a video player');
+  };
+
   const renderMessage = ({ item, index }: { item: Message; index: number }) => {
     const showTime = index === 0 ||
       messages[index - 1].timestamp.getTime() - item.timestamp.getTime() > 300000; // 5 minutes
@@ -222,14 +359,58 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
         )}
         <View style={[
           styles.messageBubble,
-          item.isOwn ? styles.ownMessage : styles.otherMessage
+          item.isOwn ? styles.ownMessage : styles.otherMessage,
+          (item.type === 'image' || item.type === 'video') && styles.mediaBubble
         ]}>
-          <Text style={[
-            styles.messageText,
-            item.isOwn ? styles.ownMessageText : styles.otherMessageText
-          ]}>
-            {item.text}
-          </Text>
+          {/* Render media content */}
+          {item.media && (
+            <View style={styles.mediaContainer}>
+              {item.type === 'image' ? (
+                <TouchableOpacity onPress={() => handleImagePress(item.media!.uri)}>
+                  <Image
+                    source={{ uri: item.media.uri }}
+                    style={styles.messageImage}
+                    resizeMode="cover"
+                  />
+                </TouchableOpacity>
+              ) : item.type === 'video' ? (
+                <TouchableOpacity onPress={() => handleVideoPress(item.media!.uri)}>
+                  <View style={styles.videoContainer}>
+                    <Image
+                      source={{ uri: item.media.thumbnail || item.media.uri }}
+                      style={styles.messageImage}
+                      resizeMode="cover"
+                    />
+                    <View style={styles.videoOverlay}>
+                      <View style={styles.playButton}>
+                        <Icon name="play" library="feather" size={24} color="white" />
+                      </View>
+                      {item.media.duration && (
+                        <View style={styles.videoDuration}>
+                          <Text style={styles.videoDurationText}>
+                            {formatDuration(item.media.duration)}
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              ) : null}
+            </View>
+          )}
+
+          {/* Render text content */}
+          {item.text && (
+            <Text style={[
+              styles.messageText,
+              item.isOwn ? styles.ownMessageText : styles.otherMessageText,
+              item.media && styles.messageTextWithMedia
+            ]}>
+              {item.text}
+            </Text>
+          )}
+
+          {/* Status indicator */}
           {item.isOwn && (
             <Text style={[
               styles.messageStatus,
@@ -332,7 +513,7 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
             style={styles.messagesList}
             contentContainerStyle={[
               styles.messagesContent,
-              { paddingBottom: isKeyboardVisible ? 10 : 20 }
+              isKeyboardVisible ? styles.messagesContentKeyboard : styles.messagesContentNormal
             ]}
             showsVerticalScrollIndicator={false}
             onContentSizeChange={() => {
@@ -351,12 +532,7 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
             }}
           />
 
-          {/* Typing Indicator */}
-          {false && (
-            <View style={styles.typingContainer}>
-              <Text style={styles.typingText}>{chatName} is typing...</Text>
-            </View>
-          )}
+          {/* Typing Indicator - Currently disabled */}
         </View>
 
         {/* Input Bar - Fixed at bottom */}
@@ -594,6 +770,10 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
     marginBottom: Spacing.xs,
   },
+  mediaBubble: {
+    borderWidth: 1,
+    borderColor: Colors.divider,
+  },
   ownMessage: {
     backgroundColor: Colors.primary,
     alignSelf: 'flex-end',
@@ -607,6 +787,9 @@ const styles = StyleSheet.create({
   messageText: {
     fontSize: Typography.fontSize.base,
     lineHeight: Typography.fontSize.base * Typography.lineHeight.normal,
+  },
+  messageTextWithMedia: {
+    marginTop: Spacing.xs,
   },
   ownMessageText: {
     color: Colors.textInverse,
@@ -734,5 +917,54 @@ const styles = StyleSheet.create({
   modalOptionSubtext: {
     fontSize: Typography.fontSize.xs,
     color: Colors.textSecondary,
+  },
+  mediaContainer: {
+    width: '100%',
+    aspectRatio: 16 / 9,
+    borderRadius: BorderRadius.lg,
+    overflow: 'hidden',
+    marginBottom: Spacing.xs,
+  },
+  messageImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: BorderRadius.lg,
+  },
+  videoContainer: {
+    width: '100%',
+    height: '100%',
+    borderRadius: BorderRadius.lg,
+    position: 'relative',
+  },
+  videoOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  playButton: {
+    width: 50,
+    height: 50,
+    borderRadius: BorderRadius.full,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.primary,
+  },
+  videoDuration: {
+    position: 'absolute',
+    bottom: 8,
+    right: 8,
+    backgroundColor: Colors.madhubani.black,
+    borderRadius: BorderRadius.sm,
+    paddingHorizontal: Spacing.xs,
+    paddingVertical: Spacing.xs,
+  },
+  videoDurationText: {
+    fontSize: Typography.fontSize.xs,
+    color: Colors.white,
   },
 });
