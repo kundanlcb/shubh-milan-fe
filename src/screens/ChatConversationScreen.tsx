@@ -6,10 +6,11 @@ import {
   StyleSheet,
   FlatList,
   TextInput,
-  KeyboardAvoidingView,
   Platform,
   Alert,
   Modal,
+  Keyboard,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Typography, Spacing, BorderRadius } from '../constants/styles';
@@ -74,18 +75,66 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
   navigation,
   route,
 }) => {
-  const { chatId, chatName, isOnline } = route.params;
+  const { chatName, isOnline } = route.params;
   const [messages, setMessages] = useState<Message[]>(mockMessages);
   const [newMessage, setNewMessage] = useState('');
   const [showAttachmentModal, setShowAttachmentModal] = useState(false);
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const flatListRef = useRef<FlatList>(null);
 
   useEffect(() => {
     // Scroll to bottom when new messages arrive
     if (messages.length > 0) {
-      flatListRef.current?.scrollToEnd({ animated: true });
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 100);
     }
   }, [messages]);
+
+  useEffect(() => {
+    // Keyboard event listeners with better handling
+    const keyboardDidShow = (event: any) => {
+      setIsKeyboardVisible(true);
+      // Scroll to bottom when keyboard shows with delay
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 150);
+    };
+
+    const keyboardDidHide = () => {
+      setIsKeyboardVisible(false);
+    };
+
+    const keyboardWillShow = (event: any) => {
+      if (Platform.OS === 'ios') {
+        setIsKeyboardVisible(true);
+      }
+    };
+
+    const keyboardWillHide = () => {
+      if (Platform.OS === 'ios') {
+        setIsKeyboardVisible(false);
+      }
+    };
+
+    // Subscribe to keyboard events
+    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', keyboardDidShow);
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', keyboardDidHide);
+
+    let keyboardWillShowListener: any = null;
+    let keyboardWillHideListener: any = null;
+    if (Platform.OS === 'ios') {
+      keyboardWillShowListener = Keyboard.addListener('keyboardWillShow', keyboardWillShow);
+      keyboardWillHideListener = Keyboard.addListener('keyboardWillHide', keyboardWillHide);
+    }
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+      if (keyboardWillShowListener) keyboardWillShowListener.remove();
+      if (keyboardWillHideListener) keyboardWillHideListener.remove();
+    };
+  }, []);
 
   const sendMessage = () => {
     if (newMessage.trim() === '') return;
@@ -216,179 +265,208 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom', 'left', 'right']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Icon name="arrow-left" library="feather" size={24} color={Colors.textPrimary} />
-        </TouchableOpacity>
-
-        <View style={styles.headerInfo}>
-          <View style={styles.avatarContainer}>
-            <View style={[styles.avatar, isOnline && styles.onlineAvatar]}>
-              <Text style={styles.avatarText}>{chatName.charAt(0)}</Text>
-            </View>
-            {isOnline && <View style={styles.onlineIndicator} />}
-          </View>
-
-          <View style={styles.headerText}>
-            <Text style={styles.headerName}>{chatName}</Text>
-            <Text style={styles.headerStatus}>
-              {isOnline ? 'Online' : 'Last seen recently'}
-            </Text>
-          </View>
-        </View>
-
-        <TouchableOpacity style={styles.moreButton} onPress={showMoreOptions}>
-          <Icon name="more-vertical" library="feather" size={24} color={Colors.textPrimary} />
-        </TouchableOpacity>
-      </View>
-
-      {/* Messages */}
-      <FlatList
-        ref={flatListRef}
-        data={messages}
-        renderItem={renderMessage}
-        keyExtractor={(item) => item.id}
-        style={styles.messagesList}
-        contentContainerStyle={styles.messagesContent}
-        showsVerticalScrollIndicator={false}
-        onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: false })}
-      />
-
-      {/* Typing Indicator */}
-      {false && (
-        <View style={styles.typingContainer}>
-          <Text style={styles.typingText}>{chatName} is typing...</Text>
-        </View>
-      )}
-
-      {/* Input Bar */}
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.inputContainer}
-      >
-        <View style={styles.inputBar}>
-          <TouchableOpacity style={styles.attachButton} onPress={handleAttachment}>
-            <Icon name="paperclip" library="feather" size={20} color={Colors.textSecondary} />
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+    >
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Icon name="arrow-left" library="feather" size={24} color={Colors.textPrimary} />
           </TouchableOpacity>
 
-          <TextInput
-            style={styles.textInput}
-            placeholder="Type a message..."
-            placeholderTextColor={Colors.inputPlaceholder}
-            value={newMessage}
-            onChangeText={setNewMessage}
-            multiline
-            maxLength={1000}
+          <View style={styles.headerInfo}>
+            <View style={styles.avatarContainer}>
+              <View style={[styles.avatar, isOnline && styles.onlineAvatar]}>
+                <Text style={styles.avatarText}>{chatName.charAt(0)}</Text>
+              </View>
+              {isOnline && <View style={styles.onlineIndicator} />}
+            </View>
+
+            <View style={styles.headerText}>
+              <Text style={styles.headerName}>{chatName}</Text>
+              <Text style={styles.headerStatus}>
+                {isOnline ? 'Online' : 'Last seen recently'}
+              </Text>
+            </View>
+          </View>
+
+          <TouchableOpacity style={styles.moreButton} onPress={showMoreOptions}>
+            <Icon name="more-vertical" library="feather" size={24} color={Colors.textPrimary} />
+          </TouchableOpacity>
+        </View>
+
+        {/* Messages Container */}
+        <View style={styles.messagesContainer}>
+          <FlatList
+            ref={flatListRef}
+            data={messages}
+            renderItem={renderMessage}
+            keyExtractor={(item) => item.id}
+            style={styles.messagesList}
+            contentContainerStyle={[
+              styles.messagesContent,
+              { paddingBottom: isKeyboardVisible ? 10 : 20 }
+            ]}
+            showsVerticalScrollIndicator={false}
+            onContentSizeChange={() => {
+              setTimeout(() => {
+                flatListRef.current?.scrollToEnd({ animated: false });
+              }, 100);
+            }}
+            onLayout={() => {
+              setTimeout(() => {
+                flatListRef.current?.scrollToEnd({ animated: false });
+              }, 100);
+            }}
+            maintainVisibleContentPosition={{
+              minIndexForVisible: 0,
+              autoscrollToTopThreshold: 10,
+            }}
           />
 
-          <TouchableOpacity
-            style={[styles.sendButton, newMessage.trim() && styles.sendButtonActive]}
-            onPress={sendMessage}
-            disabled={!newMessage.trim()}
-          >
-            <Icon
-              name="send"
-              library="feather"
-              size={20}
-              color={newMessage.trim() ? Colors.textInverse : Colors.textSecondary}
-            />
-          </TouchableOpacity>
+          {/* Typing Indicator */}
+          {false && (
+            <View style={styles.typingContainer}>
+              <Text style={styles.typingText}>{chatName} is typing...</Text>
+            </View>
+          )}
         </View>
-      </KeyboardAvoidingView>
 
-      {/* Attachment Options Modal */}
-      <Modal
-        visible={showAttachmentModal}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowAttachmentModal(false)}
-      >
-        <TouchableOpacity
-          style={styles.modalContainer}
-          activeOpacity={1}
-          onPress={() => setShowAttachmentModal(false)}
+        {/* Input Bar - Fixed at bottom */}
+        <View style={styles.inputContainer}>
+          <View style={styles.inputBar}>
+            <TouchableOpacity style={styles.attachButton} onPress={handleAttachment}>
+              <Icon name="paperclip" library="feather" size={20} color={Colors.textSecondary} />
+            </TouchableOpacity>
+
+            <TextInput
+              style={styles.textInput}
+              placeholder="Type a message..."
+              placeholderTextColor={Colors.inputPlaceholder}
+              value={newMessage}
+              onChangeText={setNewMessage}
+              multiline
+              maxLength={1000}
+              onFocus={() => {
+                // Scroll to bottom when input is focused
+                setTimeout(() => {
+                  flatListRef.current?.scrollToEnd({ animated: true });
+                }, 100);
+              }}
+              blurOnSubmit={false}
+              textAlignVertical="center"
+            />
+
+            <TouchableOpacity
+              style={[styles.sendButton, newMessage.trim() && styles.sendButtonActive]}
+              onPress={sendMessage}
+              disabled={!newMessage.trim()}
+            >
+              <Icon
+                name="send"
+                library="feather"
+                size={20}
+                color={newMessage.trim() ? Colors.textInverse : Colors.textSecondary}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Attachment Options Modal */}
+        <Modal
+          visible={showAttachmentModal}
+          transparent
+          animationType="slide"
+          onRequestClose={() => setShowAttachmentModal(false)}
         >
           <TouchableOpacity
-            style={styles.modalContent}
+            style={styles.modalContainer}
             activeOpacity={1}
-            onPress={(e) => e.stopPropagation()}
+            onPress={() => setShowAttachmentModal(false)}
           >
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Attach a file</Text>
-              <TouchableOpacity
-                style={styles.modalCloseIcon}
-                onPress={() => setShowAttachmentModal(false)}
-              >
-                <Icon name="x" library="feather" size={20} color={Colors.textSecondary} />
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+              style={styles.modalContent}
+              activeOpacity={1}
+              onPress={(e) => e.stopPropagation()}
+            >
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>Attach a file</Text>
+                <TouchableOpacity
+                  style={styles.modalCloseIcon}
+                  onPress={() => setShowAttachmentModal(false)}
+                >
+                  <Icon name="x" library="feather" size={20} color={Colors.textSecondary} />
+                </TouchableOpacity>
+              </View>
 
-            <View style={styles.modalOptionsContainer}>
-              <TouchableOpacity
-                style={styles.modalOption}
-                onPress={() => handleAttachmentOption('camera')}
-                activeOpacity={0.7}
-              >
-                <View style={[styles.modalOptionIcon, { backgroundColor: Colors.primaryLight }]}>
-                  <Icon name="camera" library="feather" size={24} color={Colors.white} />
-                </View>
-                <View style={styles.modalOptionTextContainer}>
-                  <Text style={styles.modalOptionText}>Camera</Text>
-                  <Text style={styles.modalOptionSubtext}>Take a photo</Text>
-                </View>
-              </TouchableOpacity>
+              <View style={styles.modalOptionsContainer}>
+                <TouchableOpacity
+                  style={styles.modalOption}
+                  onPress={() => handleAttachmentOption('camera')}
+                  activeOpacity={0.7}
+                >
+                  <View style={[styles.modalOptionIcon, { backgroundColor: Colors.primaryLight }]}>
+                    <Icon name="camera" library="feather" size={24} color={Colors.white} />
+                  </View>
+                  <View style={styles.modalOptionTextContainer}>
+                    <Text style={styles.modalOptionText}>Camera</Text>
+                    <Text style={styles.modalOptionSubtext}>Take a photo</Text>
+                  </View>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                style={styles.modalOption}
-                onPress={() => handleAttachmentOption('gallery')}
-                activeOpacity={0.7}
-              >
-                <View style={[styles.modalOptionIcon, { backgroundColor: Colors.secondary }]}>
-                  <Icon name="image" library="feather" size={24} color={Colors.white} />
-                </View>
-                <View style={styles.modalOptionTextContainer}>
-                  <Text style={styles.modalOptionText}>Gallery</Text>
-                  <Text style={styles.modalOptionSubtext}>Choose from gallery</Text>
-                </View>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.modalOption}
+                  onPress={() => handleAttachmentOption('gallery')}
+                  activeOpacity={0.7}
+                >
+                  <View style={[styles.modalOptionIcon, { backgroundColor: Colors.secondary }]}>
+                    <Icon name="image" library="feather" size={24} color={Colors.white} />
+                  </View>
+                  <View style={styles.modalOptionTextContainer}>
+                    <Text style={styles.modalOptionText}>Gallery</Text>
+                    <Text style={styles.modalOptionSubtext}>Choose from gallery</Text>
+                  </View>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                style={styles.modalOption}
-                onPress={() => handleAttachmentOption('document')}
-                activeOpacity={0.7}
-              >
-                <View style={[styles.modalOptionIcon, { backgroundColor: Colors.info }]}>
-                  <Icon name="file" library="feather" size={24} color={Colors.white} />
-                </View>
-                <View style={styles.modalOptionTextContainer}>
-                  <Text style={styles.modalOptionText}>Documents</Text>
-                  <Text style={styles.modalOptionSubtext}>Share files</Text>
-                </View>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.modalOption}
+                  onPress={() => handleAttachmentOption('document')}
+                  activeOpacity={0.7}
+                >
+                  <View style={[styles.modalOptionIcon, { backgroundColor: Colors.info }]}>
+                    <Icon name="file" library="feather" size={24} color={Colors.white} />
+                  </View>
+                  <View style={styles.modalOptionTextContainer}>
+                    <Text style={styles.modalOptionText}>Documents</Text>
+                    <Text style={styles.modalOptionSubtext}>Share files</Text>
+                  </View>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                style={styles.modalOption}
-                onPress={() => handleAttachmentOption('location')}
-                activeOpacity={0.7}
-              >
-                <View style={[styles.modalOptionIcon, { backgroundColor: Colors.success }]}>
-                  <Icon name="map-pin" library="feather" size={24} color={Colors.white} />
-                </View>
-                <View style={styles.modalOptionTextContainer}>
-                  <Text style={styles.modalOptionText}>Location</Text>
-                  <Text style={styles.modalOptionSubtext}>Share location</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
+                <TouchableOpacity
+                  style={styles.modalOption}
+                  onPress={() => handleAttachmentOption('location')}
+                  activeOpacity={0.7}
+                >
+                  <View style={[styles.modalOptionIcon, { backgroundColor: Colors.success }]}>
+                    <Icon name="map-pin" library="feather" size={24} color={Colors.white} />
+                  </View>
+                  <View style={styles.modalOptionTextContainer}>
+                    <Text style={styles.modalOptionText}>Location</Text>
+                    <Text style={styles.modalOptionSubtext}>Share location</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
           </TouchableOpacity>
-        </TouchableOpacity>
-      </Modal>
-    </SafeAreaView>
+        </Modal>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -396,6 +474,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
+  },
+  safeArea: {
+    flex: 1,
   },
   header: {
     flexDirection: 'row',
@@ -460,11 +541,21 @@ const styles = StyleSheet.create({
   moreButton: {
     marginLeft: Spacing.md,
   },
+  messagesContainer: {
+    flex: 1,
+  },
   messagesList: {
     flex: 1,
   },
   messagesContent: {
     paddingVertical: Spacing.md,
+    flexGrow: 1,
+  },
+  messagesContentKeyboard: {
+    paddingBottom: 10,
+  },
+  messagesContentNormal: {
+    paddingBottom: 20,
   },
   messageContainer: {
     marginBottom: Spacing.sm,
@@ -525,6 +616,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.backgroundCard,
     borderTopWidth: 1,
     borderTopColor: Colors.divider,
+    paddingBottom: Platform.OS === 'ios' ? 0 : Spacing.sm,
   },
   inputBar: {
     flexDirection: 'row',
@@ -532,9 +624,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
     gap: Spacing.sm,
+    minHeight: 60,
   },
   attachButton: {
     padding: Spacing.sm,
+    alignSelf: 'flex-end',
+    marginBottom: Spacing.xs,
   },
   textInput: {
     flex: 1,
@@ -542,11 +637,13 @@ const styles = StyleSheet.create({
     borderColor: Colors.divider,
     borderRadius: BorderRadius.lg,
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
+    paddingVertical: Platform.OS === 'ios' ? Spacing.md : Spacing.sm,
     backgroundColor: Colors.background,
     fontSize: Typography.fontSize.base,
     color: Colors.textPrimary,
     maxHeight: 100,
+    minHeight: 40,
+    textAlignVertical: 'top',
   },
   sendButton: {
     width: 40,
@@ -555,6 +652,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.backgroundSecondary,
     justifyContent: 'center',
     alignItems: 'center',
+    alignSelf: 'flex-end',
+    marginBottom: Spacing.xs,
   },
   sendButtonActive: {
     backgroundColor: Colors.primary,
