@@ -218,6 +218,7 @@ const styles = StyleSheet.create({
   mediaSection: {
     marginHorizontal: 16,
     marginTop: 16,
+    marginBottom: 20, // Add bottom margin to create space before caption section
   },
   addMediaButton: {
     height: 200,
