@@ -6,8 +6,8 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { StatusBar, useColorScheme, BackHandler } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { StatusBar, useColorScheme, BackHandler, Platform, View } from 'react-native';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LoginScreen } from './src/screens/LoginScreen';
 import { RegisterScreen } from './src/screens/RegisterScreen';
 import { MainTabNavigator } from './src/components/MainTabNavigator';
@@ -100,13 +100,36 @@ function App(): React.JSX.Element {
     return () => backHandler.remove();
   }, [modalScreen, currentScreen]);
 
-  if (isLoggedIn && currentScreen === 'EditProfile') {
+  return (
+    <SafeAreaProvider>
+      <StatusBar
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor={Colors.background}
+        translucent={false}
+        animated={true}
+      />
+      <AppContainer>
+        {renderScreen()}
+      </AppContainer>
+    </SafeAreaProvider>
+  );
+
+  function AppContainer({ children }: { children: React.ReactNode }) {
+    const insets = useSafeAreaInsets();
     return (
-      <SafeAreaProvider>
-        <StatusBar
-          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-          backgroundColor={Colors.background}
-        />
+      <View style={{
+        flex: 1,
+        backgroundColor: Colors.background,
+        paddingTop: insets.top
+      }}>
+        {children}
+      </View>
+    );
+  }
+
+  function renderScreen() {
+    if (isLoggedIn && currentScreen === 'EditProfile') {
+      return (
         <EditProfileScreen
           navigation={{
             goBack: () => setCurrentScreen('Main'),
@@ -118,17 +141,11 @@ function App(): React.JSX.Element {
           }}
           route={{ params: undefined }}
         />
-      </SafeAreaProvider>
-    );
-  }
+      );
+    }
 
-  if (isLoggedIn && currentScreen === 'ChatConversation') {
-    return (
-      <SafeAreaProvider>
-        <StatusBar
-          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-          backgroundColor={Colors.background}
-        />
+    if (isLoggedIn && currentScreen === 'ChatConversation') {
+      return (
         <ChatConversationScreen
           navigation={{
             goBack: () => setCurrentScreen('Main'),
@@ -140,14 +157,11 @@ function App(): React.JSX.Element {
           }}
           route={{ params: chatConversationParams }}
         />
-      </SafeAreaProvider>
-    );
-  }
+      );
+    }
 
-  if (isLoggedIn && currentScreen === 'StoryViewer') {
-    return (
-      <SafeAreaProvider>
-        <StatusBar barStyle="light-content" backgroundColor="black" />
+    if (isLoggedIn && currentScreen === 'StoryViewer') {
+      return (
         <StoryViewerScreen
           navigation={{
             goBack: () => setCurrentScreen('Main'),
@@ -159,17 +173,11 @@ function App(): React.JSX.Element {
           }}
           route={{ params: storyViewerParams }}
         />
-      </SafeAreaProvider>
-    );
-  }
+      );
+    }
 
-  if (isLoggedIn && currentScreen === 'UserProfile') {
-    return (
-      <SafeAreaProvider>
-        <StatusBar
-          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-          backgroundColor={Colors.background}
-        />
+    if (isLoggedIn && currentScreen === 'UserProfile') {
+      return (
         <UserProfileScreen
           navigation={{
             goBack: () => setCurrentScreen('Main'),
@@ -181,17 +189,11 @@ function App(): React.JSX.Element {
           }}
           route={{ params: modalParams }}
         />
-      </SafeAreaProvider>
-    );
-  }
+      );
+    }
 
-  if (isLoggedIn && currentScreen === 'Chat') {
-    return (
-      <SafeAreaProvider>
-        <StatusBar
-          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-          backgroundColor={Colors.background}
-        />
+    if (isLoggedIn && currentScreen === 'Chat') {
+      return (
         <ChatScreen
           navigation={{
             goBack: () => setCurrentScreen('Main'),
@@ -205,39 +207,34 @@ function App(): React.JSX.Element {
           }}
           route={{ params: undefined }}
         />
-      </SafeAreaProvider>
-    );
-  }
+      );
+    }
 
-  if (isLoggedIn && currentScreen === 'Main') {
-    return (
-      <SafeAreaProvider>
-        <StatusBar
-          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-          backgroundColor={Colors.background}
-        />
-        <MainTabNavigator
-          initialActiveTab={activeTab}
-          onTabChange={setActiveTab}
-          onNavigateToUserProfile={(userId: string) => navigate('UserProfile', { userId })}
-          onNavigateToChat={() => navigate('Chat')}
-          onNavigateToChatConversation={(params: any) => navigate('ChatConversation', params)}
-          onNavigateToEditProfile={() => navigate('EditProfile')}
-          onNavigateToStoryViewer={(params: any) => navigate('StoryViewer', params)}
-          onLogout={handleLogout}
-        />
-
-        {modalScreen === 'UserProfile' && (
-          <UserProfileScreen
-            navigation={{ goBack: closeModal }}
-            route={{ params: modalParams }}
+    if (isLoggedIn && currentScreen === 'Main') {
+      return (
+        <>
+          <MainTabNavigator
+            initialActiveTab={activeTab}
+            onTabChange={setActiveTab}
+            onNavigateToUserProfile={(userId: string) => navigate('UserProfile', { userId })}
+            onNavigateToChat={() => navigate('Chat')}
+            onNavigateToChatConversation={(params: any) => navigate('ChatConversation', params)}
+            onNavigateToEditProfile={() => navigate('EditProfile')}
+            onNavigateToStoryViewer={(params: any) => navigate('StoryViewer', params)}
+            onLogout={handleLogout}
           />
-        )}
-      </SafeAreaProvider>
-    );
-  }
 
-  const renderAuthScreen = () => {
+          {modalScreen === 'UserProfile' && (
+            <UserProfileScreen
+              navigation={{ goBack: closeModal }}
+              route={{ params: modalParams }}
+            />
+          )}
+        </>
+      );
+    }
+
+    // Auth screens
     switch (currentScreen) {
       case 'Register':
         return <RegisterScreen navigation={navigationProps} />;
@@ -245,17 +242,7 @@ function App(): React.JSX.Element {
       default:
         return <LoginScreen navigation={navigationProps} />;
     }
-  };
-
-  return (
-    <SafeAreaProvider>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={Colors.background}
-      />
-      {renderAuthScreen()}
-    </SafeAreaProvider>
-  );
+  }
 }
 
 export default App;

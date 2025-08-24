@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   BackHandler,
+  Platform,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, Typography, Spacing, BorderRadius, Shadows } from '../constants/styles';
@@ -232,7 +233,7 @@ export const MainTabNavigator: React.FC<{
   return (
     <View style={styles.container}>
       {/* Main Content */}
-      <SafeAreaView style={styles.content} edges={['top', 'left', 'right']}>
+      <SafeAreaView style={styles.content} edges={['left', 'right']}>
         {renderActiveScreen()}
       </SafeAreaView>
 
@@ -250,6 +251,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
+    ...(Platform.OS === 'android' && {
+      elevation: 0,
+      shadowOpacity: 0,
+    }),
   },
   content: {
     flex: 1,

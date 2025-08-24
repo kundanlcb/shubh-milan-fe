@@ -171,7 +171,7 @@ export const ChatScreen: React.FC<MainScreenProps<'Chat'>> = ({ navigation }) =>
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={styles.container} edges={['left', 'right']}>
       {/* Header */}
       <TabHeader
         title="Messages"

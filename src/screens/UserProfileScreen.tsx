@@ -37,14 +37,14 @@ export const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ navigation
   if (!user) {
     return (
       <View style={styles.container}>
-        <SafeAreaView style={styles.safeAreaHeader} edges={['top']}>
+        <View style={styles.safeAreaHeader}>
           <View style={styles.header}>
             <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
               <Icon name="arrow-left" library="feather" size={24} color="#333" />
             </TouchableOpacity>
             <Text style={styles.headerTitle}>Profile Not Found</Text>
           </View>
-        </SafeAreaView>
+        </View>
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>User profile not found</Text>
         </View>
@@ -64,7 +64,7 @@ export const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ navigation
   const handleMessage = () => {
     Alert.alert(
       'Premium Feature 🌟',
-      'Upgrade to Premium to send direct messages!\n\n✓ Unlimited messaging\n✓ View contact details\n✓ Priority in search results',
+      'Upgrade to Premium to send direct messages!\n\n✓ Unlimited messaging\n�� View contact details\n✓ Priority in search results',
       [
         { text: 'Upgrade Now', onPress: () => console.log('Show upgrade options') },
         { text: 'Send Interest Instead', onPress: handleFollow },
@@ -90,7 +90,7 @@ export const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ navigation
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={styles.container} edges={['left', 'right']}>
       {/* Header */}
       <TabHeader
         title="Profile"
