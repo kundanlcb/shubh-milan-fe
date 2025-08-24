@@ -498,6 +498,7 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
           <Icon name="more-vertical" library="feather" size={24} color={Colors.textPrimary} />
         </TouchableOpacity>
       </View>
+
       {/* SafeAreaView now only wraps messages and input */}
       <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
         {/* Messages Container */}
@@ -665,69 +666,6 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm, // Reduced from Spacing.md to minimize top space
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.divider,
-    backgroundColor: Colors.backgroundCard,
-  },
-  backButton: {
-    marginRight: Spacing.md,
-  },
-  headerInfo: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  avatarContainer: {
-    position: 'relative',
-    marginRight: Spacing.sm,
-  },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: BorderRadius.full,
-    backgroundColor: Colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  onlineAvatar: {
-    backgroundColor: Colors.success,
-  },
-  avatarText: {
-    fontSize: Typography.fontSize.base,
-    fontWeight: Typography.fontWeight.bold,
-    color: Colors.textInverse,
-  },
-  onlineIndicator: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: 12,
-    height: 12,
-    borderRadius: BorderRadius.full,
-    backgroundColor: Colors.success,
-    borderWidth: 2,
-    borderColor: Colors.backgroundCard,
-  },
-  headerText: {
-    flex: 1,
-  },
-  headerName: {
-    fontSize: Typography.fontSize.base,
-    fontWeight: Typography.fontWeight.semibold,
-    color: Colors.textPrimary,
-  },
-  headerStatus: {
-    fontSize: Typography.fontSize.xs,
-    color: Colors.textTertiary,
-  },
-  moreButton: {
-    marginLeft: Spacing.md,
-  },
   messagesContainer: {
     flex: 1,
   },
@@ -810,7 +748,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.backgroundCard,
     borderTopWidth: 1,
     borderTopColor: Colors.divider,
-    paddingBottom: Platform.OS === 'ios' ? 0 : Spacing.sm,
+    paddingBottom: 0, // Remove extra space below input bar
   },
   inputBar: {
     flexDirection: 'row',
@@ -956,5 +894,68 @@ const styles = StyleSheet.create({
   videoDurationText: {
     fontSize: Typography.fontSize.xs,
     color: Colors.white,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.md,
+    paddingBottom: Spacing.sm,
+    backgroundColor: Colors.backgroundCard,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.divider,
+  },
+  backButton: {
+    padding: Spacing.sm,
+  },
+  headerInfo: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatarContainer: {
+    position: 'relative',
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: BorderRadius.full,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.primary,
+  },
+  onlineAvatar: {
+    borderColor: Colors.success,
+    borderWidth: 2,
+  },
+  avatarText: {
+    color: Colors.white,
+    fontSize: Typography.fontSize.md,
+    fontWeight: Typography.fontWeight.bold,
+  },
+  onlineIndicator: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 10,
+    height: 10,
+    borderRadius: BorderRadius.full,
+    backgroundColor: Colors.success,
+  },
+  headerText: {
+    marginLeft: Spacing.sm,
+  },
+  headerName: {
+    fontSize: Typography.fontSize.sm,
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.textPrimary,
+  },
+  headerStatus: {
+    fontSize: Typography.fontSize.xs,
+    color: Colors.textSecondary,
+  },
+  moreButton: {
+    padding: Spacing.sm,
   },
 });
