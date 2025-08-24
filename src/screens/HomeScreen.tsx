@@ -237,7 +237,7 @@ export const HomeScreen: React.FC<{
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView style={styles.container} edges={['left', 'right']}>
       <TabHeader
         titleComponent={
           <View style={styles.greetingContainer}>

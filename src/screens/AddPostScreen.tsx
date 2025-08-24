@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { launchImageLibrary, launchCamera, MediaType, ImagePickerResponse } from 'react-native-image-picker';
-import { Colors, Spacing } from '../constants/styles';
+import { Colors } from '../constants/styles';
 import { TabHeader } from '../components/TabHeader';
 
 interface AddPostScreenProps {
@@ -121,7 +121,7 @@ export const AddPostScreen: React.FC<AddPostScreenProps> = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView style={styles.container} edges={['left', 'right']}>
       {/* Header */}
       <TabHeader
         title="New Post"
@@ -129,7 +129,10 @@ export const AddPostScreen: React.FC<AddPostScreenProps> = ({ navigation }) => {
         onActionPress={(!selectedMedia && !caption.trim()) || isPosting ? undefined : handlePost}
       />
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Media Section */}
         <View style={styles.mediaSection}>
           {selectedMedia ? (
@@ -209,8 +212,12 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
+  scrollContent: {
+    // Remove bottom padding since we're not including bottom edge in SafeAreaView
+  },
   mediaSection: {
-    margin: 16,
+    marginHorizontal: 16,
+    marginTop: 16,
   },
   addMediaButton: {
     height: 200,
