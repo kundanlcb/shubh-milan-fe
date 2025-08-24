@@ -83,7 +83,11 @@ export const ProfileScreen: React.FC<{
           text: 'Logout',
           style: 'destructive',
           onPress: () => {
-            Alert.alert('Info', 'Logout functionality would be implemented here');
+            if (onLogout) {
+              onLogout();
+            } else {
+              Alert.alert('Info', 'Logout functionality would be implemented here');
+            }
           }
         },
       ]
