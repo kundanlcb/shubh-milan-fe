@@ -294,9 +294,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     paddingTop: Spacing.lg,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
     marginTop: Spacing.md,
+    marginHorizontal: Spacing.md,
   },
   statItem: {
     alignItems: 'center',
@@ -320,6 +319,7 @@ const styles = StyleSheet.create({
   completionSection: {
     marginTop: Spacing.lg,
     marginBottom: Spacing.md,
+    marginHorizontal: Spacing.md,
   },
   completionHeader: {
     flexDirection: 'row',
