@@ -241,16 +241,8 @@ export const HomeScreen: React.FC<{
       <TabHeader
         titleComponent={
           <View style={styles.greetingContainer}>
-            <Image
-              source={require('../../subh-milan.png')}
-              style={styles.appIcon}
-              resizeMode="contain"
-            />
             <View style={styles.textContainer}>
-              <Text style={styles.greeting}>नमस्ते, {userPreferences.name}!</Text>
-              <Text style={styles.subtitle}>
-                {userPreferences.accountType === 'premium' ? 'Premium Member ⭐' : 'Filtered Feed'}
-              </Text>
+              <Text style={styles.greeting}>{`नमस्ते, ${userPreferences.name}!`}</Text>
             </View>
           </View>
         }
@@ -291,23 +283,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
   },
-  appIcon: {
-    width: 32,
-    height: 32,
-    marginRight: Spacing.sm,
-  },
   textContainer: {
     flex: 1,
   },
   greeting: {
-    fontSize: Typography.fontSize.lg,
-    fontWeight: Typography.fontWeight.semibold,
+    fontSize: Typography.fontSize['2xl'], // Match header title size
+    fontWeight: Typography.fontWeight.bold,
     color: Colors.textPrimary,
-  },
-  subtitle: {
-    fontSize: Typography.fontSize.sm,
-    color: Colors.textSecondary,
-    marginTop: 2,
   },
   scrollContainer: {
     flex: 1,

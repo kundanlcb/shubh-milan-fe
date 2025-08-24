@@ -326,7 +326,8 @@ const styles = StyleSheet.create({
   bottomSaveButton: {
     backgroundColor: Colors.primary,
     marginHorizontal: Spacing.md,
-    marginTop: Spacing.lg,
+    marginTop: Spacing.xs, // Further reduced space above button
+    marginBottom: Spacing['2xl'], // More space below button
     paddingVertical: Spacing.md,
     borderRadius: BorderRadius.lg,
     alignItems: 'center',
