@@ -34,7 +34,11 @@ export const TabHeader: React.FC<TabHeaderProps> = ({
     <View style={styles.header}>
       <View style={styles.leftSection}>
         {leftIcon && onLeftPress && (
-          <TouchableOpacity style={styles.leftButton} onPress={onLeftPress}>
+          <TouchableOpacity
+            style={styles.leftButton}
+            onPress={onLeftPress}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          >
             <Icon name={leftIcon} library={leftIconLibrary} size={20} color={Colors.textPrimary} />
           </TouchableOpacity>
         )}
@@ -75,6 +79,7 @@ const styles = StyleSheet.create({
   },
   leftButton: {
     marginRight: Spacing.sm,
+    padding: 8, // Increase touch area
   },
   headerTitle: {
     fontSize: Typography.fontSize['2xl'],

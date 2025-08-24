@@ -65,59 +65,62 @@ export const Stories: React.FC<StoriesProps> = ({
 
 const styles = StyleSheet.create({
   storiesContainer: {
-    paddingVertical: 16,
-    borderBottomWidth: 0.5,
-    borderBottomColor: '#E0E0E0',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingLeft: 8,
   },
   addStoryButton: {
     alignItems: 'center',
-    marginLeft: 16,
-    marginRight: 12,
+    marginRight: 6, // Slightly reduced horizontal space
+    width: 80, // Slightly reduced width
   },
   addStoryCircle: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: '#F0F0F0',
-    borderWidth: 2,
-    borderColor: '#DDD',
-    borderStyle: 'dashed',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  addStoryIcon: {
-    fontSize: 22,
-    color: '#666',
-  },
-  storyItem: {
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  storyCircle: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: Colors.primary,
+    width: 72, // Slightly reduced size
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: Colors.backgroundCard,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 3,
+    borderColor: Colors.primary,
+    marginBottom: 8, // Slightly reduced space below circle
+  },
+  addStoryIcon: {
+    fontSize: 32,
+    color: Colors.primary,
+    fontWeight: 'bold',
+  },
+  storyItem: {
+    alignItems: 'center',
+    marginRight: 6, // Slightly reduced horizontal space
+    width: 80, // Slightly reduced width
+  },
+  storyCircle: {
+    width: 72, // Slightly reduced size
+    height: 72,
+    borderRadius: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8, // Slightly reduced space below circle
   },
   storyCircleUnseen: {
-    borderColor: '#E91E63', // Magenta border for unseen stories
+    borderWidth: 3,
+    borderColor: Colors.primary,
   },
   storyCircleSeen: {
-    borderColor: '#999', // Grey border for seen stories
+    borderWidth: 2,
+    borderColor: Colors.textTertiary,
   },
   storyAvatarImage: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
+    width: 62,
+    height: 62,
+    borderRadius: 31,
   },
   storyLabel: {
     fontSize: 12,
-    marginTop: 6,
-    color: '#333',
-    width: 60,
+    color: Colors.textPrimary,
+    maxWidth: 70,
     textAlign: 'center',
   },
 });

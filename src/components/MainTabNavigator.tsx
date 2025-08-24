@@ -53,7 +53,7 @@ const tabs: Tab[] = [
   },
   {
     key: 'Notification',
-    label: 'Notifications',
+    label: 'Pings', // Updated label, removed exclamatory character
     iconConfig: { name: 'bell', library: 'feather' },
     activeIconConfig: { name: 'bell', library: 'feather' },
     component: NotificationScreen,
@@ -297,9 +297,9 @@ const styles = StyleSheet.create({
     // Active icon already handled by switching icon type
   },
   tabLabel: {
-    fontSize: Typography.fontSize.xs,
+    fontSize: 10, // Smaller font size for all tabs
     color: Colors.textSecondary,
-    fontWeight: Typography.fontWeight.medium,
+    marginTop: 2,
     textAlign: 'center',
   },
   activeTabLabel: {

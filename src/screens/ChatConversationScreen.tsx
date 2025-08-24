@@ -472,37 +472,34 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
     >
-      <SafeAreaView style={styles.safeArea} edges={['top']}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
-            <Icon name="arrow-left" library="feather" size={24} color={Colors.textPrimary} />
-          </TouchableOpacity>
-
-          <View style={styles.headerInfo}>
-            <View style={styles.avatarContainer}>
-              <View style={[styles.avatar, isOnline && styles.onlineAvatar]}>
-                <Text style={styles.avatarText}>{chatName.charAt(0)}</Text>
-              </View>
-              {isOnline && <View style={styles.onlineIndicator} />}
+      {/* Header moved outside SafeAreaView for flush top */}
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Icon name="arrow-left" library="feather" size={24} color={Colors.textPrimary} />
+        </TouchableOpacity>
+        <View style={styles.headerInfo}>
+          <View style={styles.avatarContainer}>
+            <View style={[styles.avatar, isOnline && styles.onlineAvatar]}>
+              <Text style={styles.avatarText}>{chatName.charAt(0)}</Text>
             </View>
-
-            <View style={styles.headerText}>
-              <Text style={styles.headerName}>{chatName}</Text>
-              <Text style={styles.headerStatus}>
-                {isOnline ? 'Online' : 'Last seen recently'}
-              </Text>
-            </View>
+            {isOnline && <View style={styles.onlineIndicator} />}
           </View>
-
-          <TouchableOpacity style={styles.moreButton} onPress={showMoreOptions}>
-            <Icon name="more-vertical" library="feather" size={24} color={Colors.textPrimary} />
-          </TouchableOpacity>
+          <View style={styles.headerText}>
+            <Text style={styles.headerName}>{chatName}</Text>
+            <Text style={styles.headerStatus}>
+              {isOnline ? 'Online' : 'Last seen recently'}
+            </Text>
+          </View>
         </View>
-
+        <TouchableOpacity style={styles.moreButton} onPress={showMoreOptions}>
+          <Icon name="more-vertical" library="feather" size={24} color={Colors.textPrimary} />
+        </TouchableOpacity>
+      </View>
+      {/* SafeAreaView now only wraps messages and input */}
+      <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
         {/* Messages Container */}
         <View style={styles.messagesContainer}>
           <FlatList
@@ -531,17 +528,13 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
               autoscrollToTopThreshold: 10,
             }}
           />
-
-          {/* Typing Indicator - Currently disabled */}
         </View>
-
         {/* Input Bar - Fixed at bottom */}
         <View style={styles.inputContainer}>
           <View style={styles.inputBar}>
             <TouchableOpacity style={styles.attachButton} onPress={handleAttachment}>
               <Icon name="paperclip" library="feather" size={20} color={Colors.textSecondary} />
             </TouchableOpacity>
-
             <TextInput
               style={styles.textInput}
               placeholder="Type a message..."
@@ -551,7 +544,6 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
               multiline
               maxLength={1000}
               onFocus={() => {
-                // Scroll to bottom when input is focused
                 setTimeout(() => {
                   flatListRef.current?.scrollToEnd({ animated: true });
                 }, 100);
@@ -559,7 +551,6 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
               blurOnSubmit={false}
               textAlignVertical="center"
             />
-
             <TouchableOpacity
               style={[styles.sendButton, newMessage.trim() && styles.sendButtonActive]}
               onPress={sendMessage}
@@ -574,7 +565,6 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
             </TouchableOpacity>
           </View>
         </View>
-
         {/* Attachment Options Modal */}
         <Modal
           visible={showAttachmentModal}
@@ -679,7 +669,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.md,
+    paddingVertical: Spacing.sm, // Reduced from Spacing.md to minimize top space
     borderBottomWidth: 1,
     borderBottomColor: Colors.divider,
     backgroundColor: Colors.backgroundCard,
