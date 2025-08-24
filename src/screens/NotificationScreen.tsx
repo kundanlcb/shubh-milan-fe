@@ -125,10 +125,11 @@ export const NotificationScreen: React.FC = () => {
     return (
       <TouchableOpacity
         style={[
-          styles.notificationCard,
-          !item.isRead && styles.unreadCard
+          styles.notificationItem,
+          !item.isRead && styles.unreadItem
         ]}
         onPress={() => markAsRead(item.id)}
+        activeOpacity={0.7}
       >
         <View style={styles.notificationContent}>
           <View style={styles.avatarSection}>
@@ -181,12 +182,6 @@ export const NotificationScreen: React.FC = () => {
             <Text style={styles.unreadBannerText}>
               You have {unreadCount} unread notification{unreadCount > 1 ? 's' : ''}
             </Text>
-            <TouchableOpacity
-              style={styles.markAllButton}
-              onPress={markAllAsRead}
-            >
-              <Text style={styles.markAllButtonText}>Mark all as read</Text>
-            </TouchableOpacity>
           </View>
         )}
 
@@ -212,45 +207,26 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   unreadBanner: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: Colors.primary + '10',
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    marginHorizontal: Spacing.md,
-    marginTop: Spacing.sm,
-    borderRadius: BorderRadius.md,
+    paddingVertical: Spacing.xs,
+    marginTop: Spacing.xs,
   },
   unreadBannerText: {
     fontSize: Typography.fontSize.sm,
     color: Colors.primary,
     fontWeight: Typography.fontWeight.medium,
   },
-  markAllButton: {
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
-    backgroundColor: Colors.primary,
-    borderRadius: BorderRadius.sm,
-  },
-  markAllButtonText: {
-    fontSize: Typography.fontSize.xs,
-    color: Colors.textInverse,
-    fontWeight: Typography.fontWeight.medium,
-  },
   listContainer: {
-    padding: Spacing.md,
+    // Remove horizontal padding to make items full width
   },
-  notificationCard: {
-    backgroundColor: Colors.backgroundCard,
-    borderRadius: BorderRadius.md,
-    padding: Spacing.md,
-    ...Shadows.sm,
+  notificationItem: {
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
   },
-  unreadCard: {
-    borderLeftWidth: 4,
-    borderLeftColor: Colors.primary,
-    backgroundColor: Colors.backgroundCard,
+  unreadItem: {
+    backgroundColor: Colors.primary + '08',
   },
   notificationContent: {
     flexDirection: 'row',
@@ -282,7 +258,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     backgroundColor: Colors.primary,
     borderWidth: 2,
-    borderColor: Colors.backgroundCard,
+    borderColor: Colors.background,
   },
   textSection: {
     flex: 1,
@@ -307,6 +283,6 @@ const styles = StyleSheet.create({
     color: Colors.textTertiary,
   },
   separator: {
-    height: Spacing.sm,
+    height: 0,
   },
 });
