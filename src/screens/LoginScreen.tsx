@@ -126,161 +126,132 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardContainer}>
-        <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-          <View style={styles.content}>
-            {/* Main Content Area */}
-            <View style={styles.mainContent}>
-              {/* Left-aligned Header */}
-              <View style={styles.header}>
-                <View style={styles.logoContainer}>
-                  <Image
-                    source={require('../../subh-milan.png')}
-                    style={styles.logo}
-                    resizeMode="contain"
-                  />
-                </View>
-                <View style={styles.welcomeSection}>
-                  <Text style={styles.welcomeText}>Welcome back! 🙏</Text>
-                  <Text style={styles.subtitle}>आपका स्वागत है - Find your perfect जीवनसाथी</Text>
-                </View>
-              </View>
-
-              {/* Floating Label Form */}
-              <View style={styles.form}>
-                <View style={styles.floatingInputContainer}>
-                  <Animated.Text
-                    style={[
-                      styles.floatingLabel,
-                      {
-                        top: emailLabelAnimation.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [20, 0],
-                        }),
-                        fontSize: emailLabelAnimation.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [16, 12],
-                        }),
-                        color: emailFocused ? Colors.primary : Colors.textSecondary,
-                      },
-                    ]}>
-                    Email
-                  </Animated.Text>
-                  <TextInput
-                    style={[styles.floatingInput, emailFocused && styles.floatingInputFocused]}
-                    value={email}
-                    onChangeText={handleEmailChange}
-                    onFocus={handleEmailFocus}
-                    onBlur={handleEmailBlur}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                  />
-                </View>
-
-                <View style={styles.floatingInputContainer}>
-                  <Animated.Text
-                    style={[
-                      styles.floatingLabel,
-                      {
-                        top: passwordLabelAnimation.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [20, 0],
-                        }),
-                        fontSize: passwordLabelAnimation.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [16, 12],
-                        }),
-                        color: passwordFocused ? Colors.primary : Colors.textSecondary,
-                      },
-                    ]}>
-                    Password
-                  </Animated.Text>
-                  <TextInput
-                    style={[styles.floatingInput, passwordFocused && styles.floatingInputFocused]}
-                    value={password}
-                    onChangeText={handlePasswordChange}
-                    onFocus={handlePasswordFocus}
-                    onBlur={handlePasswordBlur}
-                    secureTextEntry
-                    autoCapitalize="none"
-                  />
-                </View>
-
-                <TouchableOpacity
-                  style={[styles.loginButton, isLoading && styles.disabledButton]}
-                  onPress={handleLogin}
-                  disabled={isLoading}>
-                  <View style={styles.loginButtonContent}>
-                    {isLoading && (
-                      <View style={styles.loadingIndicator}>
-                        <Animated.Text
-                          style={[
-                            styles.loadingDot,
-                            {
-                              opacity: loadingAnimation.interpolate({
-                                inputRange: [0, 0.5, 1],
-                                outputRange: [1, 0.5, 1],
-                              }),
-                            },
-                          ]}>
-                          ●
-                        </Animated.Text>
-                        <Animated.Text
-                          style={[
-                            styles.loadingDot,
-                            {
-                              opacity: loadingAnimation.interpolate({
-                                inputRange: [0, 0.5, 1],
-                                outputRange: [1, 0.5, 1],
-                              }),
-                            },
-                          ]}>
-                          ●
-                        </Animated.Text>
-                        <Animated.Text
-                          style={[
-                            styles.loadingDot,
-                            {
-                              opacity: loadingAnimation.interpolate({
-                                inputRange: [0, 0.5, 1],
-                                outputRange: [1, 0.5, 1],
-                              }),
-                            },
-                          ]}>
-                          ●
-                        </Animated.Text>
-                      </View>
-                    )}
-                    <Text style={[styles.loginButtonText, isLoading && styles.loadingText]}>
-                      Sign In
-                    </Text>
+      <View style={styles.screenWrapper}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.keyboardContainer}>
+          <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+            <View style={styles.content}>
+              {/* Main Content Area */}
+              <View style={styles.mainContent}>
+                {/* Left-aligned Header */}
+                <View style={styles.header}>
+                  <View style={styles.logoContainer}>
+                    <Image
+                      source={require('../../subh-milan.png')}
+                      style={styles.logo}
+                      resizeMode="contain"
+                    />
                   </View>
-                </TouchableOpacity>
+                  <View style={styles.welcomeSection}>
+                    <Text style={styles.welcomeText}>Welcome back! 🙏</Text>
+                    <Text style={styles.subtitle}>आपका स्वागत है - Find your perfect जीवनसाथी</Text>
+                  </View>
+                </View>
 
-                <TouchableOpacity style={styles.forgotPassword}>
-                  <Text style={styles.forgotPasswordText}>Forgot your password?</Text>
-                </TouchableOpacity>
-              </View>
+                {/* Floating Label Form */}
+                <View style={styles.form}>
+                  <View style={styles.floatingInputContainer}>
+                    <Animated.Text
+                      style={[
+                        styles.floatingLabel,
+                        {
+                          top: emailLabelAnimation.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [20, 0],
+                          }),
+                          fontSize: emailLabelAnimation.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [16, 12],
+                          }),
+                          color: emailFocused ? Colors.primary : Colors.textSecondary,
+                        },
+                      ]}>
+                      Email
+                    </Animated.Text>
+                    <TextInput
+                      style={[styles.floatingInput, emailFocused && styles.floatingInputFocused]}
+                      value={email}
+                      onChangeText={handleEmailChange}
+                      onFocus={handleEmailFocus}
+                      onBlur={handleEmailBlur}
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                    />
+                  </View>
 
-              {/* Register Link */}
-              <View style={styles.registerContainer}>
-                <Text style={styles.registerText}>New to Shubh Milan? </Text>
-                <TouchableOpacity onPress={navigateToRegister}>
-                  <Text style={styles.registerLink}>Create account</Text>
-                </TouchableOpacity>
-              </View>
+                  <View style={styles.floatingInputContainer}>
+                    <Animated.Text
+                      style={[
+                        styles.floatingLabel,
+                        {
+                          top: passwordLabelAnimation.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [20, 0],
+                          }),
+                          fontSize: passwordLabelAnimation.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [16, 12],
+                          }),
+                          color: passwordFocused ? Colors.primary : Colors.textSecondary,
+                        },
+                      ]}>
+                      Password
+                    </Animated.Text>
+                    <TextInput
+                      style={[styles.floatingInput, passwordFocused && styles.floatingInputFocused]}
+                      value={password}
+                      onChangeText={handlePasswordChange}
+                      onFocus={handlePasswordFocus}
+                      onBlur={handlePasswordBlur}
+                      secureTextEntry
+                      autoCapitalize="none"
+                    />
+                  </View>
 
-              {/* Bottom Developer Credit - moved inside main content */}
-              <View style={styles.creditContainer}>
-                <Text style={styles.creditText}>💻 Proudly developed by a Maithil 🇮🇳 ❤️</Text>
+                  <TouchableOpacity
+                    style={[styles.loginButton, isLoading && styles.disabledButton]}
+                    onPress={handleLogin}
+                    disabled={isLoading}>
+                    <View style={styles.loginButtonContent}>
+                      <View style={styles.loadingIndicatorWrapper}>
+                        {/* Reserve space for loader, but only show dots when loading */}
+                        {isLoading ? (
+                          <View style={styles.loadingIndicator}>
+                            <Animated.Text style={styles.loadingDot}>●</Animated.Text>
+                            <Animated.Text style={styles.loadingDot}>●</Animated.Text>
+                            <Animated.Text style={styles.loadingDot}>●</Animated.Text>
+                          </View>
+                        ) : null}
+                      </View>
+                      <Text style={[styles.loginButtonText, isLoading && styles.loadingText]}>
+                        Sign In
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity style={styles.forgotPassword}>
+                    <Text style={styles.forgotPasswordText}>Forgot your password?</Text>
+                  </TouchableOpacity>
+                </View>
+
+                {/* Register Link */}
+                <View style={styles.registerContainer}>
+                  <Text style={styles.registerText}>New to Shubh Milan? </Text>
+                  <TouchableOpacity onPress={navigateToRegister}>
+                    <Text style={styles.registerLink}>Create account</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+          </ScrollView>
+        </KeyboardAvoidingView>
+        {/* Developer Credit always at bottom */}
+        <View style={styles.creditContainerFixed}>
+          <Text style={styles.creditText}>💻 Proudly developed by a Maithil 🇮🇳 ❤️</Text>
+        </View>
+      </View>
     </SafeAreaView>
   );
 };
@@ -404,14 +375,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  loadingIndicator: {
+  loadingIndicatorWrapper: {
     flexDirection: 'row',
     marginRight: Spacing.sm,
+    width: 24, // Fixed width to prevent button jump
+    justifyContent: 'center',
+    alignItems: 'center', // Ensure vertical centering
+  },
+  loadingIndicator: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center', // Ensure vertical centering
+    minHeight: 20, // Always reserve space for dots
   },
   loadingDot: {
     fontSize: Typography.fontSize.lg,
     color: Colors.textInverse,
     marginHorizontal: 1,
+    opacity: 0.5, // Default opacity, animated when loading
   },
   loadingText: {
     opacity: 0.8,
@@ -423,8 +404,8 @@ const styles = StyleSheet.create({
   },
   forgotPassword: {
     alignItems: 'center',
-    marginTop: Spacing.xl,
-    paddingVertical: Spacing.xs,
+    marginTop: Spacing.md, // Reduced spacing for tighter layout
+    paddingVertical: Spacing.xs, // Slight padding for touch area
   },
   forgotPasswordText: {
     fontSize: Typography.fontSize.sm,
@@ -435,7 +416,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: Spacing.md,
+    paddingTop: Spacing.xs, // Reduced spacing for tighter layout
+    marginBottom: Spacing.sm,
   },
   registerText: {
     fontSize: Typography.fontSize.sm,
@@ -445,12 +427,22 @@ const styles = StyleSheet.create({
     fontSize: Typography.fontSize.sm,
     color: Colors.primary,
     fontWeight: Typography.fontWeight.semibold,
+    marginLeft: 2,
   },
-  creditContainer: {
+  screenWrapper: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  creditContainerFixed: {
     alignItems: 'center',
-    marginTop: Spacing.lg,
+    justifyContent: 'flex-end',
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.sm,
+    width: '100%',
+    backgroundColor: Colors.background,
+  },
+  creditContainer: {
+    display: 'none', // Hide old credit container
   },
   creditText: {
     fontSize: Typography.fontSize.sm,
