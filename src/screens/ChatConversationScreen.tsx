@@ -194,25 +194,22 @@ const mockMessages: Message[] = [
   },
 ];
 
+const PAGE_SIZE = 20;
+
 export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'>> = ({
   navigation,
   route,
 }) => {
   const { chatName, isOnline } = route.params;
-  const [messages, setMessages] = useState<Message[]>(mockMessages);
+  // Pagination states
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  // Only show latest PAGE_SIZE * page messages
+  const [messages, setMessages] = useState<Message[]>(mockMessages.slice(-PAGE_SIZE));
   const [newMessage, setNewMessage] = useState('');
   const [showAttachmentModal, setShowAttachmentModal] = useState(false);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const flatListRef = useRef<FlatList>(null);
-
-  useEffect(() => {
-    // Scroll to bottom when new messages arrive
-    if (messages.length > 0) {
-      setTimeout(() => {
-        flatListRef.current?.scrollToEnd({ animated: true });
-      }, 100);
-    }
-  }, [messages]);
 
   useEffect(() => {
     // Keyboard event listeners with better handling
@@ -346,22 +343,10 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
     Alert.alert('Video Player', 'This would open a video player');
   };
 
-  const renderMessage = ({ item, index }: { item: Message; index: number }) => {
-    const showTime = index === 0 ||
-      messages[index - 1].timestamp.getTime() - item.timestamp.getTime() > 300000; // 5 minutes
-
+  const renderMessage = ({ item }: { item: Message }) => {
     return (
       <View style={styles.messageContainer}>
-        {showTime && (
-          <Text style={styles.timeStamp}>
-            {formatTime(item.timestamp)}
-          </Text>
-        )}
-        <View style={[
-          styles.messageBubble,
-          item.isOwn ? styles.ownMessage : styles.otherMessage,
-          (item.type === 'image' || item.type === 'video') && styles.mediaBubble
-        ]}>
+        <View style={[styles.messageBubble, item.isOwn ? styles.ownMessage : styles.otherMessage, (item.type === 'image' || item.type === 'video') && styles.mediaBubble]}>
           {/* Render media content */}
           {item.media && (
             <View style={styles.mediaContainer}>
@@ -398,27 +383,21 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
               ) : null}
             </View>
           )}
-
           {/* Render text content */}
           {item.text && (
-            <Text style={[
-              styles.messageText,
-              item.isOwn ? styles.ownMessageText : styles.otherMessageText,
-              item.media && styles.messageTextWithMedia
-            ]}>
+            <Text style={[styles.messageText, item.isOwn ? styles.ownMessageText : styles.otherMessageText, item.media && styles.messageTextWithMedia]}>
               {item.text}
             </Text>
           )}
-
-          {/* Status indicator */}
-          {item.isOwn && (
-            <Text style={[
-              styles.messageStatus,
-              item.status === 'read' && styles.readStatus
-            ]}>
-              {getStatusIcon(item.status)}
-            </Text>
-          )}
+          {/* Meta row below content */}
+          <View style={styles.bubbleMetaRowBelow}>
+            <Text style={styles.timeStampBubble}>{formatTime(item.timestamp)}</Text>
+            {item.isOwn && (
+              <Text style={[styles.messageStatus, item.status === 'read' && styles.readStatus]}>
+                {getStatusIcon(item.status)}
+              </Text>
+            )}
+          </View>
         </View>
       </View>
     );
@@ -464,6 +443,19 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
         Alert.alert('Location', 'Sharing current location...\n\nThis would integrate with geolocation services in a real app.');
         break;
     }
+  };
+
+  // Add loadMoreMessages for pagination
+  const loadMoreMessages = () => {
+    if (!hasMore) return;
+    const nextPage = page + 1;
+    const newMessages = mockMessages.slice(-PAGE_SIZE * nextPage, -PAGE_SIZE * (nextPage - 1) || undefined);
+    if (newMessages.length === 0) {
+      setHasMore(false);
+      return;
+    }
+    setMessages(prev => [...newMessages, ...prev]);
+    setPage(nextPage);
   };
 
   return (
@@ -514,20 +506,9 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
               isKeyboardVisible ? styles.messagesContentKeyboard : styles.messagesContentNormal
             ]}
             showsVerticalScrollIndicator={false}
-            onContentSizeChange={() => {
-              setTimeout(() => {
-                flatListRef.current?.scrollToEnd({ animated: false });
-              }, 100);
-            }}
-            onLayout={() => {
-              setTimeout(() => {
-                flatListRef.current?.scrollToEnd({ animated: false });
-              }, 100);
-            }}
-            maintainVisibleContentPosition={{
-              minIndexForVisible: 0,
-              autoscrollToTopThreshold: 10,
-            }}
+            inverted
+            onEndReached={loadMoreMessages}
+            onEndReachedThreshold={0.1}
           />
         </View>
         {/* Input Bar - Fixed at bottom */}
@@ -683,20 +664,40 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   messageContainer: {
-    marginBottom: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-  },
-  timeStamp: {
-    fontSize: Typography.fontSize.xs,
-    color: Colors.textTertiary,
-    textAlign: 'center',
-    marginBottom: Spacing.sm,
+    marginBottom: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
   },
   messageBubble: {
     maxWidth: '80%',
-    padding: Spacing.md,
+    padding: Spacing.sm,
     borderRadius: BorderRadius.lg,
     marginBottom: Spacing.xs,
+    position: 'relative',
+    minHeight: 40,
+  },
+  bubbleMetaRowBelow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    marginTop: 4,
+    gap: 4,
+  },
+  timeStampBubble: {
+    fontSize: Typography.fontSize.xs,
+    color: Colors.textTertiary,
+    backgroundColor: 'transparent',
+    textAlign: 'right',
+  },
+  messageStatus: {
+    fontSize: Typography.fontSize.xs,
+    color: Colors.textInverse,
+    opacity: 0.7,
+    marginLeft: 4,
+    marginTop: 0,
+  },
+  readStatus: {
+    color: Colors.info,
+    fontWeight: 'bold',
   },
   mediaBubble: {
     borderWidth: 1,
@@ -724,16 +725,6 @@ const styles = StyleSheet.create({
   },
   otherMessageText: {
     color: Colors.textPrimary,
-  },
-  messageStatus: {
-    fontSize: Typography.fontSize.xs,
-    color: Colors.textInverse,
-    opacity: 0.7,
-    alignSelf: 'flex-end',
-    marginTop: Spacing.xs,
-  },
-  readStatus: {
-    color: Colors.info,
   },
   typingContainer: {
     paddingHorizontal: Spacing.md,
