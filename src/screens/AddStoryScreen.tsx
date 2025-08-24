@@ -118,7 +118,7 @@ export const AddStoryScreen: React.FC<AddStoryScreenProps> = ({ navigation }) =>
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -142,53 +142,55 @@ export const AddStoryScreen: React.FC<AddStoryScreenProps> = ({ navigation }) =>
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Media Section */}
-        <View style={styles.mediaSection}>
-          {selectedMedia ? (
-            <View style={styles.selectedMediaContainer}>
-              <Image source={{ uri: selectedMedia.uri }} style={styles.selectedMedia} />
-              <TouchableOpacity
-                style={styles.removeMediaButton}
-                onPress={handleRemoveMedia}
-              >
-                <Icon name="x" library="feather" size={20} color="white" />
+      <SafeAreaView style={{flex: 1}} edges={['left', 'right', 'bottom']}>
+        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+          {/* Media Section */}
+          <View style={styles.mediaSection}>
+            {selectedMedia ? (
+              <View style={styles.selectedMediaContainer}>
+                <Image source={{ uri: selectedMedia.uri }} style={styles.selectedMedia} />
+                <TouchableOpacity
+                  style={styles.removeMediaButton}
+                  onPress={handleRemoveMedia}
+                >
+                  <Icon name="x" library="feather" size={20} color="white" />
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <TouchableOpacity style={styles.addMediaButton} onPress={handleSelectMedia}>
+                <Icon name="camera" library="feather" size={40} color="#666" />
+                <Text style={styles.addMediaText}>Add Photo or Video</Text>
+                <Text style={styles.addMediaSubtext}>Share your moment with everyone</Text>
               </TouchableOpacity>
-            </View>
-          ) : (
-            <TouchableOpacity style={styles.addMediaButton} onPress={handleSelectMedia}>
-              <Icon name="camera" library="feather" size={40} color="#666" />
-              <Text style={styles.addMediaText}>Add Photo or Video</Text>
-              <Text style={styles.addMediaSubtext}>Share your moment with everyone</Text>
-            </TouchableOpacity>
-          )}
-        </View>
+            )}
+          </View>
 
-        {/* Text Section */}
-        <View style={styles.textSection}>
-          <Text style={styles.textSectionTitle}>Story Text (Optional)</Text>
-          <TextInput
-            style={styles.textInput}
-            placeholder="What's on your mind? Share your thoughts..."
-            placeholderTextColor="#999"
-            multiline
-            value={storyText}
-            onChangeText={setStoryText}
-            maxLength={200}
-          />
-          <Text style={styles.characterCount}>{storyText.length}/200</Text>
-        </View>
+          {/* Text Section */}
+          <View style={styles.textSection}>
+            <Text style={styles.textSectionTitle}>Story Text (Optional)</Text>
+            <TextInput
+              style={styles.textInput}
+              placeholder="What's on your mind? Share your thoughts..."
+              placeholderTextColor="#999"
+              multiline
+              value={storyText}
+              onChangeText={setStoryText}
+              maxLength={200}
+            />
+            <Text style={styles.characterCount}>{storyText.length}/200</Text>
+          </View>
 
-        {/* Tips Section */}
-        <View style={styles.tipsSection}>
-          <Text style={styles.tipsTitle}>💡 Story Tips</Text>
-          <Text style={styles.tipText}>• Stories disappear after 24 hours</Text>
-          <Text style={styles.tipText}>• Share authentic moments from your life</Text>
-          <Text style={styles.tipText}>• Use good lighting for better photos</Text>
-          <Text style={styles.tipText}>• Keep text short and engaging</Text>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+          {/* Tips Section */}
+          <View style={styles.tipsSection}>
+            <Text style={styles.tipsTitle}>💡 Story Tips</Text>
+            <Text style={styles.tipText}>• Stories disappear after 24 hours</Text>
+            <Text style={styles.tipText}>• Share authentic moments from your life</Text>
+            <Text style={styles.tipText}>• Use good lighting for better photos</Text>
+            <Text style={styles.tipText}>• Keep text short and engaging</Text>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </View>
   );
 };
 
