@@ -9,6 +9,9 @@ interface TabHeaderProps {
   actionIcon?: string;
   actionIconLibrary?: 'feather' | 'material' | 'material-community' | 'ionicons';
   onActionPress?: () => void;
+  secondaryActionIcon?: string;
+  secondaryActionIconLibrary?: 'feather' | 'material' | 'material-community' | 'ionicons';
+  onSecondaryActionPress?: () => void;
   leftIcon?: string;
   leftIconLibrary?: 'feather' | 'material' | 'material-community' | 'ionicons';
   onLeftPress?: () => void;
@@ -20,6 +23,9 @@ export const TabHeader: React.FC<TabHeaderProps> = ({
   actionIcon = 'plus',
   actionIconLibrary = 'feather',
   onActionPress,
+  secondaryActionIcon,
+  secondaryActionIconLibrary = 'feather',
+  onSecondaryActionPress,
   leftIcon,
   leftIconLibrary = 'feather',
   onLeftPress,
@@ -38,11 +44,18 @@ export const TabHeader: React.FC<TabHeaderProps> = ({
           <Text style={styles.headerTitle}>{title}</Text>
         )}
       </View>
-      {onActionPress && (
-        <TouchableOpacity style={styles.actionButton} onPress={onActionPress}>
-          <Icon name={actionIcon} library={actionIconLibrary} size={20} color={Colors.textInverse} />
-        </TouchableOpacity>
-      )}
+      <View style={styles.actionSection}>
+        {onActionPress && (
+          <TouchableOpacity style={styles.actionButton} onPress={onActionPress}>
+            <Icon name={actionIcon} library={actionIconLibrary} size={20} color={Colors.textInverse} />
+          </TouchableOpacity>
+        )}
+        {onSecondaryActionPress && secondaryActionIcon && (
+          <TouchableOpacity style={styles.secondaryActionButton} onPress={onSecondaryActionPress}>
+            <Icon name={secondaryActionIcon} library={secondaryActionIconLibrary} size={20} color={Colors.textInverse} />
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   );
 };
@@ -68,6 +81,10 @@ const styles = StyleSheet.create({
     fontWeight: Typography.fontWeight.bold,
     color: Colors.textPrimary,
   },
+  actionSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   actionButton: {
     width: 40,
     height: 40,
@@ -75,6 +92,16 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
+    ...Shadows.sm,
+  },
+  secondaryActionButton: {
+    width: 40,
+    height: 40,
+    borderRadius: BorderRadius.full,
+    backgroundColor: Colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: Spacing.sm,
     ...Shadows.sm,
   },
 });

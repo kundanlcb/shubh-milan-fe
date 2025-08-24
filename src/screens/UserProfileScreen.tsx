@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../constants/styles';
 import { Icon } from '../components/Icon';
+import { TabHeader } from '../components/TabHeader';
 import { PostCard } from '../components/home/PostCard';
 import { allUsers } from '../utils/homeData';
 
@@ -88,30 +89,16 @@ export const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ navigation
     return `${lpa.toFixed(1)} LPA`;
   };
 
-  const getCompatibilityScore = () => Math.floor(Math.random() * 20) + 80;
-
   return (
-    <View style={styles.fullScreenContainer}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       {/* Header */}
-      <SafeAreaView style={styles.safeAreaHeader} edges={['top']}>
-        <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-              <Icon name="arrow-left" library="feather" size={24} color="#333" />
-            </TouchableOpacity>
-            <Text style={styles.headerTitle}>Profile</Text>
-          </View>
-          <View style={styles.headerActions}>
-            <View style={styles.compatibilityBadgeHeader}>
-              <Icon name="star" library="feather" size={16} color={Colors.primary} />
-              <Text style={styles.compatibilityTextHeader}>{getCompatibilityScore()}%</Text>
-            </View>
-            <TouchableOpacity style={styles.moreButton}>
-              <Icon name="more-vertical" library="feather" size={24} color="#333" />
-            </TouchableOpacity>
-          </View>
-        </View>
-      </SafeAreaView>
+      <TabHeader
+        title="Profile"
+        leftIcon="arrow-left"
+        onLeftPress={() => navigation.goBack()}
+        actionIcon="more-vertical"
+        onActionPress={() => console.log('More options')}
+      />
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Modern Profile Section */}
@@ -295,7 +282,7 @@ export const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ navigation
           </View>
         )}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 

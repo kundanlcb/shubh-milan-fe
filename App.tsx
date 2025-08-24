@@ -12,13 +12,14 @@ import { LoginScreen } from './src/screens/LoginScreen';
 import { RegisterScreen } from './src/screens/RegisterScreen';
 import { MainTabNavigator } from './src/components/MainTabNavigator';
 import { UserProfileScreen } from './src/screens/UserProfileScreen';
+import { ChatScreen } from './src/screens/ChatScreen';
 import { ChatConversationScreen } from './src/screens/ChatConversationScreen';
 import { EditProfileScreen } from './src/screens/EditProfileScreen';
 import { StoryViewerScreen } from './src/screens/StoryViewerScreen';
 import { Colors } from './src/constants/colors';
 
-type CurrentScreen = 'Login' | 'Register' | 'ForgotPassword' | 'OTPVerification' | 'Main' | 'ChatConversation' | 'EditProfile' | 'StoryViewer';
-type ModalScreen = 'UserProfile' | null;
+type CurrentScreen = 'Login' | 'Register' | 'ForgotPassword' | 'OTPVerification' | 'Main' | 'Chat' | 'ChatConversation' | 'EditProfile' | 'StoryViewer' | 'UserProfile';
+type ModalScreen = null;
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
@@ -34,11 +35,12 @@ function App(): React.JSX.Element {
     if (screen === 'Main') {
       setIsLoggedIn(true);
       setCurrentScreen('Main');
+    } else if (screen === 'Chat') {
+      setCurrentScreen('Chat');
     } else if (screen === 'UserProfile') {
-      setModalScreen('UserProfile');
+      setCurrentScreen('UserProfile');
       setModalParams(params);
     } else if (screen === 'ChatConversation') {
-      setActiveTab('Chat');
       setCurrentScreen('ChatConversation');
       setChatConversationParams(params);
     } else if (screen === 'EditProfile') {
@@ -83,7 +85,7 @@ function App(): React.JSX.Element {
       if (modalScreen) {
         closeModal();
         return true;
-      } else if (currentScreen === 'ChatConversation' || currentScreen === 'EditProfile' || currentScreen === 'StoryViewer') {
+      } else if (currentScreen === 'Chat' || currentScreen === 'ChatConversation' || currentScreen === 'EditProfile' || currentScreen === 'StoryViewer' || currentScreen === 'UserProfile') {
         return false;
       } else if (currentScreen === 'Register') {
         setCurrentScreen('Login');
@@ -161,6 +163,52 @@ function App(): React.JSX.Element {
     );
   }
 
+  if (isLoggedIn && currentScreen === 'UserProfile') {
+    return (
+      <SafeAreaProvider>
+        <StatusBar
+          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+          backgroundColor={Colors.background}
+        />
+        <UserProfileScreen
+          navigation={{
+            goBack: () => setCurrentScreen('Main'),
+            navigate: (screen: string, params?: any) => {
+              if (screen === 'ChatConversation') {
+                navigate('ChatConversation', params);
+              }
+            }
+          }}
+          route={{ params: modalParams }}
+        />
+      </SafeAreaProvider>
+    );
+  }
+
+  if (isLoggedIn && currentScreen === 'Chat') {
+    return (
+      <SafeAreaProvider>
+        <StatusBar
+          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+          backgroundColor={Colors.background}
+        />
+        <ChatScreen
+          navigation={{
+            goBack: () => setCurrentScreen('Main'),
+            navigate: (screen: string, params?: any) => {
+              if (screen === 'ChatConversation') {
+                navigate('ChatConversation', params);
+              } else if (screen === 'UserProfile') {
+                navigate('UserProfile', params);
+              }
+            }
+          }}
+          route={{ params: undefined }}
+        />
+      </SafeAreaProvider>
+    );
+  }
+
   if (isLoggedIn && currentScreen === 'Main') {
     return (
       <SafeAreaProvider>
@@ -172,6 +220,7 @@ function App(): React.JSX.Element {
           initialActiveTab={activeTab}
           onTabChange={setActiveTab}
           onNavigateToUserProfile={(userId: string) => navigate('UserProfile', { userId })}
+          onNavigateToChat={() => navigate('Chat')}
           onNavigateToChatConversation={(params: any) => navigate('ChatConversation', params)}
           onNavigateToEditProfile={() => navigate('EditProfile')}
           onNavigateToStoryViewer={(params: any) => navigate('StoryViewer', params)}

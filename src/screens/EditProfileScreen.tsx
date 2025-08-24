@@ -13,6 +13,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Typography, Spacing, BorderRadius, Shadows, GlobalStyles } from '../constants/styles';
 import { Icon } from '../components/Icon';
+import { TabHeader } from '../components/TabHeader';
 import { MainScreenProps } from '../types/navigation';
 
 interface ProfileFormData {
@@ -142,32 +143,18 @@ export const EditProfileScreen: React.FC<MainScreenProps<'EditProfile'>> = ({
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom', 'left', 'right']}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.headerButton}
-          onPress={handleCancel}
-        >
-          <Icon name="x" library="feather" size={24} color={Colors.textPrimary} />
-        </TouchableOpacity>
-
-        <Text style={styles.headerTitle}>Edit Profile</Text>
-
-        <TouchableOpacity
-          style={[styles.headerButton, styles.saveButton]}
-          onPress={handleSave}
-          disabled={isLoading}
-        >
-          <Text style={[styles.saveButtonText, isLoading && styles.saveButtonTextDisabled]}>
-            {isLoading ? 'Saving...' : 'Save'}
-          </Text>
-        </TouchableOpacity>
-      </View>
+      <TabHeader
+        title="Edit Profile"
+        leftIcon="arrow-left"
+        onLeftPress={handleCancel}
+        actionIcon="check"
+        onActionPress={handleSave}
+      />
 
       <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
+        style={styles.content}
         showsVerticalScrollIndicator={false}
       >
         {/* Profile Photo Section */}
@@ -254,44 +241,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.md,
-    backgroundColor: Colors.backgroundCard,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.divider,
-    ...Shadows.sm,
-  },
-  headerButton: {
-    padding: Spacing.sm,
-    minWidth: 60,
-  },
-  headerTitle: {
-    fontSize: Typography.fontSize.lg,
-    fontWeight: Typography.fontWeight.bold,
-    color: Colors.textPrimary,
-  },
-  saveButton: {
-    backgroundColor: Colors.primary,
-    borderRadius: BorderRadius.md,
-    paddingHorizontal: Spacing.md,
-  },
-  saveButtonText: {
-    color: Colors.white,
-    fontSize: Typography.fontSize.sm,
-    fontWeight: Typography.fontWeight.semibold,
-  },
-  saveButtonTextDisabled: {
-    opacity: 0.6,
-  },
-  scrollView: {
+  content: {
     flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: Spacing.xl,
   },
   photoSection: {
     alignItems: 'center',

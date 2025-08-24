@@ -11,12 +11,12 @@ import { Colors, Typography, Spacing, BorderRadius, Shadows } from '../constants
 import { Icon, AppIcons } from './Icon';
 import { HomeScreen } from '../screens/HomeScreen';
 import { SearchScreen } from '../screens/SearchScreen';
-import { ChatScreen } from '../screens/ChatScreen';
+import { NotificationScreen } from '../screens/NotificationScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { AddPostScreen } from '../screens/AddPostScreen';
 import { AddStoryScreen } from '../screens/AddStoryScreen';
 
-type TabKey = 'Home' | 'Search' | 'AddPost' | 'Chat' | 'Profile';
+type TabKey = 'Home' | 'Search' | 'AddPost' | 'Notification' | 'Profile';
 
 interface Tab {
   key: TabKey;
@@ -51,11 +51,11 @@ const tabs: Tab[] = [
     isAddButton: true,
   },
   {
-    key: 'Chat',
-    label: 'Messages',
-    iconConfig: AppIcons.chat,
-    activeIconConfig: AppIcons.chatActive,
-    component: ChatScreen,
+    key: 'Notification',
+    label: 'Notifications',
+    iconConfig: { name: 'bell', library: 'feather' },
+    activeIconConfig: { name: 'bell', library: 'feather' },
+    component: NotificationScreen,
   },
   {
     key: 'Profile',
@@ -70,11 +70,12 @@ export const MainTabNavigator: React.FC<{
   initialActiveTab?: string;
   onTabChange?: (tab: string) => void;
   onNavigateToUserProfile: (userId: string) => void;
+  onNavigateToChat: () => void;
   onNavigateToChatConversation: (params: any) => void;
   onNavigateToEditProfile: () => void;
   onNavigateToStoryViewer: (params: any) => void;
   onLogout: () => void;
-}> = ({ initialActiveTab = 'Home', onTabChange, onNavigateToUserProfile, onNavigateToChatConversation, onNavigateToEditProfile, onNavigateToStoryViewer, onLogout }) => {
+}> = ({ initialActiveTab = 'Home', onTabChange, onNavigateToUserProfile, onNavigateToChat, onNavigateToChatConversation, onNavigateToEditProfile, onNavigateToStoryViewer, onLogout }) => {
   const [activeTab, setActiveTab] = useState<TabKey>(initialActiveTab as TabKey);
   const [showAddStoryScreen, setShowAddStoryScreen] = useState(false);
   const insets = useSafeAreaInsets();
@@ -137,6 +138,7 @@ export const MainTabNavigator: React.FC<{
         onNavigateToAddStory={() => setShowAddStoryScreen(true)}
         onNavigateToUserProfile={onNavigateToUserProfile}
         onNavigateToStoryViewer={onNavigateToStoryViewer}
+        onNavigateToChat={onNavigateToChat}
       />;
     }
 
@@ -153,14 +155,12 @@ export const MainTabNavigator: React.FC<{
       />;
     }
 
-    // Pass navigation callback to ChatScreen
-    if (activeTab === 'Chat') {
+    // Pass navigation callback to NotificationScreen
+    if (activeTab === 'Notification') {
       return <Component
         navigation={{
           navigate: (screen: string, params?: any) => {
-            if (screen === 'Search') {
-              setActiveTab('Search');
-            } else if (screen === 'ChatConversation') {
+            if (screen === 'ChatConversation') {
               onNavigateToChatConversation(params);
             }
           }

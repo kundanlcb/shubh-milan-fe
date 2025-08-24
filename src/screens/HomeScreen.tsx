@@ -8,7 +8,7 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors, Typography, Spacing, BorderRadius } from '../constants/styles';
+import { Colors, Typography, Spacing } from '../constants/styles';
 import { TabHeader } from '../components/TabHeader';
 import { Stories } from '../components/home/Stories';
 import { PostCard } from '../components/home/PostCard';
@@ -25,11 +25,11 @@ const EmptyStateComponent: React.FC<{ onAdjustPreferences: () => void }> = ({ on
 );
 
 export const HomeScreen: React.FC<{
-  onNavigateToAddPost?: () => void;
   onNavigateToAddStory?: () => void;
   onNavigateToUserProfile?: (userId: string) => void;
   onNavigateToStoryViewer?: (params: any) => void;
-}> = ({ onNavigateToAddStory, onNavigateToUserProfile, onNavigateToStoryViewer }) => {
+  onNavigateToChat?: () => void;
+}> = ({ onNavigateToAddStory, onNavigateToUserProfile, onNavigateToStoryViewer, onNavigateToChat }) => {
   // Filter posts based on user preferences
   const [userPreferences] = useState(currentUserPreferences);
   const [activeFilters, setActiveFilters] = useState({
@@ -255,6 +255,8 @@ export const HomeScreen: React.FC<{
           </View>
         }
         actionIcon="filter"
+        secondaryActionIcon="message-circle"
+        onSecondaryActionPress={onNavigateToChat}
         onActionPress={handleFilterPress}
       />
 

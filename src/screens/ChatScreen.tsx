@@ -171,10 +171,12 @@ export const ChatScreen: React.FC<MainScreenProps<'Chat'>> = ({ navigation }) =>
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['left', 'right']}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       {/* Header */}
       <TabHeader
         title="Messages"
+        leftIcon="arrow-left"
+        onLeftPress={() => navigation.goBack()}
         actionIcon="plus"
         onActionPress={handleNewChat}
       />

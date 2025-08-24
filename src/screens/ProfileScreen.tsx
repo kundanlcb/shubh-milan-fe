@@ -44,7 +44,10 @@ const menuItems = [
   { iconConfig: AppIcons.logout, title: 'Logout', description: 'Sign out of your account', isLogout: true },
 ];
 
-export const ProfileScreen: React.FC = () => {
+export const ProfileScreen: React.FC<{
+  onNavigateToEditProfile?: () => void;
+  onLogout?: () => void;
+}> = ({ onNavigateToEditProfile, onLogout }) => {
   const [profileCompletion] = useState(75);
 
   const handleMenuItemPress = (title: string) => {
@@ -92,7 +95,7 @@ export const ProfileScreen: React.FC = () => {
       <TabHeader
         title="Profile"
         actionIcon="edit-3"
-        onActionPress={() => Alert.alert('Edit Profile', 'Edit profile screen would open here')}
+        onActionPress={() => onNavigateToEditProfile ? onNavigateToEditProfile() : Alert.alert('Edit Profile', 'Edit profile screen would open here')}
       />
 
       <ScrollView
