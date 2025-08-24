@@ -53,7 +53,7 @@ const tabs: Tab[] = [
   },
   {
     key: 'Notification',
-    label: 'Pings', // Updated label, removed exclamatory character
+    label: 'Bells', // Updated label, removed exclamatory character
     iconConfig: { name: 'bell', library: 'feather' },
     activeIconConfig: { name: 'bell', library: 'feather' },
     component: NotificationScreen,
