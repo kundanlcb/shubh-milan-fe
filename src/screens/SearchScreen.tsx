@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Typography, Spacing, BorderRadius } from '../constants/styles';
 import { Icon, AppIcons } from '../components/Icon';
+import { TabHeader } from '../components/TabHeader';
 
 // Mock search results data
 const searchResults = [
@@ -161,23 +162,16 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['left', 'right']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Text style={styles.headerTitle}>खोजें</Text>
-          <Text style={styles.headerSubtitle}>Find Your Perfect Match</Text>
-        </View>
-        <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.iconButton}>
-            <Icon name="sliders" library="feather" size={20} color={Colors.primary} />
-          </TouchableOpacity>
-        </View>
-      </View>
+    <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
+      <TabHeader
+        title="Search"
+        actionIcon="search"
+        onActionPress={() => setShowFilters(!showFilters)}
+      />
 
-      {/* Search Bar */}
+      {/* Search Input */}
       <View style={styles.searchContainer}>
-        <View style={styles.searchInputContainer}>
+        <View style={styles.searchInputWrapper}>
           <Icon name="search" library="feather" size={20} color={Colors.textSecondary} />
           <TextInput
             style={styles.searchInput}
@@ -268,10 +262,21 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     flexDirection: 'row',
-    padding: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    marginBottom: Spacing.md,
     gap: Spacing.sm,
   },
   searchInputContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.backgroundCard,
+    borderRadius: BorderRadius.md,
+    paddingHorizontal: Spacing.md,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  searchInputWrapper: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',

@@ -9,8 +9,11 @@ import {
   Image,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { launchImageLibrary, launchCamera, MediaType, ImagePickerResponse } from 'react-native-image-picker';
-import { Colors } from '../constants/styles';
+import { Colors, Spacing } from '../constants/styles';
+import { TabHeader } from '../components/TabHeader';
+
 interface AddPostScreenProps {
   navigation: any;
 }
@@ -118,29 +121,13 @@ export const AddPostScreen: React.FC<AddPostScreenProps> = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.cancelButton}>Cancel</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>New Post</Text>
-        <TouchableOpacity
-          onPress={handlePost}
-          disabled={isPosting || (!selectedMedia && !caption.trim())}
-          style={[
-            styles.postButton,
-            (!selectedMedia && !caption.trim()) && styles.disabledButton
-          ]}
-        >
-          <Text style={[
-            styles.postButtonText,
-            (!selectedMedia && !caption.trim()) && styles.disabledButtonText
-          ]}>
-            {isPosting ? 'Posting...' : 'Post'}
-          </Text>
-        </TouchableOpacity>
-      </View>
+      <TabHeader
+        title="New Post"
+        actionIcon={isPosting ? "loader" : "send"}
+        onActionPress={(!selectedMedia && !caption.trim()) || isPosting ? undefined : handlePost}
+      />
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Media Section */}
@@ -152,7 +139,7 @@ export const AddPostScreen: React.FC<AddPostScreenProps> = ({ navigation }) => {
                 style={styles.removeMediaButton}
                 onPress={handleRemoveMedia}
               >
-                <Text style={styles.removeMediaText}>×</Text>
+                <Text style={styles.removeMediaText}>��</Text>
               </TouchableOpacity>
             </View>
           ) : (
@@ -210,7 +197,7 @@ export const AddPostScreen: React.FC<AddPostScreenProps> = ({ navigation }) => {
           <Text style={styles.tipText}>• Be authentic and positive</Text>
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -218,42 +205,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 0.5,
-    borderBottomColor: '#E0E0E0',
-    backgroundColor: 'white',
-  },
-  cancelButton: {
-    fontSize: 16,
-    color: '#666',
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
-  },
-  postButton: {
-    backgroundColor: Colors.primary,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  disabledButton: {
-    backgroundColor: '#E0E0E0',
-  },
-  postButtonText: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  disabledButtonText: {
-    color: '#999',
   },
   content: {
     flex: 1,

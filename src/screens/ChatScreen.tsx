@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {Colors, Typography, Spacing, BorderRadius, Shadows, GlobalStyles} from '../constants/styles';
 import { Icon } from '../components/Icon';
+import { TabHeader } from '../components/TabHeader';
 import { MainScreenProps } from '../types/navigation';
 
 // Mock chat data
@@ -172,12 +173,11 @@ export const ChatScreen: React.FC<MainScreenProps<'Chat'>> = ({ navigation }) =>
   return (
     <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Messages</Text>
-        <TouchableOpacity style={styles.newChatButton} onPress={handleNewChat}>
-          <Icon name="plus" library="feather" size={20} color={Colors.textInverse} />
-        </TouchableOpacity>
-      </View>
+      <TabHeader
+        title="Messages"
+        actionIcon="plus"
+        onActionPress={handleNewChat}
+      />
 
       {/* Search Bar */}
       <View style={styles.searchContainer}>
@@ -231,30 +231,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.lg,
-  },
-  headerTitle: {
-    fontSize: Typography.fontSize['2xl'],
-    fontWeight: Typography.fontWeight.bold,
-    color: Colors.textPrimary,
-  },
-  newChatButton: {
-    width: 40,
-    height: 40,
-    borderRadius: BorderRadius.full,
-    backgroundColor: Colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    ...Shadows.sm,
-  },
-  newChatIcon: {
-    fontSize: 18,
   },
   searchContainer: {
     paddingHorizontal: Spacing.md,

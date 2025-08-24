@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Typography, Spacing, BorderRadius, Shadows } from '../constants/styles';
 import { Icon, AppIcons } from '../components/Icon';
+import { TabHeader } from '../components/TabHeader';
 
 // Mock user data
 const userData = {
@@ -43,101 +44,117 @@ const menuItems = [
   { iconConfig: AppIcons.logout, title: 'Logout', description: 'Sign out of your account', isLogout: true },
 ];
 
-export const ProfileScreen: React.FC<{
-  onNavigateToEditProfile?: () => void;
-  onLogout?: () => void;
-}> = ({ onNavigateToEditProfile, onLogout }) => {
+export const ProfileScreen: React.FC = () => {
   const [profileCompletion] = useState(75);
 
-  const handleSectionPress = (section: string) => {
-    Alert.alert('Navigation', `Navigate to ${section}`);
-  };
-
-  const handleMenuPress = (item: string) => {
-    if (item === 'Logout') {
-      Alert.alert(
-        'Logout',
-        'Are you sure you want to logout?',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          {
-            text: 'Logout',
-            style: 'destructive',
-            onPress: () => {
-              if (onLogout) {
-                onLogout();
-              }
-            }
-          },
-        ]
-      );
-    } else {
-      Alert.alert('Navigation', `Navigate to ${item}`);
+  const handleMenuItemPress = (title: string) => {
+    switch (title) {
+      case 'Settings':
+        Alert.alert('Settings', 'Settings screen would open here');
+        break;
+      case 'Upgrade to Premium':
+        Alert.alert('Premium', 'Premium upgrade flow would start here');
+        break;
+      case 'Help & Support':
+        Alert.alert('Help', 'Help & Support screen would open here');
+        break;
+      case 'Terms & Privacy':
+        Alert.alert('Terms', 'Terms & Privacy screen would open here');
+        break;
+      default:
+        Alert.alert('Info', `${title} feature coming soon!`);
     }
   };
 
+  const handleSectionPress = (title: string) => {
+    Alert.alert('Info', `${title} section would open here`);
+  };
+
+  const handleLogout = () => {
+    Alert.alert(
+      'Logout',
+      'Are you sure you want to logout?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Logout',
+          style: 'destructive',
+          onPress: () => {
+            Alert.alert('Info', 'Logout functionality would be implemented here');
+          }
+        },
+      ]
+    );
+  };
+
   return (
-    <SafeAreaView style={styles.container} edges={['left', 'right']}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>प्रोफाइल</Text>
-          <TouchableOpacity onPress={onNavigateToEditProfile}>
-            <Icon name="edit-2" library="feather" size={20} color={Colors.primary} />
-          </TouchableOpacity>
+    <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
+      <TabHeader
+        title="Profile"
+        actionIcon="edit-3"
+        onActionPress={() => Alert.alert('Edit Profile', 'Edit profile screen would open here')}
+      />
+
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Profile Header */}
+        <View style={styles.profileHeader}>
+          <View style={styles.avatarContainer}>
+            <Image
+              source={{ uri: userData.avatar }}
+              style={styles.avatar}
+              resizeMode="cover"
+            />
+            <TouchableOpacity style={styles.cameraButton}>
+              <Icon name="camera" library="feather" size={16} color={Colors.textInverse} />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.profileInfo}>
+            <Text style={styles.profileName}>{userData.name}</Text>
+            <Text style={styles.profileDetails}>
+              {userData.age} years • {userData.profession}
+            </Text>
+            <Text style={styles.profileLocation}>
+              <Icon name="map-pin" library="feather" size={14} color={Colors.textSecondary} />
+              {' '}{userData.location}
+            </Text>
+          </View>
         </View>
 
-        {/* Profile Card */}
-        <View style={styles.profileCard}>
-          <View style={styles.profileHeader}>
-            <View style={styles.profileImage}>
-              <Image source={{ uri: userData.avatar }} style={styles.avatarImage} />
-            </View>
-            <View style={styles.profileInfo}>
-              <Text style={styles.profileName}>{userData.name}</Text>
-              <Text style={styles.profileDetails}>
-                {userData.age} years • {userData.height}
-              </Text>
-              <Text style={styles.profileLocation}>{userData.location}</Text>
-              <Text style={styles.profileProfession}>{userData.profession}</Text>
-            </View>
+        {/* Profile Stats */}
+        <View style={styles.statsSection}>
+          <View style={styles.statItem}>
+            <Icon name="eye" library="feather" size={20} color={Colors.primary} />
+            <Text style={styles.statNumber}>{userData.profileViews}</Text>
+            <Text style={styles.statLabel}>Views</Text>
           </View>
-
-          {/* Profile Completion */}
-          <View style={styles.completionSection}>
-            <View style={styles.completionHeader}>
-              <Text style={styles.completionTitle}>Profile Completion</Text>
-              <Text style={styles.completionPercentage}>{profileCompletion}%</Text>
-            </View>
-            <View style={styles.progressBar}>
-              <View
-                style={[
-                  styles.progressFill,
-                  { width: `${profileCompletion}%` }
-                ]}
-              />
-            </View>
+          <View style={styles.statDivider} />
+          <View style={styles.statItem}>
+            <Icon name="heart" library="feather" size={20} color={Colors.primary} />
+            <Text style={styles.statNumber}>{userData.interests}</Text>
+            <Text style={styles.statLabel}>Interests</Text>
           </View>
+          <View style={styles.statDivider} />
+          <View style={styles.statItem}>
+            <Icon name="star" library="feather" size={20} color={Colors.primary} />
+            <Text style={styles.statNumber}>{userData.shortlisted}</Text>
+            <Text style={styles.statLabel}>Shortlisted</Text>
+          </View>
+        </View>
 
-          {/* Stats */}
-          <View style={styles.statsSection}>
-            <View style={styles.statItem}>
-              <Icon name="eye" library="feather" size={20} color={Colors.primary} />
-              <Text style={styles.statNumber}>{userData.profileViews}</Text>
-              <Text style={styles.statLabel}>Views</Text>
-            </View>
-            <View style={styles.statDivider} />
-            <View style={styles.statItem}>
-              <Icon name="heart" library="feather" size={20} color={Colors.primary} />
-              <Text style={styles.statNumber}>{userData.interests}</Text>
-              <Text style={styles.statLabel}>Interests</Text>
-            </View>
-            <View style={styles.statDivider} />
-            <View style={styles.statItem}>
-              <Icon name="star" library="feather" size={20} color={Colors.primary} />
-              <Text style={styles.statNumber}>{userData.shortlisted}</Text>
-              <Text style={styles.statLabel}>Shortlisted</Text>
-            </View>
+        {/* Profile Completion */}
+        <View style={styles.completionSection}>
+          <View style={styles.completionHeader}>
+            <Text style={styles.completionTitle}>Profile Completion</Text>
+            <Text style={styles.completionPercentage}>{profileCompletion}%</Text>
+          </View>
+          <View style={styles.progressBar}>
+            <View
+              style={[
+                styles.progressFill,
+                { width: `${profileCompletion}%` }
+              ]}
+            />
           </View>
         </View>
 
@@ -189,7 +206,7 @@ export const ProfileScreen: React.FC<{
                   index !== menuItems.length - 1 && styles.menuRowBorder,
                   item.isLogout && styles.logoutRow
                 ]}
-                onPress={() => handleMenuPress(item.title)}
+                onPress={() => item.isLogout ? handleLogout() : handleMenuItemPress(item.title)}
               >
                 <View style={[styles.menuRowIcon, item.isLogout && styles.logoutIconContainer]}>
                   <Icon
@@ -227,45 +244,31 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
   },
-  header: {
+  profileHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     padding: Spacing.lg,
     backgroundColor: Colors.backgroundCard,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
-  headerTitle: {
-    fontSize: Typography.fontSize.xl,
-    fontWeight: Typography.fontWeight.bold,
-    color: Colors.textPrimary,
+  avatarContainer: {
+    position: 'relative',
+    marginRight: Spacing.md,
   },
-  profileCard: {
-    backgroundColor: Colors.backgroundCard,
-    margin: Spacing.md,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.lg,
-    ...Shadows.md,
-  },
-  profileHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: Spacing.lg,
-  },
-  profileImage: {
+  avatar: {
     width: 80,
     height: 80,
     borderRadius: BorderRadius.full,
     backgroundColor: Colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: Spacing.md,
   },
-  avatarImage: {
-    width: '100%',
-    height: '100%',
+  cameraButton: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    backgroundColor: Colors.primary,
     borderRadius: BorderRadius.full,
+    padding: 4,
   },
   profileInfo: {
     flex: 1,
@@ -286,13 +289,37 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
     marginBottom: Spacing.xs,
   },
-  profileProfession: {
-    fontSize: Typography.fontSize.sm,
-    color: Colors.primary,
-    fontWeight: Typography.fontWeight.medium,
+  statsSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    paddingTop: Spacing.lg,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+    marginTop: Spacing.md,
+  },
+  statItem: {
+    alignItems: 'center',
+  },
+  statNumber: {
+    fontSize: Typography.fontSize.lg,
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.textPrimary,
+    marginTop: Spacing.xs,
+  },
+  statLabel: {
+    fontSize: Typography.fontSize.xs,
+    color: Colors.textSecondary,
+    marginTop: Spacing.xs,
+  },
+  statDivider: {
+    width: 1,
+    height: 40,
+    backgroundColor: Colors.border,
   },
   completionSection: {
-    marginBottom: Spacing.lg,
+    marginTop: Spacing.lg,
+    marginBottom: Spacing.md,
   },
   completionHeader: {
     flexDirection: 'row',
@@ -321,33 +348,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
     borderRadius: BorderRadius.full,
   },
-  statsSection: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    paddingTop: Spacing.lg,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
-  },
-  statItem: {
-    alignItems: 'center',
-  },
-  statNumber: {
-    fontSize: Typography.fontSize.lg,
-    fontWeight: Typography.fontWeight.bold,
-    color: Colors.textPrimary,
-    marginTop: Spacing.xs,
-  },
-  statLabel: {
-    fontSize: Typography.fontSize.xs,
-    color: Colors.textSecondary,
-    marginTop: Spacing.xs,
-  },
-  statDivider: {
-    width: 1,
-    height: 40,
-    backgroundColor: Colors.border,
-  },
   sectionsContainer: {
     margin: Spacing.md,
   },
@@ -360,85 +360,6 @@ const styles = StyleSheet.create({
     fontWeight: Typography.fontWeight.semibold,
     color: Colors.textPrimary,
     marginBottom: Spacing.md,
-  },
-  sectionCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.backgroundCard,
-    padding: Spacing.lg,
-    borderRadius: BorderRadius.md,
-    marginBottom: Spacing.sm,
-    ...Shadows.sm,
-  },
-  sectionIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: BorderRadius.md,
-    backgroundColor: Colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: Spacing.md,
-  },
-  sectionContent: {
-    flex: 1,
-  },
-  sectionTitle: {
-    fontSize: Typography.fontSize.md,
-    fontWeight: Typography.fontWeight.medium,
-    color: Colors.textPrimary,
-    marginBottom: Spacing.xs,
-  },
-  sectionDescription: {
-    fontSize: Typography.fontSize.sm,
-    color: Colors.textSecondary,
-  },
-  menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.backgroundCard,
-    padding: Spacing.md,
-    borderRadius: BorderRadius.md,
-    marginBottom: Spacing.sm,
-    ...Shadows.sm,
-  },
-  logoutItem: {
-    backgroundColor: Colors.backgroundCard,
-    borderWidth: 1,
-    borderColor: Colors.error,
-  },
-  menuIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: BorderRadius.md,
-    backgroundColor: Colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: Spacing.md,
-  },
-  logoutIcon: {
-    backgroundColor: Colors.errorLight,
-  },
-  menuContent: {
-    flex: 1,
-  },
-  menuTitle: {
-    fontSize: Typography.fontSize.md,
-    fontWeight: Typography.fontWeight.medium,
-    color: Colors.textPrimary,
-    marginBottom: Spacing.xs,
-  },
-  menuDescription: {
-    fontSize: Typography.fontSize.sm,
-    color: Colors.textSecondary,
-  },
-  logoutText: {
-    color: Colors.error,
-  },
-  logoutDescription: {
-    color: Colors.textSecondary, // Changed from Colors.errorLight to match other descriptions
-  },
-  scrollContent: {
-    paddingBottom: Spacing.md,
   },
   groupCard: {
     backgroundColor: Colors.backgroundCard,
@@ -514,5 +435,14 @@ const styles = StyleSheet.create({
   menuRowDescription: {
     fontSize: Typography.fontSize.sm,
     color: Colors.textSecondary,
+  },
+  logoutText: {
+    color: Colors.error,
+  },
+  logoutDescription: {
+    color: Colors.error,
+  },
+  content: {
+    flex: 1,
   },
 });

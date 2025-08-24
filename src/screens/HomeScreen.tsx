@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import {
   View,
+  Text,
+  Image,
   FlatList,
   StyleSheet,
   Alert,
 } from 'react-native';
-import { Colors } from '../constants/styles';
-import { HomeHeader } from '../components/home/HomeHeader';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Colors, Typography, Spacing, BorderRadius } from '../constants/styles';
+import { TabHeader } from '../components/TabHeader';
 import { Stories } from '../components/home/Stories';
 import { PostCard } from '../components/home/PostCard';
 import { EmptyState } from '../components/home/EmptyState';
@@ -234,10 +237,25 @@ export const HomeScreen: React.FC<{
   );
 
   return (
-    <View style={styles.container}>
-      <HomeHeader
-        userPreferences={userPreferences}
-        onFilterPress={handleFilterPress}
+    <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
+      <TabHeader
+        titleComponent={
+          <View style={styles.greetingContainer}>
+            <Image
+              source={require('../../subh-milan.png')}
+              style={styles.appIcon}
+              resizeMode="contain"
+            />
+            <View style={styles.textContainer}>
+              <Text style={styles.greeting}>नमस्ते, {userPreferences.name}!</Text>
+              <Text style={styles.subtitle}>
+                {userPreferences.accountType === 'premium' ? 'Premium Member ⭐' : 'Filtered Feed'}
+              </Text>
+            </View>
+          </View>
+        }
+        actionIcon="filter"
+        onActionPress={handleFilterPress}
       />
 
       <FlatList
@@ -257,7 +275,7 @@ export const HomeScreen: React.FC<{
         currentFilters={activeFilters}
         onApplyFilters={handleApplyFilters}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -266,10 +284,33 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
   },
+  greetingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  appIcon: {
+    width: 32,
+    height: 32,
+    marginRight: Spacing.sm,
+  },
+  textContainer: {
+    flex: 1,
+  },
+  greeting: {
+    fontSize: Typography.fontSize.lg,
+    fontWeight: Typography.fontWeight.semibold,
+    color: Colors.textPrimary,
+  },
+  subtitle: {
+    fontSize: Typography.fontSize.sm,
+    color: Colors.textSecondary,
+    marginTop: 2,
+  },
   scrollContainer: {
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 16,
+    // Remove paddingBottom to match ChatScreen
   },
 });
