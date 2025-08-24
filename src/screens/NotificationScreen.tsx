@@ -8,7 +8,7 @@ import {
   Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors, Typography, Spacing, BorderRadius, Shadows } from '../constants/styles';
+import { Colors, Typography, Spacing, BorderRadius } from '../constants/styles';
 import { Icon } from '../components/Icon';
 import { TabHeader } from '../components/TabHeader';
 
@@ -209,7 +209,8 @@ const styles = StyleSheet.create({
   unreadBanner: {
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.xs,
-    marginTop: Spacing.xs,
+    marginTop: 0, // Reduced top space
+    marginBottom: Spacing.sm, // Slightly increased bottom space
   },
   unreadBannerText: {
     fontSize: Typography.fontSize.sm,
