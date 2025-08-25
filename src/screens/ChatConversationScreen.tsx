@@ -196,6 +196,9 @@ const mockMessages: Message[] = [
 
 const PAGE_SIZE = 20;
 
+// Helper to get messages sorted newest to oldest (descending)
+const getSortedMessages = (arr: Message[]) => [...arr].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+
 export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'>> = ({
   navigation,
   route,
@@ -204,8 +207,8 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
   // Pagination states
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  // Only show latest PAGE_SIZE * page messages
-  const [messages, setMessages] = useState<Message[]>(mockMessages.slice(-PAGE_SIZE));
+  // Only show latest PAGE_SIZE * page messages, sorted newest to oldest
+  const [messages, setMessages] = useState<Message[]>(getSortedMessages(mockMessages).slice(0, PAGE_SIZE));
   const [newMessage, setNewMessage] = useState('');
   const [showAttachmentModal, setShowAttachmentModal] = useState(false);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
@@ -217,7 +220,7 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
       setIsKeyboardVisible(true);
       // Scroll to bottom when keyboard shows with delay
       setTimeout(() => {
-        flatListRef.current?.scrollToEnd({ animated: true });
+        flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
       }, 150);
     };
 
@@ -276,6 +279,7 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
     return () => backHandler.remove();
   }, [showAttachmentModal, navigation]);
 
+  // When sending a new message, add to start of array
   const sendMessage = () => {
     if (newMessage.trim() === '') return;
 
@@ -288,7 +292,7 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
       type: 'text',
     };
 
-    setMessages(prev => [...prev, message]);
+    setMessages(prev => [message, ...prev]);
     setNewMessage('');
 
     // Simulate message being sent
@@ -445,16 +449,17 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
     }
   };
 
-  // Add loadMoreMessages for pagination
+  // Pagination: load older messages and append to end
   const loadMoreMessages = () => {
     if (!hasMore) return;
     const nextPage = page + 1;
-    const newMessages = mockMessages.slice(-PAGE_SIZE * nextPage, -PAGE_SIZE * (nextPage - 1) || undefined);
+    const sortedAll = getSortedMessages(mockMessages);
+    const newMessages = sortedAll.slice(PAGE_SIZE * page, PAGE_SIZE * nextPage);
     if (newMessages.length === 0) {
       setHasMore(false);
       return;
     }
-    setMessages(prev => [...newMessages, ...prev]);
+    setMessages(prev => [...prev, ...newMessages]);
     setPage(nextPage);
   };
 
@@ -503,12 +508,14 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
             style={styles.messagesList}
             contentContainerStyle={[
               styles.messagesContent,
+              { flexGrow: 1, justifyContent: 'flex-end' },
               isKeyboardVisible ? styles.messagesContentKeyboard : styles.messagesContentNormal
             ]}
             showsVerticalScrollIndicator={false}
             inverted
             onEndReached={loadMoreMessages}
             onEndReachedThreshold={0.1}
+            keyboardShouldPersistTaps="handled"
           />
         </View>
         {/* Input Bar - Fixed at bottom */}
@@ -527,7 +534,7 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
               maxLength={1000}
               onFocus={() => {
                 setTimeout(() => {
-                  flatListRef.current?.scrollToEnd({ animated: true });
+                  flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
                 }, 100);
               }}
               blurOnSubmit={false}
