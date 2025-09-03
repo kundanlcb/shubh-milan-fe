@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  Image,
   FlatList,
   StyleSheet,
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors, Typography, Spacing } from '../constants/styles';
+import { Colors, Typography } from '../constants/styles';
 import { TabHeader } from '../components/TabHeader';
 import { Stories } from '../components/home/Stories';
 import { PostCard } from '../components/home/PostCard';

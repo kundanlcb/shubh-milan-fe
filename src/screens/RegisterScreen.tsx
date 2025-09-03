@@ -272,361 +272,67 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
     animateLabel(field, focusedFields[field] || false, value);
   };
 
-  const renderStep1 = () => (
-    <View style={styles.form}>
-      <Text style={styles.stepTitle}>Basic Information</Text>
-      <Text style={styles.stepDescription}>Let's start with your basic details</Text>
-
-      <FloatingInput
-        label="Full Name *"
-        placeholder="Enter your full name"
-        autoCapitalize="words"
-        value={formData.fullName}
-        onChangeText={(value) => handleTextChange('fullName', value)}
-        onFocus={() => handleFocus('fullName')}
-        onBlur={() => handleBlur('fullName')}
-        focused={focusedFields.fullName || false}
-        labelAnimation={labelAnimations.fullName}
-      />
-
-      <FloatingInput
-        label="Email Address *"
-        placeholder="Enter your email"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        value={formData.email}
-        onChangeText={(value) => handleTextChange('email', value)}
-        onFocus={() => handleFocus('email')}
-        onBlur={() => handleBlur('email')}
-        focused={focusedFields.email || false}
-        labelAnimation={labelAnimations.email}
-      />
-
-      <FloatingInput
-        label="Phone Number *"
-        placeholder="Enter 10-digit phone number"
-        keyboardType="phone-pad"
-        maxLength={10}
-        value={formData.phone}
-        onChangeText={(value) => handleTextChange('phone', value)}
-        onFocus={() => handleFocus('phone')}
-        onBlur={() => handleBlur('phone')}
-        focused={focusedFields.phone || false}
-        labelAnimation={labelAnimations.phone}
-      />
-
-      <FloatingInput
-        label="Password *"
-        placeholder="Create a password (min 6 characters)"
-        secureTextEntry={true}
-        autoCapitalize="none"
-        value={formData.password}
-        onChangeText={(value) => handleTextChange('password', value)}
-        onFocus={() => handleFocus('password')}
-        onBlur={() => handleBlur('password')}
-        focused={focusedFields.password || false}
-        labelAnimation={labelAnimations.password}
-      />
-
-      <FloatingInput
-        label="Confirm Password *"
-        placeholder="Re-enter your password"
-        secureTextEntry={true}
-        autoCapitalize="none"
-        value={formData.confirmPassword}
-        onChangeText={(value) => handleTextChange('confirmPassword', value)}
-        onFocus={() => handleFocus('confirmPassword')}
-        onBlur={() => handleBlur('confirmPassword')}
-        focused={focusedFields.confirmPassword || false}
-        labelAnimation={labelAnimations.confirmPassword}
-      />
-    </View>
+  // Remove old renderStep1, renderStep2, renderStep3, renderStep4
+  // Add new renderers with descriptive names
+  const renderBasicInfo = () => (
+    <RegisterBasicInfo
+      formData={formData}
+      handleTextChange={handleTextChange}
+      handleFocus={handleFocus}
+      handleBlur={handleBlur}
+      focusedFields={focusedFields}
+      labelAnimations={labelAnimations}
+      styles={styles}
+    />
   );
 
-  const renderStep2 = () => (
-    <View style={styles.form}>
-      <Text style={styles.stepTitle}>About You</Text>
-      <Text style={styles.stepDescription}>Help others know you better</Text>
-
-      <FloatingInput
-        label="Age *"
-        placeholder="25"
-        keyboardType="numeric"
-        maxLength={2}
-        value={formData.age}
-        onChangeText={(value) => handleTextChange('age', value)}
-        onFocus={() => handleFocus('age')}
-        onBlur={() => handleBlur('age')}
-        focused={focusedFields.age || false}
-        labelAnimation={labelAnimations.age}
-      />
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Gender *</Text>
-        <View style={styles.radioContainer}>
-          <TouchableOpacity
-            style={styles.radioOption}
-            onPress={() => updateFormData('gender', 'male')}
-          >
-            <View style={styles.radioButton}>
-              {formData.gender === 'male' && <View style={styles.radioButtonSelected} />}
-            </View>
-            <Text style={styles.radioText}>Male</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.radioOption}
-            onPress={() => updateFormData('gender', 'female')}
-          >
-            <View style={styles.radioButton}>
-              {formData.gender === 'female' && <View style={styles.radioButtonSelected} />}
-            </View>
-            <Text style={styles.radioText}>Female</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      <FloatingInput
-        label="Profession *"
-        placeholder="e.g., Software Engineer, Teacher, Doctor"
-        value={formData.profession}
-        onChangeText={(value) => handleTextChange('profession', value)}
-        onFocus={() => handleFocus('profession')}
-        onBlur={() => handleBlur('profession')}
-        focused={focusedFields.profession || false}
-        labelAnimation={labelAnimations.profession}
-      />
-
-      <FloatingInput
-        label="Education"
-        placeholder="e.g., Bachelor's Degree, Master's"
-        value={formData.education}
-        onChangeText={(value) => handleTextChange('education', value)}
-        onFocus={() => handleFocus('education')}
-        onBlur={() => handleBlur('education')}
-        focused={focusedFields.education || false}
-        labelAnimation={labelAnimations.education}
-      />
-
-      <FloatingInput
-        label="Location *"
-        placeholder="e.g., Darbhanga, Bihar"
-        value={formData.location}
-        onChangeText={(value) => handleTextChange('location', value)}
-        onFocus={() => handleFocus('location')}
-        onBlur={() => handleBlur('location')}
-        focused={focusedFields.location || false}
-        labelAnimation={labelAnimations.location}
-      />
-
-      <View style={styles.row}>
-        <FloatingInput
-          label="Mother Tongue"
-          placeholder="Maithili"
-          style={styles.halfWidth}
-          value={formData.motherTongue}
-          onChangeText={(value) => handleTextChange('motherTongue', value)}
-          onFocus={() => handleFocus('motherTongue')}
-          onBlur={() => handleBlur('motherTongue')}
-          focused={focusedFields.motherTongue || false}
-          labelAnimation={labelAnimations.motherTongue}
-        />
-
-        <FloatingInput
-          label="Religion"
-          placeholder="Hindu"
-          style={styles.halfWidth}
-          value={formData.religion}
-          onChangeText={(value) => handleTextChange('religion', value)}
-          onFocus={() => handleFocus('religion')}
-          onBlur={() => handleBlur('religion')}
-          focused={focusedFields.religion || false}
-          labelAnimation={labelAnimations.religion}
-        />
-      </View>
-    </View>
+  const renderAboutYou = () => (
+    <RegisterAboutYou
+      formData={formData}
+      handleTextChange={handleTextChange}
+      handleFocus={handleFocus}
+      handleBlur={handleBlur}
+      focusedFields={focusedFields}
+      labelAnimations={labelAnimations}
+      styles={styles}
+      updateFormData={updateFormData}
+    />
   );
 
-  const renderStep3 = () => (
-    <View style={styles.form}>
-      <Text style={styles.stepTitle}>Partner Preferences</Text>
-      <Text style={styles.stepDescription}>We'll filter your feed to show relevant profiles</Text>
-
-      <View style={styles.row}>
-        <FloatingInput
-          label="Min Age *"
-          placeholder="22"
-          keyboardType="numeric"
-          maxLength={2}
-          style={styles.halfWidth}
-          value={formData.partnerAgeMin}
-          onChangeText={(value) => handleTextChange('partnerAgeMin', value)}
-          onFocus={() => handleFocus('partnerAgeMin')}
-          onBlur={() => handleBlur('partnerAgeMin')}
-          focused={focusedFields.partnerAgeMin || false}
-          labelAnimation={labelAnimations.partnerAgeMin}
-        />
-
-        <FloatingInput
-          label="Max Age *"
-          placeholder="30"
-          keyboardType="numeric"
-          maxLength={2}
-          style={styles.halfWidth}
-          value={formData.partnerAgeMax}
-          onChangeText={(value) => handleTextChange('partnerAgeMax', value)}
-          onFocus={() => handleFocus('partnerAgeMax')}
-          onBlur={() => handleBlur('partnerAgeMax')}
-          focused={focusedFields.partnerAgeMax || false}
-          labelAnimation={labelAnimations.partnerAgeMax}
-        />
-      </View>
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Preferred Professions (select multiple)</Text>
-        <View style={styles.tagContainer}>
-          {professionOptions.map((profession) => (
-            <TouchableOpacity
-              key={profession}
-              style={[
-                styles.tag,
-                formData.partnerProfession.includes(profession) && styles.tagSelected
-              ]}
-              onPress={() => toggleArrayItem(formData.partnerProfession, profession, 'partnerProfession')}
-            >
-              <Text style={[
-                styles.tagText,
-                formData.partnerProfession.includes(profession) && styles.tagTextSelected
-              ]}>
-                {profession}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Preferred Locations (select multiple)</Text>
-        <View style={styles.tagContainer}>
-          {locationOptions.map((location) => (
-            <TouchableOpacity
-              key={location}
-              style={[
-                styles.tag,
-                formData.partnerLocation.includes(location) && styles.tagSelected
-              ]}
-              onPress={() => toggleArrayItem(formData.partnerLocation, location, 'partnerLocation')}
-            >
-              <Text style={[
-                styles.tagText,
-                formData.partnerLocation.includes(location) && styles.tagTextSelected
-              ]}>
-                {location}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
-    </View>
+  const renderPartnerPreferences = () => (
+    <RegisterPartnerPreferences
+      formData={formData}
+      handleTextChange={handleTextChange}
+      handleFocus={handleFocus}
+      handleBlur={handleBlur}
+      focusedFields={focusedFields}
+      labelAnimations={labelAnimations}
+      styles={styles}
+      professionOptions={professionOptions}
+      locationOptions={locationOptions}
+      toggleArrayItem={toggleArrayItem}
+    />
   );
 
-  const renderStep4 = () => (
-    <View style={styles.form}>
-      <Text style={styles.stepTitle}>Account Settings</Text>
-      <Text style={styles.stepDescription}>Choose your membership and privacy preferences</Text>
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Account Type</Text>
-        <View style={styles.accountTypeContainer}>
-          <TouchableOpacity
-            style={[styles.accountOption, formData.accountType === 'free' && styles.accountSelected]}
-            onPress={() => updateFormData('accountType', 'free')}
-          >
-            <Text style={styles.accountTitle}>Free Member</Text>
-            <Text style={styles.accountFeatures}>• Browse filtered profiles{'\n'}• Like posts{'\n'}• Limited chat messages</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.accountOption, formData.accountType === 'premium' && styles.accountSelected]}
-            onPress={() => updateFormData('accountType', 'premium')}
-          >
-            <Text style={styles.accountTitle}>Premium Member ⭐</Text>
-            <Text style={styles.accountFeatures}>• Everything in Free{'\n'}• Unlimited chat{'\n'}• View contact numbers{'\n'}• Priority in feed</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      <View style={styles.summaryContainer}>
-        <Text style={styles.summaryTitle}>Your Feed Will Show:</Text>
-        <Text style={styles.summaryText}>
-          ✓ Age: {formData.partnerAgeMin}-{formData.partnerAgeMax} years{'\n'}
-          ✓ Professions: {formData.partnerProfession.length > 0 ? formData.partnerProfession.join(', ') : 'Any'}{'\n'}
-          ✓ Locations: {formData.partnerLocation.length > 0 ? formData.partnerLocation.join(', ') : 'Any'}{'\n'}
-          ✓ Account: {formData.accountType === 'premium' ? 'Premium ⭐' : 'Free'}
-        </Text>
-      </View>
-    </View>
+  const renderAccountSettings = () => (
+    <RegisterAccountSettings
+      formData={formData}
+      updateFormData={updateFormData}
+      styles={styles}
+    />
   );
 
-  const renderProgressBar = () => (
-    <View style={styles.progressContainer}>
-      <View style={styles.progressBar}>
-        <View style={[styles.progressFill, { width: `${(currentStep / 4) * 100}%` }]} />
-      </View>
-      <Text style={styles.progressText}>{stepCategories[currentStep - 1]} ({currentStep} of 4)</Text>
-    </View>
-  );
-
+  // Update renderCurrentStep to use new renderers
   const renderCurrentStep = () => {
     switch (currentStep) {
       case 1:
-        return (
-          <RegisterBasicInfo
-            formData={formData}
-            handleTextChange={handleTextChange}
-            handleFocus={handleFocus}
-            handleBlur={handleBlur}
-            focusedFields={focusedFields}
-            labelAnimations={labelAnimations}
-            styles={styles}
-          />
-        );
+        return renderBasicInfo();
       case 2:
-        return (
-          <RegisterAboutYou
-            formData={formData}
-            handleTextChange={handleTextChange}
-            handleFocus={handleFocus}
-            handleBlur={handleBlur}
-            focusedFields={focusedFields}
-            labelAnimations={labelAnimations}
-            styles={styles}
-            updateFormData={updateFormData}
-          />
-        );
+        return renderAboutYou();
       case 3:
-        return (
-          <RegisterPartnerPreferences
-            formData={formData}
-            handleTextChange={handleTextChange}
-            handleFocus={handleFocus}
-            handleBlur={handleBlur}
-            focusedFields={focusedFields}
-            labelAnimations={labelAnimations}
-            styles={styles}
-            professionOptions={professionOptions}
-            locationOptions={locationOptions}
-            toggleArrayItem={toggleArrayItem}
-          />
-        );
+        return renderPartnerPreferences();
       case 4:
-        return (
-          <RegisterAccountSettings
-            formData={formData}
-            updateFormData={updateFormData}
-            styles={styles}
-          />
-        );
+        return renderAccountSettings();
       default:
         return null;
     }
