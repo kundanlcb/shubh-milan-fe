@@ -13,6 +13,10 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Typography, Spacing, BorderRadius } from '../constants/styles';
 import { FloatingInput } from '../components/FloatingInput';
+import RegisterBasicInfo from './RegisterBasicInfo';
+import RegisterAboutYou from './RegisterAboutYou';
+import RegisterPartnerPreferences from './RegisterPartnerPreferences';
+import RegisterAccountSettings from './RegisterAccountSettings';
 
 type NavigationProp = {
   navigate: (screen: string) => void;
@@ -51,6 +55,13 @@ interface RegistrationData {
   accountType: 'free' | 'premium';
   privacyLevel: 'public' | 'filtered' | 'private';
 }
+
+const stepCategories = [
+  'Basic Information',
+  'About You',
+  'Partner Preferences',
+  'Account Settings',
+];
 
 export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
   const [formData, setFormData] = useState<RegistrationData>({
@@ -562,24 +573,64 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
       <View style={styles.progressBar}>
         <View style={[styles.progressFill, { width: `${(currentStep / 4) * 100}%` }]} />
       </View>
-      <Text style={styles.progressText}>Step {currentStep} of 4</Text>
+      <Text style={styles.progressText}>{stepCategories[currentStep - 1]} ({currentStep} of 4)</Text>
     </View>
   );
 
   const renderCurrentStep = () => {
     switch (currentStep) {
       case 1:
-        return renderStep1();
+        return (
+          <RegisterBasicInfo
+            formData={formData}
+            handleTextChange={handleTextChange}
+            handleFocus={handleFocus}
+            handleBlur={handleBlur}
+            focusedFields={focusedFields}
+            labelAnimations={labelAnimations}
+            styles={styles}
+          />
+        );
       case 2:
-        return renderStep2();
+        return (
+          <RegisterAboutYou
+            formData={formData}
+            handleTextChange={handleTextChange}
+            handleFocus={handleFocus}
+            handleBlur={handleBlur}
+            focusedFields={focusedFields}
+            labelAnimations={labelAnimations}
+            styles={styles}
+            updateFormData={updateFormData}
+          />
+        );
       case 3:
-        return renderStep3();
+        return (
+          <RegisterPartnerPreferences
+            formData={formData}
+            handleTextChange={handleTextChange}
+            handleFocus={handleFocus}
+            handleBlur={handleBlur}
+            focusedFields={focusedFields}
+            labelAnimations={labelAnimations}
+            styles={styles}
+            professionOptions={professionOptions}
+            locationOptions={locationOptions}
+            toggleArrayItem={toggleArrayItem}
+          />
+        );
       case 4:
-        return renderStep4();
+        return (
+          <RegisterAccountSettings
+            formData={formData}
+            updateFormData={updateFormData}
+            styles={styles}
+          />
+        );
       default:
-        return renderStep1();
+        return null;
     }
-  };
+  }
 
   return (
     <SafeAreaView style={styles.container}>
