@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { StatusBar, useColorScheme, BackHandler, Platform, View } from 'react-native';
+import { StatusBar, useColorScheme, BackHandler, View } from 'react-native';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LoginScreen } from './src/screens/LoginScreen';
 import { RegisterScreen } from './src/screens/RegisterScreen';

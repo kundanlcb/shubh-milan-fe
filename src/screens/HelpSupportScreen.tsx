@@ -10,7 +10,7 @@ import {
   Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors, Typography, Spacing, BorderRadius, Shadows, GlobalStyles } from '../constants/styles';
+import { Colors, Typography, Spacing, BorderRadius, Shadows } from '../constants/styles';
 import { Icon } from '../components/Icon';
 import { TabHeader } from '../components/TabHeader';
 import { MainScreenProps } from '../types/navigation';
