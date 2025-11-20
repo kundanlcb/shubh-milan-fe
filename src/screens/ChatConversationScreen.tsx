@@ -17,6 +17,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Typography, Spacing, BorderRadius } from '../constants/styles';
 import { Icon } from '../components/Icon';
+import { SmartImage } from '../components/SmartImage';
+import { SmartVideo } from '../components/SmartVideo';
 import { MainScreenProps } from '../types/navigation';
 
 interface MediaItem {
@@ -109,7 +111,7 @@ const mockMessages: Message[] = [
     id: '8',
     media: {
       id: 'vid1',
-      uri: 'https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4',
+      uri: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
       type: 'video',
       thumbnail: 'https://picsum.photos/400/225?random=3',
       duration: 30,
@@ -144,7 +146,7 @@ const mockMessages: Message[] = [
     id: '11',
     media: {
       id: 'vid2',
-      uri: 'https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4',
+      uri: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
       type: 'video',
       thumbnail: 'https://picsum.photos/400/225?random=5',
       duration: 45,
@@ -356,34 +358,22 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
             <View style={styles.mediaContainer}>
               {item.type === 'image' ? (
                 <TouchableOpacity onPress={() => handleImagePress(item.media!.uri)}>
-                  <Image
-                    source={{ uri: item.media.uri }}
+                  <SmartImage
+                    uri={item.media!.uri}
                     style={styles.messageImage}
                     resizeMode="cover"
                   />
                 </TouchableOpacity>
               ) : item.type === 'video' ? (
-                <TouchableOpacity onPress={() => handleVideoPress(item.media!.uri)}>
-                  <View style={styles.videoContainer}>
-                    <Image
-                      source={{ uri: item.media.thumbnail || item.media.uri }}
-                      style={styles.messageImage}
-                      resizeMode="cover"
-                    />
-                    <View style={styles.videoOverlay}>
-                      <View style={styles.playButton}>
-                        <Icon name="play" library="feather" size={24} color="white" />
-                      </View>
-                      {item.media.duration && (
-                        <View style={styles.videoDuration}>
-                          <Text style={styles.videoDurationText}>
-                            {formatDuration(item.media.duration)}
-                          </Text>
-                        </View>
-                      )}
-                    </View>
-                  </View>
-                </TouchableOpacity>
+                <View style={styles.videoContainer}>
+                  <SmartVideo
+                    source={{ uri: item.media!.uri }}
+                    style={styles.messageImage}
+                    resizeMode="cover"
+                    paused={true}
+                    controls={true}
+                  />
+                </View>
               ) : null}
             </View>
           )}
@@ -414,12 +404,14 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
       [
         { text: 'Video Call', onPress: () => Alert.alert('Video call feature coming soon!') },
         { text: 'Voice Call', onPress: () => Alert.alert('Voice call feature coming soon!') },
-        { text: 'View Profile', onPress: () => {
-          // Close chat conversation and navigate to user profile
-          navigation.goBack();
-          // We need to pass navigation through props to handle this properly
-          Alert.alert('View Profile', 'Profile viewing feature will be implemented with proper navigation');
-        }},
+        {
+          text: 'View Profile', onPress: () => {
+            // Close chat conversation and navigate to user profile
+            navigation.goBack();
+            // We need to pass navigation through props to handle this properly
+            Alert.alert('View Profile', 'Profile viewing feature will be implemented with proper navigation');
+          }
+        },
         { text: 'Block User', style: 'destructive', onPress: () => Alert.alert('Block user feature coming soon!') },
         { text: 'Cancel', style: 'cancel' },
       ]

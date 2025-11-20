@@ -10,8 +10,9 @@ import {
   Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {Colors, Typography, Spacing, BorderRadius, Shadows, GlobalStyles} from '../constants/styles';
+import { Colors, Typography, Spacing, BorderRadius, Shadows, GlobalStyles } from '../constants/styles';
 import { Icon } from '../components/Icon';
+import { SmartImage } from '../components/SmartImage';
 import { TabHeader } from '../components/TabHeader';
 import { MainScreenProps } from '../types/navigation';
 
@@ -129,7 +130,7 @@ export const ChatScreen: React.FC<MainScreenProps<'Chat'>> = ({ navigation }) =>
     >
       <View style={styles.avatarContainer}>
         <View style={[styles.avatar, item.isOnline && styles.onlineAvatar]}>
-          <Image source={{ uri: item.avatar }} style={styles.avatarImage} />
+          <SmartImage uri={item.avatar} style={styles.avatarImage} />
         </View>
         {item.isOnline && <View style={styles.onlineIndicator} />}
       </View>

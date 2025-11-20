@@ -106,7 +106,7 @@ export const HomeScreen: React.FC<{
       },
       {
         id: `${user.name}-2`,
-        uri: `https://picsum.photos/400/800?random=${Math.floor(Math.random() * 1000)}`,
+        uri: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
         type: 'video' as const,
       },
       {

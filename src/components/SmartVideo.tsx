@@ -32,6 +32,10 @@ export const SmartVideo: React.FC<SmartVideoProps> = ({
         setHasError(true);
     };
 
+    const handleBuffer = ({ isBuffering }: { isBuffering: boolean }) => {
+        setIsLoading(isBuffering);
+    };
+
     return (
         <View style={[styles.container, containerStyle, style]}>
             <Video
@@ -40,6 +44,7 @@ export const SmartVideo: React.FC<SmartVideoProps> = ({
                 onLoadStart={handleLoadStart}
                 onLoad={handleLoad}
                 onError={handleError}
+                onBuffer={handleBuffer}
                 resizeMode={resizeMode}
                 {...props}
             />

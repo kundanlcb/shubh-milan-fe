@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../Icon';
 import { SmartImage } from '../SmartImage';
+import { SmartVideo } from '../SmartVideo';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -143,17 +144,15 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
             resizeMode="contain"
           />
         ) : (
+
           <View style={styles.videoContainer}>
-            <SmartImage
-              uri={currentStory.uri}
+            <SmartVideo
+              source={{ uri: currentStory.uri }}
               style={styles.storyImage}
               resizeMode="contain"
+              paused={false}
+              repeat={false}
             />
-            <View style={styles.videoOverlay}>
-              <TouchableOpacity style={styles.playButton}>
-                <Icon name="play" library="feather" size={48} color="white" />
-              </TouchableOpacity>
-            </View>
           </View>
         )}
       </View>
@@ -182,7 +181,7 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
           <Icon name="share-2" library="feather" size={24} color="white" />
         </TouchableOpacity>
       </View>
-    </View>
+    </View >
   );
 };
 

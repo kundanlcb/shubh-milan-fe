@@ -16,7 +16,7 @@ export const allUsers = [
     media: [
       { id: '1-1', uri: 'https://picsum.photos/400/300?random=1', type: 'image' as const },
       { id: '1-2', uri: 'https://picsum.photos/400/300?random=11', type: 'image' as const },
-      { id: '1-3', uri: 'https://picsum.photos/400/300?random=21', type: 'video' as const },
+      { id: '1-3', uri: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', type: 'video' as const },
       { id: '1-4', uri: 'https://picsum.photos/400/300?random=101', type: 'image' as const },
     ],
     caption: 'Family celebration during Chhath Puja! 🙏 Looking for someone special to share life\'s beautiful moments.',
@@ -63,7 +63,7 @@ export const allUsers = [
     media: [
       { id: '3-1', uri: 'https://picsum.photos/400/350?random=3', type: 'image' as const },
       { id: '3-2', uri: 'https://picsum.photos/400/350?random=103', type: 'image' as const },
-      { id: '3-3', uri: 'https://picsum.photos/400/350?random=203', type: 'video' as const },
+      { id: '3-3', uri: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4', type: 'video' as const },
       { id: '3-4', uri: 'https://picsum.photos/400/350?random=303', type: 'image' as const },
       { id: '3-5', uri: 'https://picsum.photos/400/350?random=403', type: 'image' as const },
     ],
@@ -88,7 +88,7 @@ export const allUsers = [
     },
     media: [
       { id: '4-1', uri: 'https://picsum.photos/400/320?random=4', type: 'image' as const },
-      { id: '4-2', uri: 'https://picsum.photos/400/320?random=14', type: 'video' as const },
+      { id: '4-2', uri: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4', type: 'video' as const },
       { id: '4-3', uri: 'https://picsum.photos/400/320?random=24', type: 'image' as const },
     ],
     caption: 'Started my own business this year! Family support means everything. 💼',
@@ -112,7 +112,7 @@ export const allUsers = [
     },
     media: [
       { id: '5-1', uri: 'https://picsum.photos/400/380?random=5', type: 'image' as const },
-      { id: '5-2', uri: 'https://picsum.photos/400/380?random=15', type: 'video' as const },
+      { id: '5-2', uri: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4', type: 'video' as const },
       { id: '5-3', uri: 'https://picsum.photos/400/380?random=105', type: 'image' as const },
       { id: '5-4', uri: 'https://picsum.photos/400/380?random=205', type: 'image' as const },
       { id: '5-5', uri: 'https://picsum.photos/400/380?random=305', type: 'image' as const },
@@ -138,7 +138,7 @@ export const allUsers = [
     },
     media: [
       { id: '6-1', uri: 'https://picsum.photos/400/360?random=6', type: 'image' as const },
-      { id: '6-2', uri: 'https://picsum.photos/400/360?random=16', type: 'video' as const },
+      { id: '6-2', uri: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4', type: 'video' as const },
     ],
     caption: 'Building bridges and dreams! Family values are important to me. 🏗️',
     likes: 27,
@@ -163,7 +163,7 @@ export const allUsers = [
       { id: '7-1', uri: 'https://picsum.photos/400/340?random=7', type: 'image' as const },
       { id: '7-2', uri: 'https://picsum.photos/400/340?random=107', type: 'image' as const },
       { id: '7-3', uri: 'https://picsum.photos/400/340?random=207', type: 'image' as const },
-      { id: '7-4', uri: 'https://picsum.photos/400/340?random=307', type: 'video' as const },
+      { id: '7-4', uri: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4', type: 'video' as const },
     ],
     caption: 'Teaching children is my passion. Seeking someone who values education and family. 📚',
     likes: 41,
@@ -209,7 +209,7 @@ export const allUsers = [
     media: [
       { id: '9-1', uri: 'https://picsum.photos/400/370?random=9', type: 'image' as const },
       { id: '9-2', uri: 'https://picsum.photos/400/370?random=19', type: 'image' as const },
-      { id: '9-3', uri: 'https://picsum.photos/400/370?random=109', type: 'video' as const },
+      { id: '9-3', uri: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4', type: 'video' as const },
     ],
     caption: 'Healing hearts and souls. Family gatherings are my favorite time! ❤️',
     likes: 48,
@@ -235,7 +235,7 @@ export const allUsers = [
       { id: '10-2', uri: 'https://picsum.photos/400/330?random=110', type: 'image' as const },
       { id: '10-3', uri: 'https://picsum.photos/400/330?random=210', type: 'image' as const },
       { id: '10-4', uri: 'https://picsum.photos/400/330?random=310', type: 'image' as const },
-      { id: '10-5', uri: 'https://picsum.photos/400/330?random=410', type: 'video' as const },
+      { id: '10-5', uri: 'https://storage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4', type: 'video' as const },
     ],
     caption: 'Financial stability and family values go hand in hand. 🏦',
     likes: 22,
@@ -258,10 +258,10 @@ export const allUsers = [
     },
     media: [
       { id: '11-1', uri: 'https://picsum.photos/400/350?random=11', type: 'image' as const },
-      { id: '11-2', uri: 'https://picsum.photos/400/350?random=31', type: 'video' as const },
+      { id: '11-2', uri: 'https://storage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4', type: 'video' as const },
       { id: '11-3', uri: 'https://picsum.photos/400/350?random=41', type: 'image' as const },
       { id: '11-4', uri: 'https://picsum.photos/400/350?random=51', type: 'image' as const },
-      { id: '11-5', uri: 'https://picsum.photos/400/350?random=61', type: 'video' as const },
+      { id: '11-5', uri: 'https://storage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4', type: 'video' as const },
     ],
     caption: 'Healthcare is my calling. Seeking someone who appreciates dedication and care. 💊',
     likes: 29,
@@ -329,7 +329,7 @@ export const allUsers = [
     },
     media: [
       { id: '14-1', uri: 'https://picsum.photos/400/340?random=14', type: 'image' as const },
-      { id: '14-2', uri: 'https://picsum.photos/400/340?random=34', type: 'video' as const },
+      { id: '14-2', uri: 'https://storage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4', type: 'video' as const },
       { id: '14-3', uri: 'https://picsum.photos/400/340?random=44', type: 'image' as const },
     ],
     caption: 'Designing homes and building dreams. Family is the foundation of everything! 🏡',
