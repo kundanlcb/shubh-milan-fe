@@ -5,6 +5,7 @@ import {
   FlatList,
   StyleSheet,
   Alert,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Typography } from '../constants/styles';
@@ -83,6 +84,17 @@ export const HomeScreen: React.FC<{
   };
 
   const [posts, setPosts] = useState(getFilteredPosts());
+
+  // Prefetch first story for each user to ensure smooth loading
+  React.useEffect(() => {
+    posts.forEach(post => {
+      const stories = getStoriesForUser(post.user);
+      if (stories.length > 0 && stories[0].type === 'image') {
+        // @ts-ignore - Image.prefetch is valid but might need type definition update
+        Image.prefetch(stories[0].uri).catch(() => { });
+      }
+    });
+  }, [posts]);
 
   // Mock story data - in real app this would come from API
   const getStoriesForUser = (user: any) => {
@@ -218,12 +230,12 @@ export const HomeScreen: React.FC<{
 
   const renderPost = ({ item }: { item: PostData }) => (
     <PostCard
-        post={item}
-        onLike={handleLike}
-        onProfile={handleProfile}
-        onComment={handleChat}
-        onShare={(postId: string) => console.log('Share post:', postId)}
-        onSave={() => console.log('Save post')}
+      post={item}
+      onLike={handleLike}
+      onProfile={handleProfile}
+      onComment={handleChat}
+      onShare={(postId: string) => console.log('Share post:', postId)}
+      onSave={() => console.log('Save post')}
     />
   );
 

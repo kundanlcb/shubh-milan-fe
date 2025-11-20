@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../components/Icon';
 import { SmartImage } from '../components/SmartImage';
+import { SmartVideo } from '../components/SmartVideo';
 import { MainScreenProps } from '../types/navigation';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
@@ -24,26 +25,46 @@ export const StoryViewerScreen: React.FC<MainScreenProps<'StoryViewer'>> = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress] = useState(new Animated.Value(0));
 
-  const startProgress = useCallback(() => {
+  const [isMediaLoaded, setIsMediaLoaded] = useState(false);
+  const [currentDuration, setCurrentDuration] = useState(5000);
+
+  const handleNext = useCallback(() => {
+    if (currentIndex < stories.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    } else {
+      navigation.goBack();
+    }
+  }, [currentIndex, stories.length, navigation]);
+
+  const startProgress = useCallback((duration: number = 5000) => {
     progress.setValue(0);
     Animated.timing(progress, {
       toValue: 1,
-      duration: 5000, // 5 seconds per story
+      duration: duration,
       useNativeDriver: false,
-    }).start(() => {
-      if (currentIndex < stories.length - 1) {
-        setCurrentIndex(currentIndex + 1);
-      } else {
-        navigation.goBack();
+    }).start(({ finished }) => {
+      if (finished) {
+        handleNext();
       }
     });
-  }, [progress, currentIndex, stories.length, navigation]);
+  }, [progress, handleNext]);
 
   useEffect(() => {
-    if (stories.length > 0) {
-      startProgress();
+    setIsMediaLoaded(false);
+    progress.setValue(0);
+    // Default duration for images, video will override on load
+    setCurrentDuration(5000);
+  }, [currentIndex]);
+
+  useEffect(() => {
+    if (isMediaLoaded) {
+      startProgress(currentDuration);
+    } else {
+      progress.stopAnimation();
     }
-  }, [currentIndex, stories.length, startProgress]);
+  }, [isMediaLoaded, currentDuration, startProgress]);
+
+  // Removed auto-start useEffect, now controlled by isMediaLoaded
 
   // Preload next story
   useEffect(() => {
@@ -53,13 +74,7 @@ export const StoryViewerScreen: React.FC<MainScreenProps<'StoryViewer'>> = ({
     }
   }, [currentIndex, stories]);
 
-  const handleNext = () => {
-    if (currentIndex < stories.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    } else {
-      navigation.goBack();
-    }
-  };
+
 
   const handlePrevious = () => {
     if (currentIndex > 0) {
@@ -133,19 +148,21 @@ export const StoryViewerScreen: React.FC<MainScreenProps<'StoryViewer'>> = ({
             uri={currentStory.uri}
             style={styles.storyImage}
             resizeMode="cover"
+            onLoad={() => setIsMediaLoaded(true)}
           />
         ) : (
           <View style={styles.videoContainer}>
-            <SmartImage
-              uri={currentStory.uri}
+            <SmartVideo
+              source={{ uri: currentStory.uri }}
               style={styles.storyImage}
               resizeMode="cover"
+              onLoad={(data) => {
+                setCurrentDuration(data.duration * 1000);
+                setIsMediaLoaded(true);
+              }}
+              paused={!isMediaLoaded} // Start playing when loaded (and effectively when progress starts)
+              repeat={false}
             />
-            <View style={styles.videoOverlay}>
-              <TouchableOpacity style={styles.playButton}>
-                <Icon name="play" library="feather" size={48} color="white" />
-              </TouchableOpacity>
-            </View>
           </View>
         )}
       </View>
