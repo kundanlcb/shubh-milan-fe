@@ -12,7 +12,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../Icon';
 import { CachedImage } from '../CachedImage';
 import { preloadMediaItems } from '../../utils/cacheManager';
-import FastImage from 'react-native-fast-image';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -47,7 +46,7 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
   useEffect(() => {
     if (visible && stories.length > 0) {
       // Preload all story media with high priority
-      preloadMediaItems(stories, FastImage.priority.high);
+      preloadMediaItems(stories, 'high');
     }
   }, [visible, stories]);
 
@@ -129,8 +128,8 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
           <CachedImage
             uri={user.avatar}
             style={styles.userAvatar}
-            resizeMode={FastImage.resizeMode.cover}
-            priority={FastImage.priority.high}
+            resizeMode={'cover' as any}
+            priority={'high' as any}
           />
           <Text style={styles.userName}>{user.name}</Text>
           <Text style={styles.timeAgo}>2h ago</Text>
@@ -146,8 +145,8 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
           <CachedImage
             uri={currentStory.uri}
             style={styles.storyImage}
-            resizeMode={FastImage.resizeMode.contain}
-            priority={FastImage.priority.high}
+            resizeMode={'contain' as any}
+            priority={'high' as any}
             showLoader
           />
         ) : (
@@ -155,8 +154,8 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
             <CachedImage
               uri={currentStory.uri}
               style={styles.storyImage}
-              resizeMode={FastImage.resizeMode.contain}
-              priority={FastImage.priority.high}
+              resizeMode={'contain' as any}
+              priority={'high' as any}
               showLoader
             />
             <View style={styles.videoOverlay}>

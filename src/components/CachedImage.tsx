@@ -25,8 +25,8 @@ interface CachedImageProps extends Omit<FastImageProps, 'source'> {
 export const CachedImage: React.FC<CachedImageProps> = ({
   uri,
   style,
-  resizeMode = FastImage.resizeMode.cover,
-  priority = FastImage.priority.normal,
+  resizeMode = 'cover' as ResizeMode,
+  priority = 'normal' as Priority,
   showLoader = false,
   fallbackColor = Colors.backgroundCard,
   ...props
@@ -38,11 +38,11 @@ export const CachedImage: React.FC<CachedImageProps> = ({
       <FastImage
         source={{
           uri,
-          priority,
-          cache: FastImage.cacheControl.web,
+          priority: priority || 'normal' as Priority,
+          cache: 'web',
         }}
         style={[StyleSheet.absoluteFill, style]}
-        resizeMode={resizeMode}
+        resizeMode={resizeMode || 'cover' as ResizeMode}
         onLoadStart={() => setLoading(true)}
         onLoadEnd={() => setLoading(false)}
         onError={() => setLoading(false)}

@@ -19,7 +19,6 @@ import {
   PostData,
 } from '../utils/homeData';
 import { preloadMediaItems } from '../utils/cacheManager';
-import FastImage from 'react-native-fast-image';
 
 const EmptyStateComponent: React.FC<{ onAdjustPreferences: () => void }> = ({ onAdjustPreferences }) => (
   <EmptyState onAdjustPreferences={onAdjustPreferences} />
@@ -93,7 +92,7 @@ export const HomeScreen: React.FC<{
       const visiblePosts = posts.slice(0, 3);
       for (const post of visiblePosts) {
         // Preload with normal priority as user will see these soon
-        await preloadMediaItems(post.media, FastImage.priority.normal);
+        await preloadMediaItems(post.media, 'normal');
       }
     };
 
@@ -108,7 +107,7 @@ export const HomeScreen: React.FC<{
       const nextPosts = posts.slice(currentIndex + 1, currentIndex + 3);
       nextPosts.forEach(post => {
         // Use low priority for items not yet visible
-        preloadMediaItems(post.media, FastImage.priority.low);
+        preloadMediaItems(post.media, 'low');
       });
     }
   }, [posts]);

@@ -5,14 +5,14 @@ import FastImage from 'react-native-fast-image';
  */
 export const CacheConfig = {
   // Cache priority for different content types
-  HIGH_PRIORITY: FastImage.priority.high,
-  NORMAL_PRIORITY: FastImage.priority.normal,
-  LOW_PRIORITY: FastImage.priority.low,
+  HIGH_PRIORITY: 'high',
+  NORMAL_PRIORITY: 'normal',
+  LOW_PRIORITY: 'low',
   
   // Cache control
-  WEB: FastImage.cacheControl.web,
-  CACHE_ONLY: FastImage.cacheControl.cacheOnly,
-  IMMUTABLE: FastImage.cacheControl.immutable,
+  WEB: 'web',
+  CACHE_ONLY: 'cacheOnly',
+  IMMUTABLE: 'immutable',
 } as const;
 
 /**
@@ -21,16 +21,16 @@ export const CacheConfig = {
  */
 export const preloadImages = async (
   uris: string[],
-  priority: typeof FastImage.priority[keyof typeof FastImage.priority] = FastImage.priority.normal
+  priority: string = 'normal'
 ): Promise<void> => {
   try {
     const sources = uris.map(uri => ({
       uri,
-      priority,
-      cache: FastImage.cacheControl.web,
+      priority: priority as any,
+      cache: 'web' as any,
     }));
     
-    await FastImage.preload(sources);
+    await FastImage.preload(sources as any);
   } catch (error) {
     console.warn('Failed to preload images:', error);
   }
@@ -42,7 +42,7 @@ export const preloadImages = async (
  */
 export const preloadMediaItems = async (
   mediaItems: Array<{ uri: string; type: 'image' | 'video' }>,
-  priority: typeof FastImage.priority[keyof typeof FastImage.priority] = FastImage.priority.normal
+  priority: string = 'normal'
 ): Promise<void> => {
   try {
     // Only preload images (videos are handled differently)

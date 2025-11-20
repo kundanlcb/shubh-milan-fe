@@ -4,7 +4,6 @@ import { Colors } from '../../constants/styles';
 import { Icon } from '../Icon';
 import { CachedImage } from '../CachedImage';
 import { preloadMediaItems } from '../../utils/cacheManager';
-import FastImage from 'react-native-fast-image';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -55,7 +54,7 @@ export const PostCard: React.FC<PostCardProps> = ({
   // Prefetch all media items in this post when component mounts
   useEffect(() => {
     // Preload with normal priority since user is viewing the post
-    preloadMediaItems(post.media, FastImage.priority.normal);
+    preloadMediaItems(post.media, 'normal');
   }, [post.media]);
 
   const onViewableItemsChanged = useRef(({ viewableItems }: any) => {
@@ -75,8 +74,8 @@ export const PostCard: React.FC<PostCardProps> = ({
           <CachedImage
             uri={item.uri}
             style={styles.postImage}
-            resizeMode={FastImage.resizeMode.cover}
-            priority={FastImage.priority.high}
+            resizeMode={'cover' as any}
+            priority={'high' as any}
           />
           <View style={styles.videoOverlay}>
             <TouchableOpacity style={styles.playButton}>
@@ -95,8 +94,8 @@ export const PostCard: React.FC<PostCardProps> = ({
         <CachedImage
           uri={item.uri}
           style={styles.postImage}
-          resizeMode={FastImage.resizeMode.cover}
-          priority={FastImage.priority.high}
+          resizeMode={'cover' as any}
+          priority={'high' as any}
         />
       </View>
     );
@@ -114,8 +113,8 @@ export const PostCard: React.FC<PostCardProps> = ({
             <CachedImage
               uri={post.user.avatar}
               style={styles.avatarImage}
-              resizeMode={FastImage.resizeMode.cover}
-              priority={FastImage.priority.high}
+              resizeMode={'cover' as any}
+              priority={'high' as any}
             />
           </View>
           <View style={styles.userDetails}>

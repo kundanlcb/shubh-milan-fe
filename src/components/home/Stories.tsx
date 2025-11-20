@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-nati
 import { Colors } from '../../constants/styles';
 import { CachedImage } from '../CachedImage';
 import { preloadImages } from '../../utils/cacheManager';
-import FastImage from 'react-native-fast-image';
 
 interface User {
   name: string;
@@ -27,7 +26,7 @@ export const Stories: React.FC<StoriesProps> = ({
   useEffect(() => {
     const avatarUris = users.slice(0, 5).map(user => user.avatar);
     // Preload with high priority since these are immediately visible
-    preloadImages(avatarUris, FastImage.priority.high);
+    preloadImages(avatarUris, 'high');
   }, [users]);
 
   const handleStoryPress = (user: User) => {
@@ -63,8 +62,8 @@ export const Stories: React.FC<StoriesProps> = ({
                 <CachedImage
                   uri={user.avatar}
                   style={styles.storyAvatarImage}
-                  resizeMode={FastImage.resizeMode.cover}
-                  priority={FastImage.priority.high}
+                  resizeMode={'cover' as any}
+                  priority={'high' as any}
                 />
               </View>
               <Text style={styles.storyLabel} numberOfLines={1}>
