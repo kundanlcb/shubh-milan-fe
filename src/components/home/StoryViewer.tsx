@@ -5,12 +5,13 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
-  Image,
   StatusBar,
   Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../Icon';
+import { CachedImage } from '../CachedImage';
+import { preloadMediaItems } from '../../utils/cacheManager';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -40,6 +41,14 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress] = useState(new Animated.Value(0));
+
+  // Prefetch all stories when viewer becomes visible
+  useEffect(() => {
+    if (visible && stories.length > 0) {
+      // Preload all story media with high priority
+      preloadMediaItems(stories, 'high');
+    }
+  }, [visible, stories]);
 
   const startProgress = useCallback(() => {
     progress.setValue(0);
@@ -116,7 +125,12 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
       {/* Header */}
       <SafeAreaView style={styles.header}>
         <View style={styles.userInfo}>
-          <Image source={{ uri: user.avatar }} style={styles.userAvatar} />
+          <CachedImage
+            uri={user.avatar}
+            style={styles.userAvatar}
+            resizeMode={'cover' as any}
+            priority={'high' as any}
+          />
           <Text style={styles.userName}>{user.name}</Text>
           <Text style={styles.timeAgo}>2h ago</Text>
         </View>
@@ -128,17 +142,21 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
       {/* Story Content */}
       <View style={styles.storyContent}>
         {currentStory.type === 'image' ? (
-          <Image
-            source={{ uri: currentStory.uri }}
+          <CachedImage
+            uri={currentStory.uri}
             style={styles.storyImage}
-            resizeMode="contain"
+            resizeMode={'contain' as any}
+            priority={'high' as any}
+            showLoader
           />
         ) : (
           <View style={styles.videoContainer}>
-            <Image
-              source={{ uri: currentStory.uri }}
+            <CachedImage
+              uri={currentStory.uri}
               style={styles.storyImage}
-              resizeMode="contain"
+              resizeMode={'contain' as any}
+              priority={'high' as any}
+              showLoader
             />
             <View style={styles.videoOverlay}>
               <TouchableOpacity style={styles.playButton}>

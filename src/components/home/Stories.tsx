@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { Colors } from '../../constants/styles';
+import { CachedImage } from '../CachedImage';
+import { preloadImages } from '../../utils/cacheManager';
 
 interface User {
   name: string;
@@ -19,6 +21,13 @@ export const Stories: React.FC<StoriesProps> = ({
   onStoryPress,
 }) => {
   const [seenStories, setSeenStories] = useState<Set<string>>(new Set());
+
+  // Prefetch story avatars when component mounts or users change
+  useEffect(() => {
+    const avatarUris = users.slice(0, 5).map(user => user.avatar);
+    // Preload with high priority since these are immediately visible
+    preloadImages(avatarUris, 'high');
+  }, [users]);
 
   const handleStoryPress = (user: User) => {
     // Mark this story as seen
@@ -50,7 +59,12 @@ export const Stories: React.FC<StoriesProps> = ({
                 styles.storyCircle,
                 isSeen ? styles.storyCircleSeen : styles.storyCircleUnseen
               ]}>
-                <Image source={{ uri: user.avatar }} style={styles.storyAvatarImage} />
+                <CachedImage
+                  uri={user.avatar}
+                  style={styles.storyAvatarImage}
+                  resizeMode={'cover' as any}
+                  priority={'high' as any}
+                />
               </View>
               <Text style={styles.storyLabel} numberOfLines={1}>
                 {user.name.split(' ')[0]}

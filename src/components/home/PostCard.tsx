@@ -1,7 +1,9 @@
-import React, { useState, useRef } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, Dimensions, FlatList } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, FlatList } from 'react-native';
 import { Colors } from '../../constants/styles';
 import { Icon } from '../Icon';
+import { CachedImage } from '../CachedImage';
+import { preloadMediaItems } from '../../utils/cacheManager';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -49,6 +51,12 @@ export const PostCard: React.FC<PostCardProps> = ({
   const flatListRef = useRef<FlatList>(null);
   const compatibilityScore = Math.floor(Math.random() * 20) + 80;
 
+  // Prefetch all media items in this post when component mounts
+  useEffect(() => {
+    // Preload with normal priority since user is viewing the post
+    preloadMediaItems(post.media, 'normal');
+  }, [post.media]);
+
   const onViewableItemsChanged = useRef(({ viewableItems }: any) => {
     if (viewableItems.length > 0) {
       setCurrentIndex(viewableItems[0].index || 0);
@@ -63,10 +71,11 @@ export const PostCard: React.FC<PostCardProps> = ({
     if (item.type === 'video') {
       return (
         <View style={styles.mediaItem}>
-          <Image
-            source={{ uri: item.uri }}
+          <CachedImage
+            uri={item.uri}
             style={styles.postImage}
-            resizeMode="cover"
+            resizeMode={'cover' as any}
+            priority={'high' as any}
           />
           <View style={styles.videoOverlay}>
             <TouchableOpacity style={styles.playButton}>
@@ -82,10 +91,11 @@ export const PostCard: React.FC<PostCardProps> = ({
 
     return (
       <View style={styles.mediaItem}>
-        <Image
-          source={{ uri: item.uri }}
+        <CachedImage
+          uri={item.uri}
           style={styles.postImage}
-          resizeMode="cover"
+          resizeMode={'cover' as any}
+          priority={'high' as any}
         />
       </View>
     );
@@ -100,7 +110,12 @@ export const PostCard: React.FC<PostCardProps> = ({
           onPress={() => onProfile(post.user)}
         >
           <View style={styles.avatar}>
-            <Image source={{ uri: post.user.avatar }} style={styles.avatarImage} />
+            <CachedImage
+              uri={post.user.avatar}
+              style={styles.avatarImage}
+              resizeMode={'cover' as any}
+              priority={'high' as any}
+            />
           </View>
           <View style={styles.userDetails}>
             <Text style={styles.username}>{post.user.name}</Text>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -18,6 +18,7 @@ import {
   currentUserPreferences,
   PostData,
 } from '../utils/homeData';
+import { preloadMediaItems } from '../utils/cacheManager';
 
 const EmptyStateComponent: React.FC<{ onAdjustPreferences: () => void }> = ({ onAdjustPreferences }) => (
   <EmptyState onAdjustPreferences={onAdjustPreferences} />
@@ -83,6 +84,33 @@ export const HomeScreen: React.FC<{
   };
 
   const [posts, setPosts] = useState(getFilteredPosts());
+
+  // Prefetch media from the first few posts when component mounts or posts change
+  useEffect(() => {
+    const prefetchPostMedia = async () => {
+      // Prefetch media from the first 3 visible posts
+      const visiblePosts = posts.slice(0, 3);
+      for (const post of visiblePosts) {
+        // Preload with normal priority as user will see these soon
+        await preloadMediaItems(post.media, 'normal');
+      }
+    };
+
+    prefetchPostMedia();
+  }, [posts]);
+
+  // Callback to prefetch adjacent posts when user scrolls
+  const handleViewableItemsChanged = useCallback(({ viewableItems }: any) => {
+    if (viewableItems.length > 0) {
+      const currentIndex = viewableItems[0].index || 0;
+      // Prefetch next 2 posts after the currently visible one
+      const nextPosts = posts.slice(currentIndex + 1, currentIndex + 3);
+      nextPosts.forEach(post => {
+        // Use low priority for items not yet visible
+        preloadMediaItems(post.media, 'low');
+      });
+    }
+  }, [posts]);
 
   // Mock story data - in real app this would come from API
   const getStoriesForUser = (user: any) => {
@@ -260,6 +288,10 @@ export const HomeScreen: React.FC<{
         contentContainerStyle={styles.scrollContent}
         ListHeaderComponent={renderListHeader}
         ListEmptyComponent={<EmptyStateComponent onAdjustPreferences={handleAdjustPreferences} />}
+        onViewableItemsChanged={handleViewableItemsChanged}
+        viewabilityConfig={{
+          itemVisiblePercentThreshold: 50,
+        }}
       />
 
       <FilterModal
