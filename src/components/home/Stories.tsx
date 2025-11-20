@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { SmartImage } from '../SmartImage';
 import { Colors } from '../../constants/styles';
 
 interface User {
@@ -50,7 +51,7 @@ export const Stories: React.FC<StoriesProps> = ({
                 styles.storyCircle,
                 isSeen ? styles.storyCircleSeen : styles.storyCircleUnseen
               ]}>
-                <Image source={{ uri: user.avatar }} style={styles.storyAvatarImage} />
+                <SmartImage uri={user.avatar} style={styles.storyAvatarImage} />
               </View>
               <Text style={styles.storyLabel} numberOfLines={1}>
                 {user.name.split(' ')[0]}

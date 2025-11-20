@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, Dimensions, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, FlatList } from 'react-native';
+import { SmartImage } from '../SmartImage';
 import { Colors } from '../../constants/styles';
 import { Icon } from '../Icon';
 
@@ -63,8 +64,8 @@ export const PostCard: React.FC<PostCardProps> = ({
     if (item.type === 'video') {
       return (
         <View style={styles.mediaItem}>
-          <Image
-            source={{ uri: item.uri }}
+          <SmartImage
+            uri={item.uri}
             style={styles.postImage}
             resizeMode="cover"
           />
@@ -82,8 +83,8 @@ export const PostCard: React.FC<PostCardProps> = ({
 
     return (
       <View style={styles.mediaItem}>
-        <Image
-          source={{ uri: item.uri }}
+        <SmartImage
+          uri={item.uri}
           style={styles.postImage}
           resizeMode="cover"
         />
@@ -100,7 +101,7 @@ export const PostCard: React.FC<PostCardProps> = ({
           onPress={() => onProfile(post.user)}
         >
           <View style={styles.avatar}>
-            <Image source={{ uri: post.user.avatar }} style={styles.avatarImage} />
+            <SmartImage uri={post.user.avatar} style={styles.avatarImage} />
           </View>
           <View style={styles.userDetails}>
             <Text style={styles.username}>{post.user.name}</Text>

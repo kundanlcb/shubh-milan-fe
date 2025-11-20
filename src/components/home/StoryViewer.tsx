@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../Icon';
+import { SmartImage } from '../SmartImage';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -62,6 +63,14 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
     }
   }, [visible, currentIndex, stories.length, startProgress]);
 
+  // Preload next story
+  useEffect(() => {
+    if (currentIndex < stories.length - 1) {
+      const nextStory = stories[currentIndex + 1];
+      Image.prefetch(nextStory.uri).catch(() => { });
+    }
+  }, [currentIndex, stories]);
+
   const handleNext = () => {
     if (currentIndex < stories.length - 1) {
       setCurrentIndex(currentIndex + 1);
@@ -102,9 +111,9 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
                 {
                   width: index === currentIndex
                     ? progress.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: ['0%', '100%'],
-                      })
+                      inputRange: [0, 1],
+                      outputRange: ['0%', '100%'],
+                    })
                     : index < currentIndex ? '100%' : '0%'
                 }
               ]}
@@ -116,7 +125,7 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
       {/* Header */}
       <SafeAreaView style={styles.header}>
         <View style={styles.userInfo}>
-          <Image source={{ uri: user.avatar }} style={styles.userAvatar} />
+          <SmartImage uri={user.avatar} style={styles.userAvatar} />
           <Text style={styles.userName}>{user.name}</Text>
           <Text style={styles.timeAgo}>2h ago</Text>
         </View>
@@ -128,15 +137,15 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
       {/* Story Content */}
       <View style={styles.storyContent}>
         {currentStory.type === 'image' ? (
-          <Image
-            source={{ uri: currentStory.uri }}
+          <SmartImage
+            uri={currentStory.uri}
             style={styles.storyImage}
             resizeMode="contain"
           />
         ) : (
           <View style={styles.videoContainer}>
-            <Image
-              source={{ uri: currentStory.uri }}
+            <SmartImage
+              uri={currentStory.uri}
               style={styles.storyImage}
               resizeMode="contain"
             />

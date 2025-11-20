@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../components/Icon';
+import { SmartImage } from '../components/SmartImage';
 import { MainScreenProps } from '../types/navigation';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
@@ -43,6 +44,14 @@ export const StoryViewerScreen: React.FC<MainScreenProps<'StoryViewer'>> = ({
       startProgress();
     }
   }, [currentIndex, stories.length, startProgress]);
+
+  // Preload next story
+  useEffect(() => {
+    if (currentIndex < stories.length - 1) {
+      const nextStory = stories[currentIndex + 1];
+      Image.prefetch(nextStory.uri).catch(() => { });
+    }
+  }, [currentIndex, stories]);
 
   const handleNext = () => {
     if (currentIndex < stories.length - 1) {
@@ -85,7 +94,7 @@ export const StoryViewerScreen: React.FC<MainScreenProps<'StoryViewer'>> = ({
       {/* Header with User Info */}
       <SafeAreaView style={styles.header} edges={['top']}>
         <View style={styles.userInfo}>
-          <Image source={{ uri: user.avatar }} style={styles.userAvatar} />
+          <SmartImage uri={user.avatar} style={styles.userAvatar} />
           <View style={styles.userDetails}>
             <Text style={styles.userName}>{user.name}</Text>
             <Text style={styles.timeAgo}>2h ago</Text>
@@ -106,9 +115,9 @@ export const StoryViewerScreen: React.FC<MainScreenProps<'StoryViewer'>> = ({
                 {
                   width: index === currentIndex
                     ? progress.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: ['0%', '100%'],
-                      })
+                      inputRange: [0, 1],
+                      outputRange: ['0%', '100%'],
+                    })
                     : index < currentIndex ? '100%' : '0%'
                 }
               ]}
@@ -120,15 +129,15 @@ export const StoryViewerScreen: React.FC<MainScreenProps<'StoryViewer'>> = ({
       {/* Story Content */}
       <View style={styles.storyContent}>
         {currentStory.type === 'image' ? (
-          <Image
-            source={{ uri: currentStory.uri }}
+          <SmartImage
+            uri={currentStory.uri}
             style={styles.storyImage}
             resizeMode="cover"
           />
         ) : (
           <View style={styles.videoContainer}>
-            <Image
-              source={{ uri: currentStory.uri }}
+            <SmartImage
+              uri={currentStory.uri}
               style={styles.storyImage}
               resizeMode="cover"
             />
