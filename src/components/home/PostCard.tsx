@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions, FlatList } from 'react-native';
 import { SmartImage } from '../SmartImage';
+import { SmartVideo } from '../SmartVideo';
 import { Colors } from '../../constants/styles';
 import { Icon } from '../Icon';
 
@@ -64,19 +65,13 @@ export const PostCard: React.FC<PostCardProps> = ({
     if (item.type === 'video') {
       return (
         <View style={styles.mediaItem}>
-          <SmartImage
-            uri={item.uri}
+          <SmartVideo
+            source={{ uri: item.uri }}
             style={styles.postImage}
             resizeMode="cover"
+            paused={true} // Auto-play disabled for list view by default
+            controls={true} // Show controls for user interaction
           />
-          <View style={styles.videoOverlay}>
-            <TouchableOpacity style={styles.playButton}>
-              <Icon name="play" library="feather" size={48} color="white" />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.videoIndicator}>
-            <Icon name="video" library="feather" size={16} color="white" />
-          </View>
         </View>
       );
     }
