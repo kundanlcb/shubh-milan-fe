@@ -46,31 +46,77 @@ const menuItems = [
 
 export const ProfileScreen: React.FC<{
   onNavigateToEditProfile?: () => void;
+  onNavigateToSettings?: () => void;
+  onNavigateToPremiumUpgrade?: () => void;
+  onNavigateToHelpSupport?: () => void;
+  onNavigateToTermsPrivacy?: () => void;
+  onNavigateToProfileDetail?: (sectionType: string) => void;
   onLogout?: () => void;
-}> = ({ onNavigateToEditProfile, onLogout }) => {
+}> = ({ 
+  onNavigateToEditProfile, 
+  onNavigateToSettings,
+  onNavigateToPremiumUpgrade,
+  onNavigateToHelpSupport,
+  onNavigateToTermsPrivacy,
+  onNavigateToProfileDetail,
+  onLogout 
+}) => {
   const [profileCompletion] = useState(75);
 
   const handleMenuItemPress = (title: string) => {
     switch (title) {
       case 'Settings':
-        Alert.alert('Settings', 'Settings screen would open here');
+        if (onNavigateToSettings) {
+          onNavigateToSettings();
+        } else {
+          Alert.alert('Settings', 'Settings screen would open here');
+        }
         break;
       case 'Upgrade to Premium':
-        Alert.alert('Premium', 'Premium upgrade flow would start here');
+        if (onNavigateToPremiumUpgrade) {
+          onNavigateToPremiumUpgrade();
+        } else {
+          Alert.alert('Premium', 'Premium upgrade flow would start here');
+        }
         break;
       case 'Help & Support':
-        Alert.alert('Help', 'Help & Support screen would open here');
+        if (onNavigateToHelpSupport) {
+          onNavigateToHelpSupport();
+        } else {
+          Alert.alert('Help', 'Help & Support screen would open here');
+        }
         break;
       case 'Terms & Privacy':
-        Alert.alert('Terms', 'Terms & Privacy screen would open here');
+        if (onNavigateToTermsPrivacy) {
+          onNavigateToTermsPrivacy();
+        } else {
+          Alert.alert('Terms', 'Terms & Privacy screen would open here');
+        }
         break;
       default:
         Alert.alert('Info', `${title} feature coming soon!`);
     }
   };
 
+  const getSectionType = (title: string): string => {
+    switch (title) {
+      case 'Personal Info': return 'personal';
+      case 'Family Details': return 'family';
+      case 'Education & Career': return 'education';
+      case 'Lifestyle': return 'lifestyle';
+      case 'Horoscope': return 'horoscope';
+      case 'Contact Info': return 'contact';
+      default: return 'personal';
+    }
+  };
+
   const handleSectionPress = (title: string) => {
-    Alert.alert('Info', `${title} section would open here`);
+    const sectionType = getSectionType(title);
+    if (onNavigateToProfileDetail) {
+      onNavigateToProfileDetail(sectionType);
+    } else {
+      Alert.alert('Info', `${title} section would open here`);
+    }
   };
 
   const handleLogout = () => {

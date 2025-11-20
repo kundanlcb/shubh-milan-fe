@@ -14,12 +14,15 @@ export type MainStackParamList = {
   AddPost: undefined;
   Settings: undefined;
   UserProfile: { userId: string };
-  ProfileDetail: { userId: string };
+  ProfileDetail: { sectionType?: string };
   EditProfile: undefined;
   StoryViewer: {
     user: { name: string; avatar: string };
     stories: { id: string; uri: string; type: 'image' | 'video' }[]
   };
+  PremiumUpgrade: undefined;
+  HelpSupport: undefined;
+  TermsPrivacy: undefined;
 };
 
 export type RootStackParamList = {
