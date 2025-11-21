@@ -103,20 +103,43 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleLogin = async () => {
+    // Basic validation
+    if (!email.trim()) {
+      Alert.alert('Error', 'Please enter your email or phone number');
+      return;
+    }
+    if (!password) {
+      Alert.alert('Error', 'Please enter your password');
+      return;
+    }
+
     setIsLoading(true);
     startLoadingAnimation();
+    
     try {
-      setTimeout(() => {
-        setIsLoading(false);
-        stopLoadingAnimation();
-        if (navigation.onLoginSuccess) {
-          navigation.onLoginSuccess();
-        }
-      }, 500);
+      const { authService } = await import('../services');
+      const { getErrorMessage, logError } = await import('../utils/errorHandler');
+      
+      await authService.login({
+        emailOrPhone: email.trim(),
+        password: password,
+      });
+
+      setIsLoading(false);
+      stopLoadingAnimation();
+      
+      // Navigate to main app
+      if (navigation.onLoginSuccess) {
+        navigation.onLoginSuccess();
+      }
     } catch (error) {
       setIsLoading(false);
       stopLoadingAnimation();
-      Alert.alert('Error', 'Login failed. Please try again.');
+      
+      const { getErrorMessage, logError } = await import('../utils/errorHandler');
+      logError(error, 'LoginScreen.handleLogin');
+      const errorMessage = getErrorMessage(error);
+      Alert.alert('Login Failed', errorMessage);
     }
   };
 

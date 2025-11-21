@@ -227,25 +227,62 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
 
     setIsLoading(true);
     try {
-      // Save user preferences for content filtering
-      console.log('Registration Data with Preferences:', formData);
+      const { authService } = await import('../services');
+      const { getErrorMessage, logError } = await import('../utils/errorHandler');
+      
+      // Prepare registration data
+      const registrationData = {
+        fullName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
+        profile: {
+          gender: formData.gender as 'Male' | 'Female' | 'Other',
+          age: parseInt(formData.age),
+          profession: formData.profession,
+          education: formData.education,
+          location: formData.location,
+          motherTongue: formData.motherTongue,
+          religion: formData.religion,
+          salary: 0, // Default value, can be updated later
+          bio: '',
+          photos: [],
+        },
+        partnerPreferences: {
+          ageMin: parseInt(formData.partnerAgeMin),
+          ageMax: parseInt(formData.partnerAgeMax),
+          professions: formData.partnerProfession,
+          educations: formData.partnerEducation,
+          locations: formData.partnerLocation,
+          religions: formData.partnerReligion ? [formData.partnerReligion] : [],
+          genders: [], // Can be set based on user's preference
+          salaryMin: 0,
+          salaryMax: 10000000,
+        },
+        accountType: formData.accountType.toUpperCase() as 'FREE' | 'PREMIUM',
+        privacyLevel: formData.privacyLevel.toUpperCase() as 'PUBLIC' | 'FILTERED' | 'PRIVATE',
+      };
 
-      setTimeout(() => {
-        setIsLoading(false);
-        Alert.alert(
-          'Welcome to शुभ मिलन! 🎉',
-          `Registration successful! Your feed will be personalized to show posts from people matching your preferences:\n\n• Age: ${formData.partnerAgeMin}-${formData.partnerAgeMax} years\n• Locations: ${formData.partnerLocation.join(', ') || 'Any'}\n• Account: ${formData.accountType === 'premium' ? 'Premium ⭐' : 'Free'}`,
-          [
-            {
-              text: 'Start Exploring',
-              onPress: () => navigation.navigate('Main'),
-            },
-          ]
-        );
-      }, 1500);
+      await authService.register(registrationData);
+      
+      setIsLoading(false);
+      Alert.alert(
+        'Welcome to शुभ मिलन! 🎉',
+        `Registration successful! Your account has been created.\n\n• Age: ${formData.partnerAgeMin}-${formData.partnerAgeMax} years\n• Locations: ${formData.partnerLocation.join(', ') || 'Any'}\n• Account: ${formData.accountType === 'premium' ? 'Premium ⭐' : 'Free'}`,
+        [
+          {
+            text: 'Start Exploring',
+            onPress: () => navigation.navigate('Main'),
+          },
+        ]
+      );
     } catch (error) {
       setIsLoading(false);
-      Alert.alert('Error', 'Registration failed. Please try again.');
+      
+      const { getErrorMessage, logError } = await import('../utils/errorHandler');
+      logError(error, 'RegisterScreen.handleRegister');
+      const errorMessage = getErrorMessage(error);
+      Alert.alert('Registration Failed', errorMessage);
     }
   };
 
