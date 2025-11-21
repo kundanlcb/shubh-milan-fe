@@ -75,8 +75,27 @@ export const MainTabNavigator: React.FC<{
   onNavigateToChatConversation: (params: any) => void;
   onNavigateToEditProfile: () => void;
   onNavigateToStoryViewer: (params: any) => void;
+  onNavigateToSettings?: () => void;
+  onNavigateToPremiumUpgrade?: () => void;
+  onNavigateToHelpSupport?: () => void;
+  onNavigateToTermsPrivacy?: () => void;
+  onNavigateToProfileDetail?: (sectionType: string) => void;
   onLogout: () => void;
-}> = ({ initialActiveTab = 'Home', onTabChange, onNavigateToUserProfile, onNavigateToChat, onNavigateToChatConversation, onNavigateToEditProfile, onNavigateToStoryViewer, onLogout }) => {
+}> = ({ 
+  initialActiveTab = 'Home', 
+  onTabChange, 
+  onNavigateToUserProfile, 
+  onNavigateToChat, 
+  onNavigateToChatConversation, 
+  onNavigateToEditProfile, 
+  onNavigateToStoryViewer, 
+  onNavigateToSettings,
+  onNavigateToPremiumUpgrade,
+  onNavigateToHelpSupport,
+  onNavigateToTermsPrivacy,
+  onNavigateToProfileDetail,
+  onLogout 
+}) => {
   const [activeTab, setActiveTab] = useState<TabKey>(initialActiveTab as TabKey);
   const [showAddStoryScreen, setShowAddStoryScreen] = useState(false);
   const insets = useSafeAreaInsets();
@@ -173,6 +192,11 @@ export const MainTabNavigator: React.FC<{
     if (activeTab === 'Profile') {
       return <Component
         onNavigateToEditProfile={onNavigateToEditProfile}
+        onNavigateToSettings={onNavigateToSettings}
+        onNavigateToPremiumUpgrade={onNavigateToPremiumUpgrade}
+        onNavigateToHelpSupport={onNavigateToHelpSupport}
+        onNavigateToTermsPrivacy={onNavigateToTermsPrivacy}
+        onNavigateToProfileDetail={onNavigateToProfileDetail}
         onLogout={onLogout}
       />;
     }
