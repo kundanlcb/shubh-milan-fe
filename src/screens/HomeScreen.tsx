@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import {
   View,
-  Text,
   FlatList,
   StyleSheet,
   Alert,
-  Image,
+  RefreshControl,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Typography } from '../constants/styles';
@@ -14,23 +14,25 @@ import { Stories } from '../components/home/Stories';
 import { PostCard } from '../components/home/PostCard';
 import { EmptyState } from '../components/home/EmptyState';
 import { FilterModal } from '../components/home/FilterModal';
-import {
-  allUsers,
-  currentUserPreferences,
-  PostData,
-} from '../utils/homeData';
+import { useFeed } from '../hooks';
+import { currentUserPreferences, PostData } from '../utils/homeData';
 
-const EmptyStateComponent: React.FC<{ onAdjustPreferences: () => void }> = ({ onAdjustPreferences }) => (
-  <EmptyState onAdjustPreferences={onAdjustPreferences} />
-);
+const EmptyStateComponent: React.FC<{ onAdjustPreferences: () => void }> = ({
+  onAdjustPreferences,
+}) => <EmptyState onAdjustPreferences={onAdjustPreferences} />;
 
 export const HomeScreen: React.FC<{
   onNavigateToAddStory?: () => void;
   onNavigateToUserProfile?: (userId: string) => void;
   onNavigateToStoryViewer?: (params: any) => void;
   onNavigateToChat?: () => void;
-}> = ({ onNavigateToAddStory, onNavigateToUserProfile, onNavigateToStoryViewer, onNavigateToChat }) => {
-  // Filter posts based on user preferences
+}> = ({
+  onNavigateToAddStory,
+  onNavigateToUserProfile,
+  onNavigateToStoryViewer,
+  onNavigateToChat,
+}) => {
+  // User preferences for initial filters
   const [userPreferences] = useState(currentUserPreferences);
   const [activeFilters, setActiveFilters] = useState({
     ageMin: userPreferences.partnerAgeMin,
@@ -42,59 +44,21 @@ export const HomeScreen: React.FC<{
     salaryMin: 300000, // Default minimum salary (3 LPA)
     salaryMax: 5000000, // Default maximum salary (50 LPA)
   });
+
+  // Use the feed hook
+  const {
+    posts,
+    isLoading,
+    isRefreshing,
+    error,
+    hasMore,
+    refresh,
+    loadMore,
+    applyFilters,
+    toggleLike,
+  } = useFeed(activeFilters);
+
   const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
-
-  // Apply filters to get filtered posts
-  const getFilteredPosts = () => {
-    return allUsers.filter(post => {
-      const user = post.user;
-
-      // Age filter
-      if (user.age < activeFilters.ageMin || user.age > activeFilters.ageMax) {
-        return false;
-      }
-
-      // Profession filter
-      if (activeFilters.professions.length > 0 && !activeFilters.professions.includes(user.profession)) {
-        return false;
-      }
-
-      // Location filter
-      if (activeFilters.locations.length > 0 && !activeFilters.locations.includes(user.location)) {
-        return false;
-      }
-
-      // Religion filter
-      if (activeFilters.religions.length > 0 && !activeFilters.religions.includes(user.religion)) {
-        return false;
-      }
-
-      // Gender filter
-      if (activeFilters.genders.length > 0 && !activeFilters.genders.includes(user.gender)) {
-        return false;
-      }
-
-      // Salary filter
-      if (user.salary < activeFilters.salaryMin || user.salary > activeFilters.salaryMax) {
-        return false;
-      }
-
-      return true;
-    });
-  };
-
-  const [posts, setPosts] = useState(getFilteredPosts());
-
-  // Prefetch first story for each user to ensure smooth loading
-  React.useEffect(() => {
-    posts.forEach(post => {
-      const stories = getStoriesForUser(post.user);
-      if (stories.length > 0 && stories[0].type === 'image') {
-        // @ts-ignore - Image.prefetch is valid but might need type definition update
-        Image.prefetch(stories[0].uri).catch(() => { });
-      }
-    });
-  }, [posts]);
 
   // Mock story data - in real app this would come from API
   const getStoriesForUser = (user: any) => {
@@ -117,12 +81,8 @@ export const HomeScreen: React.FC<{
     ];
   };
 
-  const handleLike = (postId: string) => {
-    setPosts(posts.map(post =>
-      post.id === postId
-        ? { ...post, isLiked: !post.isLiked, likes: post.isLiked ? post.likes - 1 : post.likes + 1 }
-        : post
-    ));
+  const handleLike = async (postId: string) => {
+    await toggleLike(postId);
   };
 
   const handleProfile = (user: { name: string; avatar: string; location: string; age: number; profession: string; }) => {
@@ -150,7 +110,7 @@ export const HomeScreen: React.FC<{
     setIsFilterModalVisible(true);
   };
 
-  const handleApplyFilters = (newFilters: {
+  const handleApplyFilters = async (newFilters: {
     ageMin: number;
     ageMax: number;
     professions: string[];
@@ -161,45 +121,7 @@ export const HomeScreen: React.FC<{
     salaryMax: number;
   }) => {
     setActiveFilters(newFilters);
-
-    // Apply new filters and update posts
-    const filteredPosts = allUsers.filter(post => {
-      const user = post.user;
-
-      // Age filter
-      if (user.age < newFilters.ageMin || user.age > newFilters.ageMax) {
-        return false;
-      }
-
-      // Profession filter
-      if (newFilters.professions.length > 0 && !newFilters.professions.includes(user.profession)) {
-        return false;
-      }
-
-      // Location filter
-      if (newFilters.locations.length > 0 && !newFilters.locations.includes(user.location)) {
-        return false;
-      }
-
-      // Religion filter
-      if (newFilters.religions.length > 0 && !newFilters.religions.includes(user.religion)) {
-        return false;
-      }
-
-      // Gender filter
-      if (newFilters.genders.length > 0 && !newFilters.genders.includes(user.gender)) {
-        return false;
-      }
-
-      // Salary filter
-      if (user.salary < newFilters.salaryMin || user.salary > newFilters.salaryMax) {
-        return false;
-      }
-
-      return true;
-    });
-
-    setPosts(filteredPosts);
+    await applyFilters(newFilters);
   };
 
   // Stories action handlers
@@ -271,7 +193,32 @@ export const HomeScreen: React.FC<{
         style={styles.scrollContainer}
         contentContainerStyle={styles.scrollContent}
         ListHeaderComponent={renderListHeader}
-        ListEmptyComponent={<EmptyStateComponent onAdjustPreferences={handleAdjustPreferences} />}
+        ListEmptyComponent={
+          isLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color={Colors.primary} />
+            </View>
+          ) : (
+            <EmptyStateComponent onAdjustPreferences={handleAdjustPreferences} />
+          )
+        }
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={refresh}
+            tintColor={Colors.primary}
+            colors={[Colors.primary]}
+          />
+        }
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          isLoading && posts.length > 0 ? (
+            <View style={styles.footerLoader}>
+              <ActivityIndicator size="small" color={Colors.primary} />
+            </View>
+          ) : null
+        }
       />
 
       <FilterModal
@@ -307,5 +254,15 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     // Remove paddingBottom to match ChatScreen
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
+  footerLoader: {
+    paddingVertical: 20,
+    alignItems: 'center',
   },
 });
