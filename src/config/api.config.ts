@@ -87,6 +87,8 @@ export const API_ENDPOINTS = {
     GET_THREADS: '/chat/threads',
     CREATE_THREAD: '/chat/threads',
     GET_MESSAGES: (threadId: string) => `/chat/threads/${threadId}/messages`,
+    MARK_READ: (threadId: string) => `/chat/threads/${threadId}/read`,
+    UNREAD_COUNT: '/chat/unread-count',
     WEBSOCKET: '/ws',
   },
   
@@ -94,6 +96,9 @@ export const API_ENDPOINTS = {
   NOTIFICATIONS: {
     GET_ALL: '/notifications',
     MARK_READ: (notificationId: string) => `/notifications/${notificationId}/read`,
+    MARK_ALL_READ: '/notifications/read-all',
+    UNREAD_COUNT: '/notifications/unread-count',
+    DELETE: (notificationId: string) => `/notifications/${notificationId}`,
   },
   
   // Upload

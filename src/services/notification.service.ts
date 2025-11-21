@@ -43,7 +43,7 @@ class NotificationService {
    */
   async markAllAsRead(): Promise<void> {
     try {
-      await apiClient.post('/notifications/read-all');
+      await apiClient.post(API_ENDPOINTS.NOTIFICATIONS.MARK_ALL_READ);
     } catch (error) {
       throw error;
     }
@@ -55,7 +55,7 @@ class NotificationService {
   async getUnreadCount(): Promise<number> {
     try {
       const response = await apiClient.get<{ count: number }>(
-        '/notifications/unread-count'
+        API_ENDPOINTS.NOTIFICATIONS.UNREAD_COUNT
       );
       return response.count;
     } catch (error) {
@@ -68,7 +68,7 @@ class NotificationService {
    */
   async deleteNotification(notificationId: string): Promise<void> {
     try {
-      await apiClient.delete(`/notifications/${notificationId}`);
+      await apiClient.delete(API_ENDPOINTS.NOTIFICATIONS.DELETE(notificationId));
     } catch (error) {
       throw error;
     }

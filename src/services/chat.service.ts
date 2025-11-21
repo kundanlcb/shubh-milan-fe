@@ -76,7 +76,7 @@ class ChatService {
    */
   async markMessagesAsRead(threadId: string): Promise<void> {
     try {
-      await apiClient.post(`/chat/threads/${threadId}/read`);
+      await apiClient.post(API_ENDPOINTS.CHAT.MARK_READ(threadId));
     } catch (error) {
       throw error;
     }
@@ -88,7 +88,7 @@ class ChatService {
   async getUnreadCount(): Promise<number> {
     try {
       const response = await apiClient.get<{ count: number }>(
-        '/chat/unread-count'
+        API_ENDPOINTS.CHAT.UNREAD_COUNT
       );
       return response.count;
     } catch (error) {
