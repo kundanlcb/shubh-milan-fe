@@ -13,6 +13,10 @@ import type {
   RegisterResponse,
   RefreshTokenResponse,
   User,
+  ApiLoginRequest,
+  ApiRegisterRequest,
+  ApiUser,
+  ApiProfile,
 } from '../types/api.types';
 
 class AuthService {
@@ -21,15 +25,45 @@ class AuthService {
    */
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     try {
-      const response = await apiClient.post<LoginResponse>(
+      const apiRequest: ApiLoginRequest = {
+        identifier: credentials.emailOrPhone,
+        password: credentials.password,
+      };
+
+      const response = await apiClient.post<any>(
         API_ENDPOINTS.AUTH.LOGIN,
-        credentials
+        apiRequest
       );
 
-      // Store tokens and user info
-      await this.storeAuthData(response);
+      // Map response. API might return { accessToken, refreshToken, userId, user? }
+      // If user is missing, we might need to fetch it.
+      let user: User;
+      if (response.user) {
+        user = this.mapApiUserToUiUser(response.user);
+      } else if (response.userId) {
+        // Fetch profile if not returned
+        try {
+          const profileResponse = await apiClient.get<ApiUser>(`/api/profile/${response.userId}`); // Using direct path as API_ENDPOINTS.PROFILE might not be set up for this exactly
+          user = this.mapApiUserToUiUser(profileResponse);
+        } catch (e) {
+          console.warn('Failed to fetch user profile after login', e);
+          user = { id: response.userId, fullName: 'User', email: '', phone: '', roles: [], status: 'ACTIVE', createdAt: new Date().toISOString() };
+        }
+      } else {
+        throw new Error('Invalid login response: missing userId');
+      }
 
-      return response;
+      const loginResponse: LoginResponse = {
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+        userId: response.userId?.toString(),
+        user: user,
+      };
+
+      // Store tokens and user info
+      await this.storeAuthData(loginResponse);
+
+      return loginResponse;
     } catch (error) {
       throw error;
     }
@@ -40,17 +74,38 @@ class AuthService {
    */
   async register(data: RegisterRequest): Promise<RegisterResponse> {
     try {
-      const response = await apiClient.post<RegisterResponse>(
+      // Calculate approximate DOB from age if not provided (UI has age)
+      const birthYear = new Date().getFullYear() - (data.profile.age || 25);
+      const dob = `${birthYear}-01-01`;
+
+      const apiRequest: ApiRegisterRequest = {
+        fullName: data.fullName,
+        email: data.email,
+        mobile: data.phone,
+        password: data.password,
+        gender: data.profile.gender,
+        dob: dob,
+        religion: data.profile.religion,
+        motherTongue: data.profile.motherTongue,
+        city: data.profile.location.split(',')[0]?.trim(), // Simple heuristic
+        // Map other fields as needed
+      };
+
+      const response = await apiClient.post<any>(
         API_ENDPOINTS.AUTH.REGISTER,
-        data
+        apiRequest
       );
 
       // Store tokens
       await AsyncStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, response.accessToken);
       await AsyncStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, response.refreshToken);
-      await AsyncStorage.setItem(STORAGE_KEYS.USER_ID, response.userId);
+      await AsyncStorage.setItem(STORAGE_KEYS.USER_ID, response.userId?.toString());
 
-      return response;
+      return {
+        userId: response.userId?.toString(),
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+      };
     } catch (error) {
       throw error;
     }
@@ -201,6 +256,22 @@ class AuthService {
     } catch (error) {
       return null;
     }
+  }
+
+  // Helper to map API User to UI User
+  private mapApiUserToUiUser(apiUser: ApiUser | any): User {
+    // Handle case where apiUser might be just the user object or nested
+    const user = apiUser.user || apiUser;
+    return {
+      id: user.id?.toString() || '',
+      fullName: user.fullName || '',
+      email: user.email || '',
+      phone: user.mobile || '',
+      roles: user.roles || [],
+      status: user.status || 'ACTIVE',
+      createdAt: user.createdAt || new Date().toISOString(),
+      lastLogin: user.lastLogin
+    };
   }
 }
 

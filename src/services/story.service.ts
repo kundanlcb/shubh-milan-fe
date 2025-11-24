@@ -5,7 +5,7 @@
 
 import { apiClient } from './api.client';
 import { API_ENDPOINTS } from '../config/api.config';
-import type { Story, CreateStoryRequest } from '../types/api.types';
+import type { Story, CreateStoryRequest, ApiStory, ApiStoryRequest, ApiUser } from '../types/api.types';
 
 class StoryService {
   /**
@@ -13,7 +13,8 @@ class StoryService {
    */
   async getAllStories(): Promise<Story[]> {
     try {
-      return await apiClient.get<Story[]>(API_ENDPOINTS.STORIES.GET_ALL);
+      const apiStories = await apiClient.get<ApiStory[]>(API_ENDPOINTS.STORIES.GET_ALL);
+      return apiStories.map(story => this.mapApiStoryToUiStory(story));
     } catch (error) {
       throw error;
     }
@@ -24,7 +25,13 @@ class StoryService {
    */
   async createStory(data: CreateStoryRequest): Promise<Story> {
     try {
-      return await apiClient.post<Story>(API_ENDPOINTS.STORIES.CREATE, data);
+      const apiRequest: ApiStoryRequest = {
+        mediaUrl: data.mediaKey, // Assuming key is URL or handled by backend
+        mediaType: data.type.toUpperCase()
+      };
+
+      const apiStory = await apiClient.post<ApiStory>(API_ENDPOINTS.STORIES.CREATE, apiRequest);
+      return this.mapApiStoryToUiStory(apiStory);
     } catch (error) {
       throw error;
     }
@@ -35,9 +42,10 @@ class StoryService {
    */
   async getStoryById(storyId: string): Promise<Story> {
     try {
-      return await apiClient.get<Story>(
+      const apiStory = await apiClient.get<ApiStory>(
         API_ENDPOINTS.STORIES.GET_STORY(storyId)
       );
+      return this.mapApiStoryToUiStory(apiStory);
     } catch (error) {
       throw error;
     }
@@ -62,7 +70,7 @@ class StoryService {
   > {
     try {
       const stories = await this.getAllStories();
-      
+
       // Group stories by user
       const groupedMap = new Map<
         string,
@@ -98,6 +106,34 @@ class StoryService {
     } catch (error) {
       throw error;
     }
+  }
+
+  // ==========================================
+  // PRIVATE HELPERS
+  // ==========================================
+
+  private mapApiStoryToUiStory(apiStory: ApiStory): Story {
+    return {
+      id: apiStory.id?.toString() || '',
+      userId: apiStory.user?.id?.toString() || '',
+      user: apiStory.user ? {
+        id: apiStory.user.id?.toString() || '',
+        name: apiStory.user.fullName || 'Unknown',
+        avatar: apiStory.user.profile?.photos?.[0] || '',
+        location: apiStory.user.profile?.location || '',
+        age: apiStory.user.profile?.age || 0,
+        profession: apiStory.user.profile?.profession || '',
+        religion: apiStory.user.profile?.religion || '',
+        gender: (apiStory.user.profile?.gender as any) || 'Other',
+        salary: apiStory.user.profile?.salary || 0
+      } : undefined,
+      uri: apiStory.mediaUrl || '',
+      type: (apiStory.mediaType?.toLowerCase() as 'image' | 'video') || 'image',
+      createdAt: apiStory.createdAt || new Date().toISOString(),
+      expiresAt: apiStory.expiresAt || new Date().toISOString(),
+      viewersCount: apiStory.viewCount || 0,
+      isViewed: false // API doesn't return this
+    };
   }
 }
 

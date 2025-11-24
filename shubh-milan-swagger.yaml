@@ -1,0 +1,4451 @@
+openapi: 3.0.1
+info:
+  title: Shubh Milan API
+  description: Production-ready matrimony + social media platform API
+  contact:
+    name: Shubh Milan Team
+    url: https://github.com/kundanlcb/shubhMilan
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Local server
+  - url: https://api.shubhmilan.com
+    description: Production server
+security:
+  - bearerAuth: []
+tags:
+  - name: Profile
+    description: User profile management endpoints
+  - name: Ping
+    description: Simple ping endpoint for testing
+  - name: Partner Preferences
+    description: Partner preference management endpoints
+  - name: Recommendations
+    description: Profile matching and recommendation endpoints
+  - name: Stories
+    description: Story management endpoints
+  - name: Profile Search
+    description: Profile search and filtering endpoints powered by Elasticsearch
+  - name: Authentication
+    description: User authentication and registration endpoints
+  - name: Posts
+    description: Social media posts management
+  - name: Media
+    description: Media upload and management endpoints
+  - name: Search
+    description: Unified search endpoints for posts and profiles
+  - name: Matches
+    description: Match and connection management endpoints
+  - name: Chat
+    description: Chat and messaging endpoints
+  - name: Feed
+    description: Feed and post search endpoints powered by Elasticsearch
+  - name: Notifications
+    description: Notification management endpoints
+  - name: Admin
+    description: Administrative endpoints for testing and data management
+  - name: Post Likes
+    description: Post like and unlike endpoints
+paths:
+  /api/posts/{id}:
+    get:
+      tags:
+        - Posts
+      operationId: getPostById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+    put:
+      tags:
+        - Posts
+      operationId: updatePost
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+    delete:
+      tags:
+        - Posts
+      operationId: deletePost
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/partner-preferences/me:
+    get:
+      tags:
+        - Partner Preferences
+      summary: Get my preferences
+      description: Get partner preferences for the current user
+      operationId: getMyPreferences
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - Partner Preferences
+      summary: Update my preferences
+      description: Update partner preferences for the current user
+      operationId: updateMyPreferences
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PartnerPreferencesRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+      security:
+        - bearerAuth: []
+  /api/stories:
+    get:
+      tags:
+        - Stories
+      summary: Get active stories
+      description: Get all active stories (not expired)
+      operationId: getActiveStories
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Story"
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+    post:
+      tags:
+        - Stories
+      summary: Create a story
+      description: Create a new story with media
+      operationId: createStory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoryRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+      security:
+        - bearerAuth: []
+  /api/stories/{storyId}/view:
+    post:
+      tags:
+        - Stories
+      summary: View a story
+      description: Mark a story as viewed
+      operationId: viewStory
+      parameters:
+        - name: storyId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/profiles/reindex:
+    post:
+      tags:
+        - Profile Search
+      summary: Reindex all profiles
+      description: Triggers a full reindex of all profiles into Elasticsearch. Use this after data migrations or to rebuild the search index. Only available when Elasticsearch is enabled.
+      operationId: reindexProfiles
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+      security:
+        - bearerAuth: []
+  /api/profile/{userId}:
+    get:
+      tags:
+        - Profile
+      summary: Get user profile
+      description: Retrieves profile information for a specific user
+      operationId: getProfile
+      parameters:
+        - name: userId
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Profile found
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "404":
+          description: Profile not found
+          content:
+            '*/*':
+              schema:
+                type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+    post:
+      tags:
+        - Profile
+      summary: Create or update profile
+      description: Creates or updates profile information for a user
+      operationId: saveProfile
+      parameters:
+        - name: userId
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileUpdateRequest"
+        required: true
+      responses:
+        "200":
+          description: Profile saved successfully
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Invalid profile data
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/posts:
+    get:
+      tags:
+        - Posts
+      summary: Get all posts with pagination
+      description: "Returns a paginated list of posts. Supports sorting by createdAt, likeCount, commentCount. Example: GET /api/posts?page=0&size=20&sort=createdAt,desc"
+      operationId: getAllPostsPaginated
+      parameters:
+        - name: pageable
+          in: query
+          description: "Pagination parameters - page (0-indexed), size, and sort"
+          required: true
+          schema:
+            $ref: "#/components/schemas/Pageable"
+      responses:
+        "200":
+          description: Successfully retrieved paginated posts
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PagePost"
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+    post:
+      tags:
+        - Posts
+      operationId: createPost
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/posts/{postId}/like:
+    post:
+      tags:
+        - Post Likes
+      summary: Like a post
+      description: Like a post by ID
+      operationId: likePost
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - Post Likes
+      summary: Unlike a post
+      description: Remove like from a post
+      operationId: unlikePost
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+      security:
+        - bearerAuth: []
+  /api/posts/{postId}/comments:
+    get:
+      tags:
+        - comment-controller
+      operationId: getPostComments
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+    post:
+      tags:
+        - comment-controller
+      operationId: createComment
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommentRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/notifications/{id}/read:
+    post:
+      tags:
+        - Notifications
+      summary: Mark notification as read
+      description: Mark a notification as read by ID
+      operationId: markAsRead
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/media/upload-url/story-media:
+    post:
+      tags:
+        - Media
+      summary: Generate presigned URL for story media upload
+      description: Returns a presigned URL for uploading story media (images/videos) to S3/MinIO
+      operationId: getStoryMediaUploadUrl
+      parameters:
+        - name: fileName
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: contentType
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Presigned URL generated successfully
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Invalid content type
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+      security:
+        - bearerAuth: []
+  /api/media/upload-url/profile-photo:
+    post:
+      tags:
+        - Media
+      summary: Generate presigned URL for profile photo upload
+      description: Returns a presigned URL for uploading profile photos to S3/MinIO
+      operationId: getProfilePhotoUploadUrl
+      parameters:
+        - name: fileName
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: contentType
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Presigned URL generated successfully
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Invalid content type
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+      security:
+        - bearerAuth: []
+  /api/media/upload-url/post-media:
+    post:
+      tags:
+        - Media
+      summary: Generate presigned URL for post media upload
+      description: Returns a presigned URL for uploading post media (images/videos) to S3/MinIO
+      operationId: getPostMediaUploadUrl
+      parameters:
+        - name: fileName
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: contentType
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Presigned URL generated successfully
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Invalid content type
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+      security:
+        - bearerAuth: []
+  /api/matches:
+    get:
+      tags:
+        - Matches
+      summary: Get connections
+      description: Get all connections for the current user
+      operationId: getConnections
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+      security:
+        - bearerAuth: []
+    post:
+      tags:
+        - Matches
+      summary: Send connection request
+      description: Send a connection request to another user
+      operationId: sendConnectionRequest
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConnectionRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+      security:
+        - bearerAuth: []
+  /api/matches/{connectionId}/decline:
+    post:
+      tags:
+        - Matches
+      summary: Decline connection
+      description: Decline a connection request
+      operationId: declineConnection
+      parameters:
+        - name: connectionId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/matches/{connectionId}/accept:
+    post:
+      tags:
+        - Matches
+      summary: Accept connection
+      description: Accept a connection request
+      operationId: acceptConnection
+      parameters:
+        - name: connectionId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/likes:
+    post:
+      tags:
+        - Post Likes
+      summary: Add a like
+      description: Add a like to a post
+      operationId: addLike
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LikeRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/feed/reindex:
+    post:
+      tags:
+        - Feed
+      summary: Reindex all posts
+      description: Triggers a full reindex of all posts into Elasticsearch. Use this after data migrations or to rebuild the search index. Only available when Elasticsearch is enabled.
+      operationId: reindexPosts
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+      security:
+        - bearerAuth: []
+  /api/chat/threads:
+    get:
+      tags:
+        - Chat
+      summary: Get user threads
+      description: Get all chat threads for the current user
+      operationId: getUserThreads
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+      security:
+        - bearerAuth: []
+    post:
+      tags:
+        - Chat
+      summary: Create or get chat thread
+      description: Create a new chat thread or get existing one with a user
+      operationId: createThread
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChatThreadRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+      security:
+        - bearerAuth: []
+  /api/chat/messages:
+    post:
+      tags:
+        - Chat
+      summary: Send message
+      description: Send a message in a chat thread
+      operationId: sendMessage
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChatMessageRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+      security:
+        - bearerAuth: []
+  /api/chat/messages/{messageId}/read:
+    post:
+      tags:
+        - Chat
+      summary: Mark message as read
+      description: Mark a message as read
+      operationId: markMessageAsRead
+      parameters:
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user
+      description: Creates a new user account with profile and preferences
+      operationId: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+        required: true
+      responses:
+        "200":
+          description: User registered successfully
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Invalid input or user already exists
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh access token
+      description: Generates a new access token and refresh token using the old refresh token (refresh token rotation)
+      operationId: refreshToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshTokenRequest"
+        required: true
+      responses:
+        "200":
+          description: Token refreshed successfully
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Invalid refresh token
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Logout user
+      description: Invalidates the current JWT token
+      operationId: logout
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Logged out successfully
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Invalid token
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login user
+      description: Authenticates user and returns access token and refresh token
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+        required: true
+      responses:
+        "200":
+          description: Login successful with access and refresh tokens
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Invalid credentials
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/admin/seed-data:
+    post:
+      tags:
+        - Admin
+      summary: Seed database with test data
+      description: Starts an asynchronous job to create 500 fake users with 5-10 posts each and chat messages for testing purposes. Returns immediately with 202 Accepted while seeding runs in the background. This endpoint is only available when app.seeding.enabled=true in application properties. Check logs for seeding progress and completion.
+      operationId: seedData
+      responses:
+        "202":
+          description: Data seeding started successfully and running in background
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Seeding skipped - database already has sufficient data
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal server error during seeding
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/admin/reindex-all:
+    post:
+      tags:
+        - Admin
+      summary: Reindex all data into Elasticsearch
+      description: Triggers a full reindex of all profiles and posts into Elasticsearch. This operation runs asynchronously and may take some time for large datasets. Only available when Elasticsearch is enabled.
+      operationId: reindexAll
+      responses:
+        "200":
+          description: Reindexing started successfully
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "503":
+          description: Elasticsearch is not available
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/profiles/me:
+    patch:
+      tags:
+        - Profile Search
+      summary: Update my profile
+      description: Update the current user's profile information. Changes are automatically indexed in Elasticsearch if available.
+      operationId: updateMyProfile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileUpdateRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+      security:
+        - bearerAuth: []
+  /api/users/me:
+    get:
+      tags:
+        - user-controller
+      operationId: getCurrentUser
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/stories/user/{userId}:
+    get:
+      tags:
+        - Stories
+      summary: Get user stories
+      description: Get active stories for a specific user
+      operationId: getUserStories
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/search:
+    get:
+      tags:
+        - Search
+      summary: Unified search across posts and profiles (paginated)
+      description: "Search across both posts and profiles with a single query. Returns paginated results for both content types. Uses Elasticsearch for fast, relevant results. Falls back gracefully if Elasticsearch is unavailable. Example: GET /api/search?query=engineer&page=0&size=20"
+      operationId: unifiedSearch
+      parameters:
+        - name: query
+          in: query
+          description: Search query - searches across all fields in posts and profiles
+          required: false
+          schema:
+            type: string
+        - name: pageable
+          in: query
+          description: "Pagination parameters - page (0-indexed), size, and sort"
+          required: true
+          schema:
+            $ref: "#/components/schemas/Pageable"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/search/profiles:
+    get:
+      tags:
+        - Search
+      summary: Search profiles only (paginated)
+      description: "Search only profiles with advanced filtering options. Returns paginated results. Supports filtering by age, profession, location, religion, gender, salary ranges. Example: GET /api/search/profiles?query=engineer&ageMin=25&ageMax=35&page=0&size=20"
+      operationId: searchProfiles
+      parameters:
+        - name: query
+          in: query
+          description: "Search query - searches name, profession, education, bio"
+          required: false
+          schema:
+            type: string
+        - name: ageMin
+          in: query
+          description: Minimum age filter
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: ageMax
+          in: query
+          description: Maximum age filter
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: professions
+          in: query
+          description: Comma-separated professions
+          required: false
+          schema:
+            type: string
+        - name: locations
+          in: query
+          description: Comma-separated locations
+          required: false
+          schema:
+            type: string
+        - name: religions
+          in: query
+          description: Comma-separated religions
+          required: false
+          schema:
+            type: string
+        - name: genders
+          in: query
+          description: Comma-separated genders
+          required: false
+          schema:
+            type: string
+        - name: salaryMin
+          in: query
+          description: Minimum salary filter
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: salaryMax
+          in: query
+          description: Maximum salary filter
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageable
+          in: query
+          description: "Pagination parameters - page (0-indexed), size, and sort"
+          required: true
+          schema:
+            $ref: "#/components/schemas/Pageable"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/search/posts:
+    get:
+      tags:
+        - Search
+      summary: Search posts only (paginated)
+      description: "Search only posts with advanced filtering options. Returns paginated results. Supports filtering by userId, visibility, location, and custom sorting. Example: GET /api/search/posts?query=vacation&sortBy=likes&page=0&size=20"
+      operationId: searchPosts
+      parameters:
+        - name: query
+          in: query
+          description: "Search query - searches caption, content, and location"
+          required: false
+          schema:
+            type: string
+        - name: userId
+          in: query
+          description: Filter by user ID
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: visibility
+          in: query
+          description: "Filter by visibility (PUBLIC, FILTERED, PRIVATE)"
+          required: false
+          schema:
+            type: string
+        - name: location
+          in: query
+          description: Filter by location
+          required: false
+          schema:
+            type: string
+        - name: sortBy
+          in: query
+          description: "Sort by field (recent, likes, comments)"
+          required: false
+          schema:
+            type: string
+        - name: pageable
+          in: query
+          description: "Pagination parameters - page (0-indexed), size, and sort"
+          required: true
+          schema:
+            $ref: "#/components/schemas/Pageable"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/recommendations:
+    get:
+      tags:
+        - Recommendations
+      summary: Get recommended profiles
+      description: Get profile recommendations based on current user's partner preferences
+      operationId: getRecommendations
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 20
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+      security:
+        - bearerAuth: []
+  /api/profiles:
+    get:
+      tags:
+        - Profile Search
+      summary: Search profiles with Elasticsearch (paginated)
+      description: "Search and filter profiles by various criteria using Elasticsearch for fast, relevant results. Supports full-text search, range filters, and exact matching. Returns paginated results with metadata. Falls back to database search if Elasticsearch is not available. Example: GET /api/profiles?search=engineer&ageMin=25&ageMax=35&page=0&size=20&sort=updatedAt,desc"
+      operationId: searchProfiles_1
+      parameters:
+        - name: search
+          in: query
+          description: "Full-text search term (searches name, profession, education, bio)"
+          required: false
+          schema:
+            type: string
+        - name: ageMin
+          in: query
+          description: Minimum age filter
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: ageMax
+          in: query
+          description: Maximum age filter
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: professions
+          in: query
+          description: Comma-separated professions
+          required: false
+          schema:
+            type: string
+        - name: locations
+          in: query
+          description: Comma-separated locations
+          required: false
+          schema:
+            type: string
+        - name: religions
+          in: query
+          description: Comma-separated religions
+          required: false
+          schema:
+            type: string
+        - name: genders
+          in: query
+          description: Comma-separated genders
+          required: false
+          schema:
+            type: string
+        - name: salaryMin
+          in: query
+          description: Minimum salary filter
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: salaryMax
+          in: query
+          description: Maximum salary filter
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageable
+          in: query
+          description: "Pagination parameters - page (0-indexed), size, and sort"
+          required: true
+          schema:
+            $ref: "#/components/schemas/Pageable"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/profiles/index-stats:
+    get:
+      tags:
+        - Profile Search
+      summary: Get index statistics
+      description: Returns statistics about the Elasticsearch index. Only available when Elasticsearch is enabled.
+      operationId: getIndexStats
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/profile/me:
+    get:
+      tags:
+        - profile-me-controller
+      operationId: getMyProfile
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/preferences/me:
+    get:
+      tags:
+        - preference-controller
+      operationId: getMyPreferences_1
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/posts/{postId}/likes:
+    get:
+      tags:
+        - Post Likes
+      summary: Get likes for a post
+      description: Get all likes for a specific post
+      operationId: getPostLikes
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+      security:
+        - bearerAuth: []
+  /api/posts/all:
+    get:
+      tags:
+        - Posts
+      summary: Get all posts (deprecated)
+      description: Returns all posts without pagination. Use GET /api/posts instead for paginated results.
+      operationId: getAllPosts
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Post"
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+      deprecated: true
+  /api/ping:
+    get:
+      tags:
+        - Ping
+      summary: Ping endpoint
+      description: Returns a simple pong response to verify the API is running
+      operationId: ping
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/notifications:
+    get:
+      tags:
+        - Notifications
+      summary: Get user notifications
+      description: Get all notifications for the current user
+      operationId: getUserNotifications
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+      security:
+        - bearerAuth: []
+  /api/notifications/unread:
+    get:
+      tags:
+        - Notifications
+      summary: Get unread notifications
+      description: Get all unread notifications for the current user
+      operationId: getUnreadNotifications
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+      security:
+        - bearerAuth: []
+  /api/matches/pending:
+    get:
+      tags:
+        - Matches
+      summary: Get pending requests
+      description: Get all pending connection requests for the current user
+      operationId: getPendingRequests
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+      security:
+        - bearerAuth: []
+  /api/feed:
+    get:
+      tags:
+        - Feed
+      summary: Get feed with optional search (paginated)
+      description: "Get posts feed with optional search using Elasticsearch. Returns paginated results with metadata. Falls back to database if Elasticsearch is unavailable. Supports filtering by userId, visibility, location, and sorting. Example: GET /api/feed?search=vacation&sortBy=likes&page=0&size=20"
+      operationId: getFeed
+      parameters:
+        - name: search
+          in: query
+          description: "Full-text search term (searches caption, content, location)"
+          required: false
+          schema:
+            type: string
+        - name: userId
+          in: query
+          description: Filter by user ID
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: visibility
+          in: query
+          description: "Filter by visibility (PUBLIC, FILTERED, PRIVATE)"
+          required: false
+          schema:
+            type: string
+        - name: location
+          in: query
+          description: Filter by location
+          required: false
+          schema:
+            type: string
+        - name: sortBy
+          in: query
+          description: "Sort by field (recent, likes, comments)"
+          required: false
+          schema:
+            type: string
+        - name: pageable
+          in: query
+          description: "Pagination parameters - page (0-indexed), size, and sort"
+          required: true
+          schema:
+            $ref: "#/components/schemas/Pageable"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/feed/index-stats:
+    get:
+      tags:
+        - Feed
+      summary: Get post index statistics
+      description: Returns statistics about the Elasticsearch post index. Only available when Elasticsearch is enabled.
+      operationId: getIndexStats_1
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/docs:
+    get:
+      tags:
+        - api-docs-controller
+      operationId: getApiDocs
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/chat/threads/{threadId}/messages:
+    get:
+      tags:
+        - Chat
+      summary: Get thread messages
+      description: Get messages for a specific thread with pagination
+      operationId: getThreadMessages
+      parameters:
+        - name: threadId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 50
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/admin/seeding-status:
+    get:
+      tags:
+        - Admin
+      summary: Get seeding configuration status
+      description: Returns the current seeding configuration and database statistics
+      operationId: getSeedingStatus
+      responses:
+        "200":
+          description: Status retrieved successfully
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/admin/index-status:
+    get:
+      tags:
+        - Admin
+      summary: Get Elasticsearch index status
+      description: Returns statistics about the Elasticsearch indices including document counts. Only available when Elasticsearch is enabled.
+      operationId: getIndexStatus
+      responses:
+        "200":
+          description: Index status retrieved successfully
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "503":
+          description: Elasticsearch is not available
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/:
+    get:
+      tags:
+        - api-docs-controller
+      operationId: getApiInfo
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/admin/clear-data:
+    delete:
+      tags:
+        - Admin
+      summary: Clear all data from database
+      description: "WARNING: Deletes all users, profiles, posts, chat data, and refresh tokens from the database. Returns immediately with 202 Accepted while deletion runs in background. Handles foreign key constraints by deleting dependent entities first. Use with extreme caution! Only available when app.seeding.enabled=true. Check logs for deletion progress and completion."
+      operationId: clearData
+      responses:
+        "202":
+          description: Data deletion started successfully and running in background
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+        "500":
+          description: Internal server error during clearing
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+components:
+  schemas:
+    PostRequest:
+      required:
+        - content
+      type: object
+      properties:
+        content:
+          maxLength: 1000
+          minLength: 0
+          type: string
+        userId:
+          type: integer
+          format: int64
+        mediaUrls:
+          type: array
+          items:
+            type: string
+    PartnerPreferencesRequest:
+      type: object
+      properties:
+        ageMin:
+          maximum: 100
+          minimum: 18
+          type: integer
+          format: int32
+        ageMax:
+          maximum: 100
+          minimum: 18
+          type: integer
+          format: int32
+        professions:
+          type: array
+          items:
+            type: string
+        educations:
+          type: array
+          items:
+            type: string
+        locations:
+          type: array
+          items:
+            type: string
+        religions:
+          type: array
+          items:
+            type: string
+        genders:
+          type: array
+          items:
+            type: string
+        salaryMin:
+          minimum: 0
+          type: integer
+          format: int32
+        salaryMax:
+          minimum: 0
+          type: integer
+          format: int32
+    StoryRequest:
+      required:
+        - mediaType
+        - mediaUrl
+      type: object
+      properties:
+        mediaUrl:
+          type: string
+        mediaType:
+          type: string
+    ProfileUpdateRequest:
+      required:
+        - fullName
+        - gender
+      type: object
+      properties:
+        fullName:
+          type: string
+        gender:
+          type: string
+        bio:
+          type: string
+        profession:
+          type: string
+        education:
+          type: string
+        location:
+          type: string
+        salary:
+          type: integer
+          format: int32
+        city:
+          type: string
+        state:
+          type: string
+        country:
+          type: string
+        religion:
+          type: string
+        caste:
+          type: string
+        motherTongue:
+          type: string
+        maritalStatus:
+          type: string
+        height:
+          type: string
+        weight:
+          type: string
+        occupation:
+          type: string
+        income:
+          type: string
+        profilePhoto:
+          type: string
+    CommentRequest:
+      required:
+        - postId
+        - text
+      type: object
+      properties:
+        postId:
+          type: integer
+          format: int64
+        text:
+          maxLength: 1000
+          minLength: 0
+          type: string
+        parentId:
+          type: integer
+          format: int64
+    ConnectionRequest:
+      required:
+        - targetUserId
+      type: object
+      properties:
+        targetUserId:
+          type: integer
+          format: int64
+        message:
+          type: string
+    LikeRequest:
+      required:
+        - postId
+        - userId
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+        postId:
+          type: integer
+          format: int64
+    ChatThreadRequest:
+      required:
+        - participantId
+      type: object
+      properties:
+        participantId:
+          type: integer
+          format: int64
+    ChatMessageRequest:
+      required:
+        - content
+        - threadId
+        - type
+      type: object
+      properties:
+        threadId:
+          type: integer
+          format: int64
+        content:
+          maxLength: 5000
+          minLength: 0
+          type: string
+        type:
+          type: string
+    RegisterRequest:
+      required:
+        - dob
+        - email
+        - fullName
+        - gender
+        - mobile
+        - password
+      type: object
+      properties:
+        fullName:
+          type: string
+        email:
+          type: string
+        mobile:
+          pattern: "^\\d{10,15}$"
+          type: string
+        password:
+          maxLength: 100
+          minLength: 6
+          type: string
+        gender:
+          pattern: Male|Female|Other
+          type: string
+        dob:
+          pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+          type: string
+        religion:
+          type: string
+        caste:
+          type: string
+        motherTongue:
+          type: string
+        maritalStatus:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        country:
+          type: string
+        profilePhoto:
+          type: string
+    RefreshTokenRequest:
+      required:
+        - refreshToken
+      type: object
+      properties:
+        refreshToken:
+          type: string
+    LoginRequest:
+      required:
+        - identifier
+        - password
+      type: object
+      properties:
+        identifier:
+          type: string
+        password:
+          type: string
+    Profile:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        fullName:
+          type: string
+        gender:
+          type: string
+        dob:
+          type: string
+          format: date-time
+        age:
+          type: integer
+          format: int32
+        profession:
+          type: string
+        education:
+          type: string
+        location:
+          type: string
+        salary:
+          type: integer
+          format: int32
+        religion:
+          type: string
+        caste:
+          type: string
+        motherTongue:
+          type: string
+        maritalStatus:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        country:
+          type: string
+        heightCm:
+          type: integer
+          format: int32
+        weightKg:
+          type: integer
+          format: int32
+        diet:
+          type: string
+          enum:
+            - VEG
+            - NON_VEG
+            - EGGITARIAN
+            - VEGAN
+        smoking:
+          type: string
+          enum:
+            - "YES"
+            - "NO"
+            - OCCASIONALLY
+        drinking:
+          type: string
+          enum:
+            - "YES"
+            - "NO"
+            - OCCASIONALLY
+        photos:
+          type: array
+          items:
+            type: string
+        bio:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    Story:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        user:
+          $ref: "#/components/schemas/User"
+        mediaUrl:
+          type: string
+        mediaType:
+          type: string
+          enum:
+            - IMAGE
+            - VIDEO
+        createdAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        viewCount:
+          type: integer
+          format: int32
+        visibility:
+          type: string
+          enum:
+            - PUBLIC
+            - CONNECTIONS
+            - CLOSE_FRIENDS
+        thumbnailUrl:
+          type: string
+        durationSeconds:
+          type: integer
+          format: int32
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        fullName:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        mobile:
+          type: string
+        password:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - SUSPENDED
+            - DELETED
+            - PENDING_VERIFICATION
+        isVerified:
+          type: boolean
+        isPremium:
+          type: boolean
+        lastLogin:
+          type: string
+          format: date-time
+        lastActiveAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type: string
+          format: date-time
+        profile:
+          $ref: "#/components/schemas/Profile"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    Pageable:
+      type: object
+      properties:
+        page:
+          minimum: 0
+          type: integer
+          format: int32
+        size:
+          minimum: 1
+          type: integer
+          format: int32
+        sort:
+          type: array
+          items:
+            type: string
+    PagePost:
+      type: object
+      properties:
+        totalPages:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        numberOfElements:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/Post"
+        number:
+          type: integer
+          format: int32
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    PageableObject:
+      type: object
+      properties:
+        unpaged:
+          type: boolean
+        pageNumber:
+          type: integer
+          format: int32
+        paged:
+          type: boolean
+        pageSize:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int64
+        sort:
+          $ref: "#/components/schemas/SortObject"
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        caption:
+          type: string
+        content:
+          type: string
+          deprecated: true
+        mediaUrls:
+          type: array
+          items:
+            type: string
+        visibility:
+          type: string
+          enum:
+            - PUBLIC
+            - FILTERED
+            - PRIVATE
+        location:
+          type: string
+        likeCount:
+          type: integer
+          format: int32
+        commentCount:
+          type: integer
+          format: int32
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    SortObject:
+      type: object
+      properties:
+        unsorted:
+          type: boolean
+        sorted:
+          type: boolean
+        empty:
+          type: boolean
+  securitySchemes:
+    bearerAuth:
+      type: http
+      description: JWT authentication using Bearer token
+      scheme: bearer
+      bearerFormat: JWT

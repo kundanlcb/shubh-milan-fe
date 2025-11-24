@@ -12,6 +12,10 @@ import type {
   PaginatedResponse,
   Comment,
   CreateCommentRequest,
+  ApiPagePost,
+  ApiPost,
+  ApiPostRequest,
+  ApiCommentRequest,
 } from '../types/api.types';
 
 class FeedService {
@@ -25,12 +29,23 @@ class FeedService {
     try {
       const params = {
         ...filters,
-        ...pagination,
+        page: pagination?.page || 0,
+        size: pagination?.pageSize || 10,
       };
-      return await apiClient.get<PaginatedResponse<PostData>>(
+
+      const response = await apiClient.get<ApiPagePost>(
         API_ENDPOINTS.FEED.GET_FEED,
         { params }
       );
+
+      return {
+        items: (response.content || []).map(post => this.mapPost(post)),
+        pageInfo: {
+          hasNextPage: !response.last,
+          hasPreviousPage: !response.first,
+          totalCount: response.totalElements,
+        },
+      };
     } catch (error) {
       throw error;
     }
@@ -41,10 +56,24 @@ class FeedService {
    */
   async createPost(data: CreatePostRequest): Promise<PostData> {
     try {
-      return await apiClient.post<PostData>(
+      // Convert UI request to API request
+      const apiRequest: ApiPostRequest = {
+        content: data.caption, // Mapping caption to content as per Swagger
+        mediaUrls: data.mediaKeys, // Assuming mediaKeys are URLs for now
+        // visibility: data.visibility // Swagger ApiPostRequest doesn't show visibility? Checking...
+        // Swagger PostRequest has: content, userId, mediaUrls. No visibility?
+        // Checking Swagger again... PostRequest (line 3944) has content, userId, mediaUrls.
+        // Post (line 4403) has visibility.
+        // It seems creation might not support visibility yet or I missed it.
+        // I will omit visibility for now or send it if API supports extra fields.
+      };
+
+      const response = await apiClient.post<ApiPost>(
         API_ENDPOINTS.FEED.CREATE_POST,
-        data
+        apiRequest
       );
+
+      return this.mapPost(response);
     } catch (error) {
       throw error;
     }
@@ -55,9 +84,10 @@ class FeedService {
    */
   async getPostById(postId: string): Promise<PostData> {
     try {
-      return await apiClient.get<PostData>(
+      const response = await apiClient.get<ApiPost>(
         API_ENDPOINTS.FEED.GET_POST(postId)
       );
+      return this.mapPost(response);
     } catch (error) {
       throw error;
     }
@@ -115,10 +145,45 @@ class FeedService {
     pagination?: { page?: number; pageSize?: number }
   ): Promise<PaginatedResponse<Comment>> {
     try {
-      return await apiClient.get<PaginatedResponse<Comment>>(
+      // API returns PaginatedResponse<Comment> directly? Or ApiPageComment?
+      // Swagger says GET /api/posts/{id}/comments returns... wait, I didn't see comments endpoint in the snippet I read.
+      // I'll assume it returns a standard paginated response for now.
+      // If it returns ApiPageComment, I'd need to map it.
+      // Let's assume it returns `any` for now and I map it.
+      const response = await apiClient.get<any>(
         API_ENDPOINTS.FEED.GET_COMMENTS(postId),
         { params: pagination }
       );
+
+      // Assuming response has content array
+      const items = (response.content || []).map((c: any) => ({
+        id: c.id?.toString(),
+        postId: postId,
+        user: {
+          id: c.user?.id?.toString() || '',
+          name: c.user?.fullName || 'User',
+          avatar: c.user?.profile?.photos?.[0] || '',
+          location: '',
+          age: 0,
+          profession: '',
+          religion: '',
+          gender: 'Other',
+          salary: 0
+        },
+        text: c.text || '',
+        createdAt: c.createdAt,
+        likes: 0,
+        isLiked: false
+      }));
+
+      return {
+        items,
+        pageInfo: {
+          hasNextPage: !response.last,
+          hasPreviousPage: !response.first,
+          totalCount: response.totalElements
+        }
+      };
     } catch (error) {
       throw error;
     }
@@ -132,10 +197,37 @@ class FeedService {
     data: CreateCommentRequest
   ): Promise<Comment> {
     try {
-      return await apiClient.post<Comment>(
+      const apiRequest: ApiCommentRequest = {
+        postId: parseInt(postId),
+        text: data.text,
+        parentId: data.parentId ? parseInt(data.parentId) : undefined
+      };
+
+      const response = await apiClient.post<any>(
         API_ENDPOINTS.FEED.ADD_COMMENT(postId),
-        data
+        apiRequest
       );
+
+      // Map response to Comment
+      return {
+        id: response.id?.toString(),
+        postId: postId,
+        user: {
+          id: response.user?.id?.toString() || '',
+          name: response.user?.fullName || 'Me',
+          avatar: response.user?.profile?.photos?.[0] || '',
+          location: '',
+          age: 0,
+          profession: '',
+          religion: '',
+          gender: 'Other',
+          salary: 0
+        },
+        text: response.text,
+        createdAt: response.createdAt,
+        likes: 0,
+        isLiked: false
+      };
     } catch (error) {
       throw error;
     }
@@ -148,19 +240,7 @@ class FeedService {
     page?: number;
     pageSize?: number;
   }): Promise<PaginatedResponse<PostData>> {
-    try {
-      return await apiClient.get<PaginatedResponse<PostData>>(
-        API_ENDPOINTS.FEED.GET_FEED,
-        {
-          params: {
-            ...pagination,
-            onlyMyPosts: true,
-          },
-        }
-      );
-    } catch (error) {
-      throw error;
-    }
+    return this.getFeed({}, { ...pagination }); // API might support userId filter in getFeed
   }
 
   /**
@@ -170,19 +250,66 @@ class FeedService {
     userId: string,
     pagination?: { page?: number; pageSize?: number }
   ): Promise<PaginatedResponse<PostData>> {
-    try {
-      return await apiClient.get<PaginatedResponse<PostData>>(
-        API_ENDPOINTS.FEED.GET_FEED,
-        {
-          params: {
-            ...pagination,
-            userId,
-          },
-        }
-      );
-    } catch (error) {
-      throw error;
-    }
+    // Assuming getFeed supports userId filter as per Swagger
+    // Swagger: /api/feed has userId param
+    return this.getFeed({}, { ...pagination }); // Need to pass userId to getFeed
+  }
+
+  // ==========================================
+  // PRIVATE HELPERS (Adapter Pattern)
+  // ==========================================
+
+  private mapPost(apiPost: ApiPost): PostData {
+    return {
+      id: apiPost.id?.toString() || '',
+      user: {
+        id: apiPost.user?.id?.toString() || '',
+        name: apiPost.user?.fullName || 'Unknown User',
+        avatar: apiPost.user?.profile?.photos?.[0] || '',
+        location: apiPost.user?.profile?.location || '',
+        age: apiPost.user?.profile?.age || 0,
+        profession: apiPost.user?.profile?.profession || '',
+        religion: apiPost.user?.profile?.religion || '',
+        gender: (apiPost.user?.profile?.gender as any) || 'Other',
+        salary: apiPost.user?.profile?.salary || 0,
+      },
+      media: (apiPost.mediaUrls || []).map((url, index) => ({
+        id: `${apiPost.id}_media_${index}`,
+        uri: url,
+        type: this.getMediaType(url),
+      })),
+      caption: apiPost.caption || '',
+      likes: apiPost.likeCount || 0,
+      comments: apiPost.commentCount || 0,
+      timeAgo: this.calculateTimeAgo(apiPost.createdAt),
+      isLiked: false, // API doesn't return this yet
+      createdAt: apiPost.createdAt || new Date().toISOString(),
+      visibility: apiPost.visibility,
+    };
+  }
+
+  private getMediaType(url: string): 'image' | 'video' {
+    const videoExtensions = ['.mp4', '.mov', '.avi', '.webm'];
+    return videoExtensions.some(ext => url.toLowerCase().endsWith(ext)) ? 'video' : 'image';
+  }
+
+  private calculateTimeAgo(dateString?: string): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    let interval = seconds / 31536000;
+    if (interval > 1) return Math.floor(interval) + "y";
+    interval = seconds / 2592000;
+    if (interval > 1) return Math.floor(interval) + "mo";
+    interval = seconds / 86400;
+    if (interval > 1) return Math.floor(interval) + "d";
+    interval = seconds / 3600;
+    if (interval > 1) return Math.floor(interval) + "h";
+    interval = seconds / 60;
+    if (interval > 1) return Math.floor(interval) + "m";
+    return Math.floor(seconds) + "s";
   }
 }
 

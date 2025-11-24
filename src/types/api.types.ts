@@ -211,9 +211,11 @@ export interface ChatMessage {
   senderId: string;
   type: 'text' | 'image' | 'video' | 'typing';
   content: string;
+  mediaUrl?: string;
   sentAt: string;
   deliveredAt?: string;
   readAt?: string;
+  isRead?: boolean;
   clientMessageId?: string;
 }
 
@@ -221,6 +223,7 @@ export interface SendMessageRequest {
   threadId: string;
   type: 'text' | 'image' | 'video';
   content: string;
+  mediaUrl?: string;
   clientMessageId?: string;
 }
 
@@ -250,6 +253,8 @@ export interface MatchIntent {
   id: string;
   requesterId: string;
   targetId: string;
+  fromUser?: UserSummary;
+  toUser?: UserSummary;
   type: 'LIKE' | 'CONNECT';
   status: 'PENDING' | 'ACCEPTED' | 'DECLINED';
   createdAt: string;
@@ -258,6 +263,7 @@ export interface MatchIntent {
 
 export interface SendIntentRequest {
   type: 'LIKE' | 'CONNECT';
+  message?: string;
 }
 
 export interface MatchesResponse {
@@ -313,3 +319,247 @@ export interface AppSettings {
     theme: 'light' | 'dark' | 'auto';
   };
 }
+
+// ==========================================
+// SWAGGER API TYPES (Strict DTOs)
+// ==========================================
+
+export interface ApiPostRequest {
+  content?: string;
+  userId?: number;
+  mediaUrls?: string[];
+}
+
+export interface ApiPartnerPreferencesRequest {
+  ageMin?: number;
+  ageMax?: number;
+  professions?: string[];
+  educations?: string[];
+  locations?: string[];
+  religions?: string[];
+  genders?: string[];
+  salaryMin?: number;
+  salaryMax?: number;
+}
+
+export interface ApiStoryRequest {
+  mediaUrl: string;
+  mediaType: string;
+}
+
+export interface ApiProfileUpdateRequest {
+  fullName: string;
+  gender: string;
+  bio?: string;
+  profession?: string;
+  education?: string;
+  location?: string;
+  salary?: number;
+  city?: string;
+  state?: string;
+  country?: string;
+  religion?: string;
+  caste?: string;
+  motherTongue?: string;
+  maritalStatus?: string;
+  height?: string;
+  weight?: string;
+  occupation?: string;
+  income?: string;
+  profilePhoto?: string;
+}
+
+export interface ApiCommentRequest {
+  postId: number;
+  text: string;
+  parentId?: number;
+}
+
+export interface ApiConnectionRequest {
+  targetUserId: number;
+  message?: string;
+}
+
+export interface ApiLikeRequest {
+  userId: number;
+  postId: number;
+}
+
+export interface ApiChatThreadRequest {
+  participantId: number;
+}
+
+export interface ApiSendMessageRequest {
+  threadId: number;
+  content: string;
+  type: string;
+  mediaUrl?: string;
+}
+
+export interface ApiRegisterRequest {
+  fullName: string;
+  email: string;
+  mobile: string;
+  password: string;
+  gender: string;
+  dob: string;
+  religion?: string;
+  caste?: string;
+  motherTongue?: string;
+  maritalStatus?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  profilePhoto?: string;
+}
+
+export interface ApiRefreshTokenRequest {
+  refreshToken: string;
+}
+
+export interface ApiLoginRequest {
+  identifier: string;
+  password: string;
+}
+
+export interface ApiProfile {
+  id?: number;
+  fullName?: string;
+  gender?: string;
+  dob?: string;
+  age?: number;
+  profession?: string;
+  education?: string;
+  location?: string;
+  salary?: number;
+  religion?: string;
+  caste?: string;
+  motherTongue?: string;
+  maritalStatus?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  heightCm?: number;
+  weightKg?: number;
+  diet?: 'VEG' | 'NON_VEG' | 'EGGITARIAN' | 'VEGAN';
+  smoking?: 'YES' | 'NO' | 'OCCASIONALLY';
+  drinking?: 'YES' | 'NO' | 'OCCASIONALLY';
+  photos?: string[];
+  bio?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ApiStory {
+  id?: number;
+  user?: ApiUser;
+  mediaUrl?: string;
+  mediaType?: 'IMAGE' | 'VIDEO';
+  createdAt?: string;
+  expiresAt?: string;
+  viewCount?: number;
+  visibility?: 'PUBLIC' | 'CONNECTIONS' | 'CLOSE_FRIENDS';
+  thumbnailUrl?: string;
+  durationSeconds?: number;
+}
+
+export interface ApiUser {
+  id?: number;
+  fullName?: string;
+  username?: string;
+  email?: string;
+  mobile?: string;
+  password?: string;
+  roles?: string[];
+  status?: 'ACTIVE' | 'SUSPENDED' | 'DELETED' | 'PENDING_VERIFICATION';
+  isVerified?: boolean;
+  isPremium?: boolean;
+  lastLogin?: string;
+  lastActiveAt?: string;
+  deletedAt?: string;
+  profile?: ApiProfile;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ApiPageable {
+  page?: number;
+  size?: number;
+  sort?: string[];
+}
+
+export interface ApiPagePost {
+  totalPages?: number;
+  totalElements?: number;
+  pageable?: ApiPageableObject;
+  numberOfElements?: number;
+  size?: number;
+  content?: ApiPost[];
+  number?: number;
+  sort?: ApiSortObject;
+  first?: boolean;
+  last?: boolean;
+  empty?: boolean;
+}
+
+export interface ApiPageableObject {
+  unpaged?: boolean;
+  pageNumber?: number;
+  paged?: boolean;
+  pageSize?: number;
+  offset?: number;
+  sort?: ApiSortObject;
+}
+
+export interface ApiPost {
+  id?: number;
+  caption?: string;
+  content?: string;
+  mediaUrls?: string[];
+  visibility?: 'PUBLIC' | 'FILTERED' | 'PRIVATE';
+  location?: string;
+  likeCount?: number;
+  commentCount?: number;
+  createdAt?: string;
+  updatedAt?: string;
+  user?: ApiUser; // Assuming the API returns the user object populated, though Swagger schema for Post didn't explicitly show it, it's common. If not, we might need to fetch separately or it's in a wrapper. *Correction*: Swagger Post schema didn't show `user` field. Checking `PagePost` -> `content` -> `Post`. The `Post` schema in Swagger (lines 4402) does NOT have a `user` field. However, the `Feed` endpoint usually returns posts with user info. I will assume for now it might be there or I'll need to check the actual API response. *Self-correction*: The `PostData` UI type has `user`. I will add `user` to `ApiPost` as optional, but be aware it might not be in the strict schema.
+}
+
+
+export interface ApiSortObject {
+  unsorted?: boolean;
+  sorted?: boolean;
+  empty?: boolean;
+}
+
+export interface ApiChatMessage {
+  id?: number;
+  chatId?: number;
+  senderId?: number;
+  content?: string;
+  mediaUrl?: string;
+  type?: 'TEXT' | 'IMAGE' | 'VIDEO' | 'AUDIO' | 'FILE';
+  read?: boolean;
+  createdAt?: string;
+}
+
+export interface ApiChat {
+  id?: number;
+  users?: ApiUser[];
+  lastMessage?: ApiChatMessage;
+  unreadCount?: number;
+  updatedAt?: string;
+  createdAt?: string;
+}
+
+export interface ApiConnection {
+  id?: number;
+  requester?: ApiUser;
+  receiver?: ApiUser;
+  status?: 'PENDING' | 'ACCEPTED' | 'DECLINED' | 'BLOCKED';
+  createdAt?: string;
+  updatedAt?: string;
+  message?: string;
+}
+
+
