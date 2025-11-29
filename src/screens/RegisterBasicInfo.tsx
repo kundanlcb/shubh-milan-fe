@@ -1,8 +1,31 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Animated } from 'react-native';
 import { FloatingInput } from '../components/FloatingInput';
+import type { RegistrationData } from './RegisterScreen';
 
-const RegisterBasicInfo = ({ formData, handleTextChange, handleFocus, handleBlur, focusedFields, labelAnimations, styles }) => (
+interface RegisterBasicInfoProps {
+  formData: RegistrationData;
+  handleTextChange: (field: keyof RegistrationData, value: string) => void;
+  handleFocus: (field: string) => void;
+  handleBlur: (field: string) => void;
+  focusedFields: { [key: string]: boolean };
+  labelAnimations: { [key: string]: Animated.Value };
+  styles: any;
+}
+
+const RegisterBasicInfo: React.FC<RegisterBasicInfoProps> = ({
+  formData,
+  handleTextChange,
+  handleFocus,
+  handleBlur,
+  focusedFields,
+  labelAnimations,
+  styles,
+}) => {
+  // Safety check for undefined animations
+  const getAnimation = (field: string) => labelAnimations[field] || new Animated.Value(0);
+
+  return (
     <View style={styles.form}>
         <Text style={styles.stepTitle}>Basic Information</Text>
         <Text style={styles.stepDescription}>Let's start with your basic details</Text>
@@ -15,7 +38,7 @@ const RegisterBasicInfo = ({ formData, handleTextChange, handleFocus, handleBlur
             onFocus={() => handleFocus('fullName')}
             onBlur={() => handleBlur('fullName')}
             focused={focusedFields.fullName || false}
-            labelAnimation={labelAnimations.fullName}
+            labelAnimation={getAnimation('fullName')}
         />
         <FloatingInput
             label="Email Address *"
@@ -27,7 +50,7 @@ const RegisterBasicInfo = ({ formData, handleTextChange, handleFocus, handleBlur
             onFocus={() => handleFocus('email')}
             onBlur={() => handleBlur('email')}
             focused={focusedFields.email || false}
-            labelAnimation={labelAnimations.email}
+            labelAnimation={getAnimation('email')}
         />
         <FloatingInput
             label="Phone Number *"
@@ -39,7 +62,18 @@ const RegisterBasicInfo = ({ formData, handleTextChange, handleFocus, handleBlur
             onFocus={() => handleFocus('phone')}
             onBlur={() => handleBlur('phone')}
             focused={focusedFields.phone || false}
-            labelAnimation={labelAnimations.phone}
+            labelAnimation={getAnimation('phone')}
+        />
+        <FloatingInput
+            label="Date of Birth (YYYY-MM-DD) *"
+            placeholder="Enter DOB as YYYY-MM-DD"
+            keyboardType="default"
+            value={formData.dob}
+            onChangeText={(value) => handleTextChange('dob', value)}
+            onFocus={() => handleFocus('dob')}
+            onBlur={() => handleBlur('dob')}
+            focused={focusedFields.dob || false}
+            labelAnimation={getAnimation('dob')}
         />
         <FloatingInput
             label="Password *"
@@ -51,7 +85,7 @@ const RegisterBasicInfo = ({ formData, handleTextChange, handleFocus, handleBlur
             onFocus={() => handleFocus('password')}
             onBlur={() => handleBlur('password')}
             focused={focusedFields.password || false}
-            labelAnimation={labelAnimations.password}
+            labelAnimation={getAnimation('password')}
         />
         <FloatingInput
             label="Confirm Password *"
@@ -63,10 +97,10 @@ const RegisterBasicInfo = ({ formData, handleTextChange, handleFocus, handleBlur
             onFocus={() => handleFocus('confirmPassword')}
             onBlur={() => handleBlur('confirmPassword')}
             focused={focusedFields.confirmPassword || false}
-            labelAnimation={labelAnimations.confirmPassword}
+            labelAnimation={getAnimation('confirmPassword')}
         />
     </View>
-);
+  );
+};
 
 export default RegisterBasicInfo;
-

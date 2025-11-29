@@ -16,7 +16,7 @@ import type {
   ApiLoginRequest,
   ApiRegisterRequest,
   ApiUser,
-  ApiProfile,
+
 } from '../types/api.types';
 
 class AuthService {
@@ -35,35 +35,35 @@ class AuthService {
         apiRequest
       );
 
-      // Map response. API might return { accessToken, refreshToken, userId, user? }
-      // If user is missing, we might need to fetch it.
-      let user: User;
-      if (response.user) {
-        user = this.mapApiUserToUiUser(response.user);
-      } else if (response.userId) {
-        // Fetch profile if not returned
-        try {
-          const profileResponse = await apiClient.get<ApiUser>(`/api/profile/${response.userId}`); // Using direct path as API_ENDPOINTS.PROFILE might not be set up for this exactly
-          user = this.mapApiUserToUiUser(profileResponse);
-        } catch (e) {
-          console.warn('Failed to fetch user profile after login', e);
-          user = { id: response.userId, fullName: 'User', email: '', phone: '', roles: [], status: 'ACTIVE', createdAt: new Date().toISOString() };
-        }
-      } else {
-        throw new Error('Invalid login response: missing userId');
+      // Store tokens in AsyncStorage
+      await AsyncStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, response.accessToken);
+      await AsyncStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, response.refreshToken);
+      if (response.userId) {
+        await AsyncStorage.setItem(STORAGE_KEYS.USER_ID, response.userId.toString());
       }
 
-      const loginResponse: LoginResponse = {
-        accessToken: response.accessToken,
-        refreshToken: response.refreshToken,
-        userId: response.userId?.toString(),
-        user: user,
+      // Store user profile if available
+      const user = response.user || {
+        id: response.userId?.toString() || '',
+        fullName: '',
+        email: '',
+        phone: '',
+        roles: [],
+        status: 'ACTIVE',
+        createdAt: new Date().toISOString()
       };
 
-      // Store tokens and user info
-      await this.storeAuthData(loginResponse);
+      if (user) {
+        await AsyncStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(user));
+      }
 
-      return loginResponse;
+      // Return the login response
+      return {
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+        userId: response.userId?.toString() || '',
+        user: user,
+      };
     } catch (error) {
       throw error;
     }
@@ -74,8 +74,10 @@ class AuthService {
    */
   async register(data: RegisterRequest): Promise<RegisterResponse> {
     try {
-      // Calculate approximate DOB from age if not provided (UI has age)
-      const birthYear = new Date().getFullYear() - (data.profile.age || 25);
+      // Convert UI data to API format
+      const birthYear = parseInt(data.profile.age.toString(), 10) > 0
+        ? new Date().getFullYear() - data.profile.age
+        : new Date().getFullYear() - 25;
       const dob = `${birthYear}-01-01`;
 
       const apiRequest: ApiRegisterRequest = {
@@ -86,9 +88,13 @@ class AuthService {
         gender: data.profile.gender,
         dob: dob,
         religion: data.profile.religion,
+        caste: '', // Not collected in UI currently
         motherTongue: data.profile.motherTongue,
-        city: data.profile.location.split(',')[0]?.trim(), // Simple heuristic
-        // Map other fields as needed
+        maritalStatus: '', // Not collected in UI currently
+        city: data.profile.location,
+        state: '', // Not collected in UI currently
+        country: 'India', // Default
+        profilePhoto: data.profile.photos?.[0] || undefined,
       };
 
       const response = await apiClient.post<any>(
@@ -96,15 +102,11 @@ class AuthService {
         apiRequest
       );
 
-      // Store tokens
-      await AsyncStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, response.accessToken);
-      await AsyncStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, response.refreshToken);
-      await AsyncStorage.setItem(STORAGE_KEYS.USER_ID, response.userId?.toString());
-
+      // Registration successful - API returns { userId, status: "success" }
+      // No tokens returned, user needs to login after registration
       return {
-        userId: response.userId?.toString(),
-        accessToken: response.accessToken,
-        refreshToken: response.refreshToken,
+        userId: response.userId ? response.userId.toString() : undefined,
+        success: response.status === 'success' || !!response.userId,
       };
     } catch (error) {
       throw error;

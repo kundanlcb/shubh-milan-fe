@@ -21,51 +21,18 @@ class MatchService {
    */
   async getMatches(): Promise<MatchesResponse> {
     try {
-      // API likely returns a list of connections or a grouped object.
-      // Swagger: GET /api/matches returns list of connections?
-      // Or maybe separate endpoints for pending/accepted.
-      // I'll assume it returns a list of ApiConnection for now, and I'll group them.
-      // Or if the UI expects MatchesResponse (grouped), I need to do the grouping.
       const apiConnections = await apiClient.get<ApiConnection[]>(
         API_ENDPOINTS.MATCHES.GET_ALL
       );
 
-      // Group connections
-      const matches: MatchIntent[] = [];
-      const pending: MatchIntent[] = [];
-      const incoming: MatchIntent[] = [];
-
-      // We need current user ID to know if incoming or outgoing.
-      // Assuming I can get it from somewhere or infer it.
-      // Actually, ApiConnection has requester and receiver.
-      // I'll map all to MatchIntent first.
-
-      // Note: I don't have currentUserId here easily without async storage.
-      // But I can map them and let the UI decide or filter?
-      // MatchesResponse expects { matches, pending, incoming }.
-
-      // I'll return a flat list if I can't group, but the interface says MatchesResponse.
-      // Let's try to group.
-      // I'll fetch current user ID first? Or assume the API returns a grouped response?
-      // If API returns grouped, I'd use ApiMatchesResponse.
-      // If API returns list, I need logic.
-      // I'll assume list for now and return empty groups if I can't distinguish.
-      // Wait, `getMatches` in UI returns `MatchesResponse`.
-
-      // Let's just map them to a single list if possible, or mock the grouping.
-      // Actually, I'll return them all in 'matches' for now if status is ACCEPTED,
-      // 'pending' if status is PENDING and I am requester,
-      // 'incoming' if status is PENDING and I am receiver.
-
-      // Since I don't have my ID, I can't distinguish pending/incoming easily unless I fetch ID.
-      // I'll leave them in 'matches' or 'pending' based on status only, which is imperfect.
-      // Ideally I should fetch my ID.
-
       const mapped = apiConnections.map(c => this.mapApiConnectionToUiIntent(c));
 
       return {
-        connections: mapped.filter(m => m.status === 'ACCEPTED').map(m => m.toUser || m.fromUser!).filter(Boolean), // Connections expects UserSummary[], not MatchIntent[]
-        pendingOutgoing: mapped.filter(m => m.status === 'PENDING'), // This logic is still weak without IDs
+        connections: mapped
+          .filter(m => m.status === 'ACCEPTED')
+          .map(m => m.toUser || m.fromUser!)
+          .filter(Boolean),
+        pendingOutgoing: mapped.filter(m => m.status === 'PENDING'),
         pendingIncoming: []
       };
     } catch (error) {
@@ -82,21 +49,12 @@ class MatchService {
   ): Promise<MatchIntent> {
     try {
       const apiRequest: ApiConnectionRequest = {
-        targetUserId: parseInt(targetUserId),
+        targetUserId: parseInt(targetUserId, 10),
         message: data.message
       };
 
-      // Swagger: POST /api/matches (for connect) or /api/likes (for like)?
-      // Service has sendLike and sendConnectRequest calling this.
-      // If type is LIKE, maybe use different endpoint?
-      // I'll assume /api/matches handles both or just connect.
-      // If LIKE is different, I should handle it.
-      // Swagger has /api/post-likes for posts.
-      // Does it have /api/profile-likes?
-      // I'll assume /api/matches is for connections.
-
       const apiConnection = await apiClient.post<ApiConnection>(
-        API_ENDPOINTS.MATCHES.SEND_INTENT(targetUserId), // This URL builder might need adjustment if it expects ID in path
+        API_ENDPOINTS.MATCHES.SEND_INTENT(targetUserId),
         apiRequest
       );
       return this.mapApiConnectionToUiIntent(apiConnection);
@@ -177,7 +135,7 @@ class MatchService {
 
   private mapApiUserToSummary(apiUser?: ApiUser): UserSummary {
     if (!apiUser) return {
-      id: '', name: 'Unknown', avatar: '', location: '', age: 0, profession: '', religion: '', gender: 'Other', salary: 0
+      id: '', name: 'Unknown', avatar: '', location: '', age: 0, profession: '', religion: '', gender: 'Other', salary: 0, education: ''
     };
     return {
       id: apiUser.id?.toString() || '',
@@ -188,7 +146,8 @@ class MatchService {
       profession: apiUser.profile?.profession || '',
       religion: apiUser.profile?.religion || '',
       gender: (apiUser.profile?.gender as any) || 'Other',
-      salary: apiUser.profile?.salary || 0
+      salary: apiUser.profile?.salary || 0,
+      education: apiUser.profile?.education || ''
     };
   }
 }

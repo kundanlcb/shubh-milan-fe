@@ -3,6 +3,7 @@ export const allUsers = [
   {
     id: '1',
     user: {
+      id: '1',
       name: 'Priya Sharma',
       avatar: 'https://picsum.photos/200/200?random=1001',
       location: 'Darbhanga',
@@ -28,6 +29,7 @@ export const allUsers = [
   {
     id: '2',
     user: {
+      id: '2',
       name: 'Anjali Mishra',
       avatar: 'https://picsum.photos/200/200?random=1002',
       location: 'Muzaffarpur',
@@ -50,6 +52,7 @@ export const allUsers = [
   {
     id: '3',
     user: {
+      id: '3',
       name: 'Kavita Jha',
       avatar: 'https://picsum.photos/200/200?random=1003',
       location: 'Madhubani',
@@ -76,6 +79,7 @@ export const allUsers = [
   {
     id: '4',
     user: {
+      id: '4',
       name: 'Rohit Kumar',
       avatar: 'https://picsum.photos/200/200?random=1004',
       location: 'Saharsa',
@@ -100,6 +104,7 @@ export const allUsers = [
   {
     id: '5',
     user: {
+      id: '5',
       name: 'Sunita Thakur',
       avatar: 'https://picsum.photos/200/200?random=1005',
       location: 'Sitamarhi',
@@ -126,6 +131,7 @@ export const allUsers = [
   {
     id: '6',
     user: {
+      id: '6',
       name: 'Deepak Singh',
       avatar: 'https://picsum.photos/200/200?random=1006',
       location: 'Begusarai',
@@ -149,6 +155,7 @@ export const allUsers = [
   {
     id: '7',
     user: {
+      id: '7',
       name: 'Rekha Yadav',
       avatar: 'https://picsum.photos/200/200?random=1007',
       location: 'Purnia',
@@ -174,6 +181,7 @@ export const allUsers = [
   {
     id: '8',
     user: {
+      id: '8',
       name: 'Vikash Prasad',
       avatar: 'https://picsum.photos/200/200?random=1008',
       location: 'Araria',
@@ -196,6 +204,7 @@ export const allUsers = [
   {
     id: '9',
     user: {
+      id: '9',
       name: 'Meera Kumari',
       avatar: 'https://picsum.photos/200/200?random=1009',
       location: 'Katihar',
@@ -220,6 +229,7 @@ export const allUsers = [
   {
     id: '10',
     user: {
+      id: '10',
       name: 'Amit Jha',
       avatar: 'https://picsum.photos/200/200?random=1010',
       location: 'Kishanganj',
@@ -246,6 +256,7 @@ export const allUsers = [
   {
     id: '11',
     user: {
+      id: '11',
       name: 'Pooja Singh',
       avatar: 'https://picsum.photos/200/200?random=1011',
       location: 'Madhepura',
@@ -272,6 +283,7 @@ export const allUsers = [
   {
     id: '12',
     user: {
+      id: '12',
       name: 'Raj Kumar',
       avatar: 'https://picsum.photos/200/200?random=1012',
       location: 'Supaul',

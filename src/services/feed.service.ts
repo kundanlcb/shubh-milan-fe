@@ -198,9 +198,9 @@ class FeedService {
   ): Promise<Comment> {
     try {
       const apiRequest: ApiCommentRequest = {
-        postId: parseInt(postId),
+        postId: parseInt(postId, 10),
         text: data.text,
-        parentId: data.parentId ? parseInt(data.parentId) : undefined
+        parentId: data.parentId ? parseInt(data.parentId, 10) : undefined
       };
 
       const response = await apiClient.post<any>(
@@ -221,7 +221,8 @@ class FeedService {
           profession: '',
           religion: '',
           gender: 'Other',
-          salary: 0
+          salary: 0,
+          education: ''
         },
         text: response.text,
         createdAt: response.createdAt,
@@ -264,14 +265,15 @@ class FeedService {
       id: apiPost.id?.toString() || '',
       user: {
         id: apiPost.user?.id?.toString() || '',
-        name: apiPost.user?.fullName || 'Unknown User',
-        avatar: apiPost.user?.profile?.photos?.[0] || '',
-        location: apiPost.user?.profile?.location || '',
-        age: apiPost.user?.profile?.age || 0,
-        profession: apiPost.user?.profile?.profession || '',
-        religion: apiPost.user?.profile?.religion || '',
-        gender: (apiPost.user?.profile?.gender as any) || 'Other',
-        salary: apiPost.user?.profile?.salary || 0,
+        name: apiPost.user?.name || 'Unknown User',
+        avatar: apiPost.user?.avatar || '',
+        location: apiPost.user?.location || '',
+        age: apiPost.user?.age || 0,
+        profession: apiPost.user?.profession || '',
+        religion: apiPost.user?.religion || '',
+        gender: (apiPost.user?.gender as any) || 'Other',
+        salary: apiPost.user?.salary || 0,
+        education: apiPost.user?.education || '',
       },
       media: (apiPost.mediaUrls || []).map((url, index) => ({
         id: `${apiPost.id}_media_${index}`,
@@ -282,7 +284,7 @@ class FeedService {
       likes: apiPost.likeCount || 0,
       comments: apiPost.commentCount || 0,
       timeAgo: this.calculateTimeAgo(apiPost.createdAt),
-      isLiked: false, // API doesn't return this yet
+      isLiked: apiPost.liked || false,
       createdAt: apiPost.createdAt || new Date().toISOString(),
       visibility: apiPost.visibility,
     };

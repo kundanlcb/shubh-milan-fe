@@ -6,10 +6,12 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { StatusBar, useColorScheme, BackHandler, View } from 'react-native';
+import { StatusBar, useColorScheme, BackHandler, View, ActivityIndicator } from 'react-native';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LoginScreen } from './src/screens/LoginScreen';
 import { RegisterScreen } from './src/screens/RegisterScreen';
+import { BackendConfigScreen } from './src/screens/BackendConfigScreen';
 import { MainTabNavigator } from './src/components/MainTabNavigator';
 import { UserProfileScreen } from './src/screens/UserProfileScreen';
 import { ChatScreen } from './src/screens/ChatScreen';
@@ -22,20 +24,58 @@ import { HelpSupportScreen } from './src/screens/HelpSupportScreen';
 import { TermsPrivacyScreen } from './src/screens/TermsPrivacyScreen';
 import { ProfileDetailScreen } from './src/screens/ProfileDetailScreen';
 import { Colors } from './src/constants/colors';
+import { STORAGE_KEYS, setDynamicBaseURL } from './src/config/api.config';
 
-type CurrentScreen = 'Login' | 'Register' | 'ForgotPassword' | 'OTPVerification' | 'Main' | 'Chat' | 'ChatConversation' | 'EditProfile' | 'StoryViewer' | 'UserProfile' | 'Settings' | 'PremiumUpgrade' | 'HelpSupport' | 'TermsPrivacy' | 'ProfileDetail';
+type CurrentScreen = 'BackendConfig' | 'Login' | 'Register' | 'ForgotPassword' | 'OTPVerification' | 'Main' | 'Chat' | 'ChatConversation' | 'EditProfile' | 'StoryViewer' | 'UserProfile' | 'Settings' | 'PremiumUpgrade' | 'HelpSupport' | 'TermsPrivacy' | 'ProfileDetail';
 type ModalScreen = null;
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
-  const [currentScreen, setCurrentScreen] = useState<CurrentScreen>('Login');
+  const [currentScreen, setCurrentScreen] = useState<CurrentScreen>('BackendConfig');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   const [modalScreen, setModalScreen] = useState<ModalScreen>(null);
   const [modalParams, setModalParams] = useState<any>(null);
   const [chatConversationParams, setChatConversationParams] = useState<any>(null);
   const [storyViewerParams, setStoryViewerParams] = useState<any>(null);
   const [profileDetailParams, setProfileDetailParams] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<string>('Home');
+
+  // Check for existing accessToken and backend URL on app start
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      try {
+        // Load backend URL if it exists
+        const backendURL = await AsyncStorage.getItem(STORAGE_KEYS.BACKEND_URL);
+        if (backendURL) {
+          setDynamicBaseURL(backendURL);
+          // Also need to update the API client with the new URL
+          const apiClient = require('./src/services/api.client').apiClient;
+          if (apiClient) {
+            apiClient.updateBaseURL(backendURL);
+          }
+        }
+
+        // Check for access token
+        const accessToken = await AsyncStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+        if (accessToken) {
+          // User is already logged in, skip to main
+          setIsLoggedIn(true);
+          setCurrentScreen('Main');
+        } else {
+          // No access token, show backend config screen first
+          setCurrentScreen('BackendConfig');
+        }
+      } catch (error) {
+        console.error('Error checking auth status:', error);
+        setCurrentScreen('BackendConfig');
+      } finally {
+        setIsLoadingAuth(false);
+      }
+    };
+
+    checkAuthStatus();
+  }, []);
 
   const navigate = (screen: string, params?: any) => {
     if (screen === 'Main') {
@@ -76,10 +116,22 @@ function App(): React.JSX.Element {
     }
   };
 
-  // Logout function to clear session and return to login
-  const handleLogout = () => {
+  // Logout function to clear session and return to config screen
+  const handleLogout = async () => {
+    // Clear tokens from AsyncStorage
+    try {
+      await AsyncStorage.multiRemove([
+        STORAGE_KEYS.ACCESS_TOKEN,
+        STORAGE_KEYS.REFRESH_TOKEN,
+        STORAGE_KEYS.USER_ID,
+        STORAGE_KEYS.USER_PROFILE,
+      ]);
+    } catch (error) {
+      console.error('Error clearing auth data:', error);
+    }
+
     setIsLoggedIn(false);
-    setCurrentScreen('Login');
+    setCurrentScreen('BackendConfig');
     setActiveTab('Home');
     setModalScreen(null);
     setModalParams(null);
@@ -96,6 +148,27 @@ function App(): React.JSX.Element {
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
     setCurrentScreen('Main');
+  };
+
+  const handleBackendConfigSave = async (baseURL: string) => {
+    try {
+      // Save the URL to AsyncStorage
+      await AsyncStorage.setItem(STORAGE_KEYS.BACKEND_URL, baseURL);
+
+      // Set the dynamic base URL in config
+      setDynamicBaseURL(baseURL);
+
+      // Update the API client with new URL
+      const { apiClient } = require('./src/services/api.client');
+      if (apiClient) {
+        apiClient.updateBaseURL(baseURL);
+      }
+
+      // Move to login screen
+      setCurrentScreen('Login');
+    } catch (error) {
+      console.error('Error saving backend config:', error);
+    }
   };
 
   const navigationProps = {
@@ -151,6 +224,23 @@ function App(): React.JSX.Element {
   }
 
   function renderScreen() {
+    // Show loading screen while checking auth status
+    if (isLoadingAuth) {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.background }}>
+          <ActivityIndicator size="large" color={Colors.primary} />
+        </View>
+      );
+    }
+
+    if (currentScreen === 'BackendConfig') {
+      return (
+        <BackendConfigScreen
+          onConfigSave={handleBackendConfigSave}
+        />
+      );
+    }
+
     if (isLoggedIn && currentScreen === 'EditProfile') {
       return (
         <EditProfileScreen

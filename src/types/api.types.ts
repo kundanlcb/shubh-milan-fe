@@ -45,6 +45,7 @@ export interface UserSummary {
   religion: string;
   gender: 'Male' | 'Female' | 'Other';
   salary: number;
+  education: string;
 }
 
 export interface User {
@@ -56,6 +57,20 @@ export interface User {
   status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED' | 'PENDING_VERIFICATION';
   createdAt: string;
   lastLogin?: string;
+  // Profile info
+  avatar?: string;
+  age?: number;
+  profession?: string;
+  education?: string;
+  location?: string;
+  gender?: 'Male' | 'Female' | 'Other';
+  motherTongue?: string;
+  religion?: string;
+  height?: string;
+  // Stats
+  profileViews?: number;
+  interests?: number;
+  shortlisted?: number;
 }
 
 export interface Profile {
@@ -109,9 +124,8 @@ export interface RegisterRequest {
 }
 
 export interface RegisterResponse {
-  userId: string;
-  accessToken: string;
-  refreshToken: string;
+  userId?: string;
+  success: boolean;
 }
 
 export interface RefreshTokenRequest {
@@ -465,6 +479,7 @@ export interface ApiStory {
 
 export interface ApiUser {
   id?: number;
+  name?: string; // Direct name field from API
   fullName?: string;
   username?: string;
   email?: string;
@@ -477,6 +492,15 @@ export interface ApiUser {
   lastLogin?: string;
   lastActiveAt?: string;
   deletedAt?: string;
+  // Direct properties from feed API
+  avatar?: string;
+  location?: string | null;
+  age?: number | null;
+  profession?: string | null;
+  religion?: string | null;
+  gender?: string;
+  salary?: number | null;
+  education?: string | null;
   profile?: ApiProfile;
   createdAt?: string;
   updatedAt?: string;
@@ -522,6 +546,7 @@ export interface ApiPost {
   commentCount?: number;
   createdAt?: string;
   updatedAt?: string;
+  liked?: boolean;
   user?: ApiUser; // Assuming the API returns the user object populated, though Swagger schema for Post didn't explicitly show it, it's common. If not, we might need to fetch separately or it's in a wrapper. *Correction*: Swagger Post schema didn't show `user` field. Checking `PagePost` -> `content` -> `Post`. The `Post` schema in Swagger (lines 4402) does NOT have a `user` field. However, the `Feed` endpoint usually returns posts with user info. I will assume for now it might be there or I'll need to check the actual API response. *Self-correction*: The `PostData` UI type has `user`. I will add `user` to `ApiPost` as optional, but be aware it might not be in the strict schema.
 }
 

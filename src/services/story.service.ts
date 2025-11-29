@@ -5,7 +5,7 @@
 
 import { apiClient } from './api.client';
 import { API_ENDPOINTS } from '../config/api.config';
-import type { Story, CreateStoryRequest, ApiStory, ApiStoryRequest, ApiUser } from '../types/api.types';
+import type { Story, CreateStoryRequest, ApiStory, ApiStoryRequest } from '../types/api.types';
 
 class StoryService {
   /**

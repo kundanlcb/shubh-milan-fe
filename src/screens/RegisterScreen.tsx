@@ -11,8 +11,8 @@ import {
   Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import type { RegisterRequest } from '../types/api.types';
 import { Colors, Typography, Spacing, BorderRadius } from '../constants/styles';
-import { FloatingInput } from '../components/FloatingInput';
 import RegisterBasicInfo from './RegisterBasicInfo';
 import RegisterAboutYou from './RegisterAboutYou';
 import RegisterPartnerPreferences from './RegisterPartnerPreferences';
@@ -26,22 +26,24 @@ type Props = {
   navigation: NavigationProp;
 };
 
-interface RegistrationData {
+export interface RegistrationData {
   // Basic Info
   fullName: string;
   email: string;
   phone: string;
+  dob: string; // YYYY-MM-DD format
   password: string;
   confirmPassword: string;
 
   // Personal Details
-  age: string;
   gender: string;
   profession: string;
   education: string;
   location: string;
+  city: string;
   motherTongue: string;
   religion: string;
+  salary: string; // User's own salary
 
   // Partner Preferences (for filtered content)
   partnerAgeMin: string;
@@ -49,40 +51,39 @@ interface RegistrationData {
   partnerProfession: string[];
   partnerEducation: string[];
   partnerLocation: string[];
-  partnerReligion: string;
+  partnerReligion: string[];
+  partnerSalaryMin: string;
+  partnerSalaryMax: string;
 
   // Account Settings
   accountType: 'free' | 'premium';
   privacyLevel: 'public' | 'filtered' | 'private';
 }
 
-const stepCategories = [
-  'Basic Information',
-  'About You',
-  'Partner Preferences',
-  'Account Settings',
-];
-
 export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
   const [formData, setFormData] = useState<RegistrationData>({
     fullName: '',
     email: '',
     phone: '',
+    dob: '',
     password: '',
     confirmPassword: '',
-    age: '',
     gender: '',
     profession: '',
     education: '',
     location: '',
+    city: '',
     motherTongue: '',
     religion: '',
+    salary: '',
     partnerAgeMin: '',
     partnerAgeMax: '',
     partnerProfession: [],
     partnerEducation: [],
     partnerLocation: [],
-    partnerReligion: '',
+    partnerReligion: [],
+    partnerSalaryMin: '',
+    partnerSalaryMax: '',
     accountType: 'free',
     privacyLevel: 'filtered',
   });
@@ -98,16 +99,21 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
     fullName: new Animated.Value(0),
     email: new Animated.Value(0),
     phone: new Animated.Value(0),
+    dob: new Animated.Value(0),
     password: new Animated.Value(0),
     confirmPassword: new Animated.Value(0),
-    age: new Animated.Value(0),
+    gender: new Animated.Value(0),
     profession: new Animated.Value(0),
     education: new Animated.Value(0),
     location: new Animated.Value(0),
+    city: new Animated.Value(0),
     motherTongue: new Animated.Value(0),
     religion: new Animated.Value(0),
+    salary: new Animated.Value(0),
     partnerAgeMin: new Animated.Value(0),
     partnerAgeMax: new Animated.Value(0),
+    partnerSalaryMin: new Animated.Value(0),
+    partnerSalaryMax: new Animated.Value(0),
   });
 
   const professionOptions = [
@@ -228,36 +234,36 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
     setIsLoading(true);
     try {
       const { authService } = await import('../services');
-      const { getErrorMessage, logError } = await import('../utils/errorHandler');
-      
-      // Prepare registration data
-      const registrationData = {
+
+      // Map UI data to API request format
+      const registrationData: RegisterRequest = {
         fullName: formData.fullName,
         email: formData.email,
         phone: formData.phone,
         password: formData.password,
         profile: {
           gender: formData.gender as 'Male' | 'Female' | 'Other',
-          age: parseInt(formData.age),
+          age: parseInt(formData.dob.split('-')[0], 10) ?
+            new Date().getFullYear() - parseInt(formData.dob.split('-')[0], 10) : 25,
           profession: formData.profession,
           education: formData.education,
           location: formData.location,
           motherTongue: formData.motherTongue,
           religion: formData.religion,
-          salary: 0, // Default value, can be updated later
+          salary: formData.salary ? parseInt(formData.salary, 10) : 0,
           bio: '',
           photos: [],
         },
         partnerPreferences: {
-          ageMin: parseInt(formData.partnerAgeMin),
-          ageMax: parseInt(formData.partnerAgeMax),
+          ageMin: parseInt(formData.partnerAgeMin, 10),
+          ageMax: parseInt(formData.partnerAgeMax, 10),
           professions: formData.partnerProfession,
           educations: formData.partnerEducation,
           locations: formData.partnerLocation,
-          religions: formData.partnerReligion ? [formData.partnerReligion] : [],
-          genders: [], // Can be set based on user's preference
-          salaryMin: 0,
-          salaryMax: 10000000,
+          religions: formData.partnerReligion,
+          genders: [],
+          salaryMin: formData.partnerSalaryMin ? parseInt(formData.partnerSalaryMin, 10) : 0,
+          salaryMax: formData.partnerSalaryMax ? parseInt(formData.partnerSalaryMax, 10) : 10000000,
         },
         accountType: formData.accountType.toUpperCase() as 'FREE' | 'PREMIUM',
         privacyLevel: formData.privacyLevel.toUpperCase() as 'PUBLIC' | 'FILTERED' | 'PRIVATE',
@@ -267,20 +273,18 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
       
       setIsLoading(false);
       Alert.alert(
-        'Welcome to शुभ मिलन! 🎉',
-        `Registration successful! Your account has been created.\n\n• Age: ${formData.partnerAgeMin}-${formData.partnerAgeMax} years\n• Locations: ${formData.partnerLocation.join(', ') || 'Any'}\n• Account: ${formData.accountType === 'premium' ? 'Premium ⭐' : 'Free'}`,
+        'Registration Successful! 🎉',
+        'Your account has been created successfully.\n\nPlease login with your credentials to continue.',
         [
           {
-            text: 'Start Exploring',
-            onPress: () => navigation.navigate('Main'),
+            text: 'Go to Login',
+            onPress: () => navigation.navigate('Login'),
           },
         ]
       );
     } catch (error) {
       setIsLoading(false);
-      
-      const { getErrorMessage, logError } = await import('../utils/errorHandler');
-      logError(error, 'RegisterScreen.handleRegister');
+      const { getErrorMessage } = await import('../utils/errorHandler');
       const errorMessage = getErrorMessage(error);
       Alert.alert('Registration Failed', errorMessage);
     }
@@ -359,7 +363,6 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
     />
   );
 
-  // Update renderCurrentStep to use new renderers
   const renderCurrentStep = () => {
     switch (currentStep) {
       case 1:
@@ -373,7 +376,16 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
       default:
         return null;
     }
-  }
+  };
+
+  const renderProgressBar = () => (
+    <View style={styles.progressContainer}>
+      <View style={styles.progressBar}>
+        <View style={[styles.progressFill, { width: `${(currentStep / 4) * 100}%` }]} />
+      </View>
+      <Text style={styles.progressText}>Step {currentStep} of 4</Text>
+    </View>
+  );
 
   return (
     <SafeAreaView style={styles.container}>

@@ -6,16 +6,18 @@ import {
   Alert,
   RefreshControl,
   ActivityIndicator,
+  Text,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Typography } from '../constants/styles';
+import type { PostData } from '../types/api.types';
 import { TabHeader } from '../components/TabHeader';
 import { Stories } from '../components/home/Stories';
 import { PostCard } from '../components/home/PostCard';
 import { EmptyState } from '../components/home/EmptyState';
 import { FilterModal } from '../components/home/FilterModal';
 import { useFeed } from '../hooks';
-import { currentUserPreferences, PostData } from '../utils/homeData';
+import { currentUserPreferences } from '../utils/homeData';
 
 const EmptyStateComponent: React.FC<{ onAdjustPreferences: () => void }> = ({
   onAdjustPreferences,
@@ -50,8 +52,6 @@ export const HomeScreen: React.FC<{
     posts,
     isLoading,
     isRefreshing,
-    error,
-    hasMore,
     refresh,
     loadMore,
     applyFilters,

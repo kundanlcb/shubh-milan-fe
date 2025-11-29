@@ -5,8 +5,8 @@
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosError } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { API_CONFIG, STORAGE_KEYS, HTTP_STATUS } from '../config/api.config';
-import type { ApiResponse, ApiError } from '../types/api.types';
+import { getAPIConfig, STORAGE_KEYS, HTTP_STATUS, setDynamicBaseURL } from '../config/api.config';
+import type { ApiError } from '../types/api.types';
 
 class ApiClient {
   private client: AxiosInstance;
@@ -17,9 +17,10 @@ class ApiClient {
   }> = [];
 
   constructor() {
+    const apiConfig = getAPIConfig();
     this.client = axios.create({
-      baseURL: API_CONFIG.baseURL,
-      timeout: API_CONFIG.timeout,
+      baseURL: apiConfig.baseURL,
+      timeout: apiConfig.timeout,
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
@@ -27,6 +28,11 @@ class ApiClient {
     });
 
     this.setupInterceptors();
+  }
+
+  public updateBaseURL(baseURL: string) {
+    this.client.defaults.baseURL = baseURL;
+    setDynamicBaseURL(baseURL);
   }
 
   private setupInterceptors() {
@@ -38,7 +44,8 @@ class ApiClient {
           config.headers.Authorization = `Bearer ${token}`;
         }
 
-        if (API_CONFIG.enableLogging) {
+        const apiConfig = getAPIConfig();
+        if (apiConfig.enableLogging) {
           console.log('API Request:', {
             method: config.method?.toUpperCase(),
             url: config.url,
@@ -56,7 +63,8 @@ class ApiClient {
     // Response interceptor - Handle errors and refresh token
     this.client.interceptors.response.use(
       (response) => {
-        if (API_CONFIG.enableLogging) {
+        const apiConfig = getAPIConfig();
+        if (apiConfig.enableLogging) {
           console.log('API Response:', {
             status: response.status,
             url: response.config.url,
@@ -129,7 +137,8 @@ class ApiClient {
   }
 
   private handleError(error: AxiosError): ApiError {
-    if (API_CONFIG.enableLogging) {
+    const apiConfig = getAPIConfig();
+    if (apiConfig.enableLogging) {
       console.error('API Error:', {
         message: error.message,
         status: error.response?.status,
@@ -185,13 +194,13 @@ class ApiClient {
     }
 
     try {
-      const response = await axios.post(
-        `${API_CONFIG.baseURL}/auth/refresh`,
-        { refreshToken },
-        { timeout: API_CONFIG.timeout }
+      const response = await this.client.post<any>(
+        '/auth/refresh',
+        { refreshToken }
       );
 
-      const { accessToken, refreshToken: newRefreshToken } = response.data;
+      const responseData = response.data?.data || response.data;
+      const { accessToken, refreshToken: newRefreshToken } = responseData;
 
       await AsyncStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, accessToken);
       if (newRefreshToken) {
@@ -219,8 +228,9 @@ class ApiClient {
 
   // Public methods
   async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    const response = await this.client.get<ApiResponse<T>>(url, config);
-    return response.data.data;
+    const response = await this.client.get<any>(url, config);
+    // Handle both wrapped { data: {...} } and direct response formats
+    return response.data?.data !== undefined ? response.data.data : response.data;
   }
 
   async post<T>(
@@ -228,8 +238,9 @@ class ApiClient {
     data?: any,
     config?: AxiosRequestConfig
   ): Promise<T> {
-    const response = await this.client.post<ApiResponse<T>>(url, data, config);
-    return response.data.data;
+    const response = await this.client.post<any>(url, data, config);
+    // Handle both wrapped { data: {...} } and direct response formats
+    return response.data?.data !== undefined ? response.data.data : response.data;
   }
 
   async put<T>(
@@ -237,8 +248,9 @@ class ApiClient {
     data?: any,
     config?: AxiosRequestConfig
   ): Promise<T> {
-    const response = await this.client.put<ApiResponse<T>>(url, data, config);
-    return response.data.data;
+    const response = await this.client.put<any>(url, data, config);
+    // Handle both wrapped { data: {...} } and direct response formats
+    return response.data?.data !== undefined ? response.data.data : response.data;
   }
 
   async patch<T>(
@@ -246,13 +258,15 @@ class ApiClient {
     data?: any,
     config?: AxiosRequestConfig
   ): Promise<T> {
-    const response = await this.client.patch<ApiResponse<T>>(url, data, config);
-    return response.data.data;
+    const response = await this.client.patch<any>(url, data, config);
+    // Handle both wrapped { data: {...} } and direct response formats
+    return response.data?.data !== undefined ? response.data.data : response.data;
   }
 
   async delete<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    const response = await this.client.delete<ApiResponse<T>>(url, config);
-    return response.data.data;
+    const response = await this.client.delete<any>(url, config);
+    // Handle both wrapped { data: {...} } and direct response formats
+    return response.data?.data !== undefined ? response.data.data : response.data;
   }
 
   // Upload with progress
@@ -261,7 +275,7 @@ class ApiClient {
     data: FormData,
     onProgress?: (progress: number) => void
   ): Promise<T> {
-    const response = await this.client.post<ApiResponse<T>>(url, data, {
+    const response = await this.client.post<any>(url, data, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -274,7 +288,8 @@ class ApiClient {
         }
       },
     });
-    return response.data.data;
+    // Handle both wrapped { data: {...} } and direct response formats
+    return response.data?.data !== undefined ? response.data.data : response.data;
   }
 
   // Get the raw axios instance if needed

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,24 +7,25 @@ import {
   ScrollView,
   Image,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Typography, Spacing, BorderRadius, Shadows } from '../constants/styles';
 import { Icon, AppIcons } from '../components/Icon';
 import { TabHeader } from '../components/TabHeader';
 
-// Mock user data
-const userData = {
-  name: 'Priya Sharma',
+// Mock user data - will be replaced with API data
+const defaultUserData = {
+  name: 'User',
   avatar: 'https://picsum.photos/200/200?random=1001',
-  age: 25,
-  location: 'Darbhanga, Bihar',
-  profession: 'Teacher',
-  education: 'M.A. Hindi Literature',
+  age: 0,
+  location: 'Loading...',
+  profession: 'Professional',
+  education: 'Education',
   height: "5'4\"",
-  profileViews: 156,
-  interests: 42,
-  shortlisted: 18,
+  profileViews: 0,
+  interests: 0,
+  shortlisted: 0,
 };
 
 const profileSections = [
@@ -62,6 +63,40 @@ export const ProfileScreen: React.FC<{
   onLogout 
 }) => {
   const [profileCompletion] = useState(75);
+  const [userData, setUserData] = useState(defaultUserData);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch user profile data
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        setIsLoading(true);
+        const { userProfileService } = await import('../services');
+        const user = await userProfileService.getCurrentUser();
+
+        // Map API user data to display format
+        setUserData({
+          name: user.fullName || 'User',
+          avatar: user.avatar || 'https://picsum.photos/200/200?random=1001',
+          age: user.age || 0,
+          location: user.location || 'Location not set',
+          profession: user.profession || 'Professional',
+          education: user.education || 'Education',
+          height: user.height || "5'4\"",
+          profileViews: user.profileViews || 0,
+          interests: user.interests || 0,
+          shortlisted: user.shortlisted || 0,
+        });
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+        // Keep default data on error
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
 
   const handleMenuItemPress = (title: string) => {
     switch (title) {
@@ -148,6 +183,11 @@ export const ProfileScreen: React.FC<{
         onActionPress={() => onNavigateToEditProfile ? onNavigateToEditProfile() : Alert.alert('Edit Profile', 'Edit profile screen would open here')}
       />
 
+      {isLoading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={Colors.primary} />
+        </View>
+      ) : (
       <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}
@@ -291,6 +331,7 @@ export const ProfileScreen: React.FC<{
           </View>
         </View>
       </ScrollView>
+      )}
     </SafeAreaView>
   );
 };
@@ -299,6 +340,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   profileHeader: {
     flexDirection: 'row',

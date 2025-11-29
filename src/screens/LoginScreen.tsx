@@ -118,8 +118,7 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
     
     try {
       const { authService } = await import('../services');
-      const { getErrorMessage, logError } = await import('../utils/errorHandler');
-      
+
       await authService.login({
         emailOrPhone: email.trim(),
         password: password,
@@ -128,7 +127,7 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
       setIsLoading(false);
       stopLoadingAnimation();
       
-      // Navigate to main app
+      // Navigate to main app on successful login
       if (navigation.onLoginSuccess) {
         navigation.onLoginSuccess();
       }
@@ -136,8 +135,7 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
       setIsLoading(false);
       stopLoadingAnimation();
       
-      const { getErrorMessage, logError } = await import('../utils/errorHandler');
-      logError(error, 'LoginScreen.handleLogin');
+      const { getErrorMessage } = await import('../utils/errorHandler');
       const errorMessage = getErrorMessage(error);
       Alert.alert('Login Failed', errorMessage);
     }

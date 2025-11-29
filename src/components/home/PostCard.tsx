@@ -4,38 +4,15 @@ import { SmartImage } from '../SmartImage';
 import { SmartVideo } from '../SmartVideo';
 import { Colors } from '../../constants/styles';
 import { Icon } from '../Icon';
+import type { PostData, UserSummary, MediaItem } from '../../types/api.types';
 
 const { width: screenWidth } = Dimensions.get('window');
 
-interface PostUser {
-  name: string;
-  avatar: string;
-  location: string;
-  age: number;
-  profession: string;
-}
-
-interface MediaItem {
-  id: string;
-  uri: string;
-  type: 'image' | 'video';
-}
-
-interface PostData {
-  id: string;
-  user: PostUser;
-  media: MediaItem[];
-  caption: string;
-  likes: number;
-  comments: number;
-  timeAgo: string;
-  isLiked: boolean;
-}
 
 interface PostCardProps {
   post: PostData;
   onLike: (postId: string) => void;
-  onProfile: (user: PostUser) => void;
+  onProfile: (user: UserSummary) => void;
   onComment: (postId: string) => void;
   onShare: (postId: string) => void;
   onSave: () => void;

@@ -6,9 +6,11 @@
 // Environment-based configuration
 const ENV = __DEV__ ? 'development' : 'production';
 
+const DEFAULT_BACKEND_URL = 'https://86231846e1f9.ngrok-free.app/api';
+
 const API_CONFIGS = {
   development: {
-    baseURL: 'http://localhost:8080/api/v1',
+    baseURL: DEFAULT_BACKEND_URL,
     timeout: 30000,
     enableLogging: true,
   },
@@ -19,7 +21,25 @@ const API_CONFIGS = {
   },
 };
 
-export const API_CONFIG = API_CONFIGS[ENV];
+let dynamicBaseURL: string | null = null;
+
+export const setDynamicBaseURL = (url: string) => {
+  dynamicBaseURL = url;
+};
+
+export const getDynamicBaseURL = () => {
+  return dynamicBaseURL;
+};
+
+export const getAPIConfig = () => {
+  const config = { ...API_CONFIGS[ENV] };
+  if (dynamicBaseURL) {
+    config.baseURL = dynamicBaseURL;
+  }
+  return config;
+};
+
+export const API_CONFIG = getAPIConfig();
 
 // API endpoints
 export const API_ENDPOINTS = {
@@ -132,6 +152,7 @@ export const STORAGE_KEYS = {
   USER_PROFILE: '@shubhmilan:userProfile',
   PREFERENCES: '@shubhmilan:preferences',
   THEME: '@shubhmilan:theme',
+  BACKEND_URL: '@shubhmilan:backendURL',
 };
 
 // HTTP status codes

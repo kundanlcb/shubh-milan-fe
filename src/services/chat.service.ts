@@ -91,13 +91,14 @@ class ChatService {
   async sendMessage(data: SendMessageRequest): Promise<ChatMessage> {
     try {
       const apiRequest: ApiSendMessageRequest = {
+        threadId: parseInt(data.threadId, 10),
         content: data.content,
         type: (data.type?.toUpperCase() as any) || 'TEXT',
         mediaUrl: data.mediaUrl
       };
 
       const apiMessage = await apiClient.post<ApiChatMessage>(
-        API_ENDPOINTS.CHAT.GET_MESSAGES(data.threadId), // POST to /api/chats/{id}/messages
+        API_ENDPOINTS.CHAT.GET_MESSAGES(data.threadId),
         apiRequest
       );
       return this.mapApiMessageToUiMessage(apiMessage, data.threadId);
@@ -190,7 +191,7 @@ class ChatService {
 
   private mapApiUserToSummary(apiUser?: ApiUser): UserSummary {
     if (!apiUser) return {
-      id: '', name: 'Unknown', avatar: '', location: '', age: 0, profession: '', religion: '', gender: 'Other', salary: 0
+      id: '', name: 'Unknown', avatar: '', location: '', age: 0, profession: '', religion: '', gender: 'Other', salary: 0, education: ''
     };
     return {
       id: apiUser.id?.toString() || '',
@@ -201,7 +202,8 @@ class ChatService {
       profession: apiUser.profile?.profession || '',
       religion: apiUser.profile?.religion || '',
       gender: (apiUser.profile?.gender as any) || 'Other',
-      salary: apiUser.profile?.salary || 0
+      salary: apiUser.profile?.salary || 0,
+      education: apiUser.profile?.education || ''
     };
   }
 }

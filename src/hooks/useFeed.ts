@@ -33,6 +33,7 @@ export const useFeed = (initialFilters?: FeedFilters): UseFeedResult => {
   // Fallback to mock data if API fails
   const useMockData = __DEV__; // Use mock data in development mode
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchFeed = useCallback(
     async (pageNum: number, isRefresh: boolean = false) => {
       try {
@@ -64,18 +65,21 @@ export const useFeed = (initialFilters?: FeedFilters): UseFeedResult => {
               !filters.genders.includes(user.gender)
             )
               return false;
-            if (filters.salaryMin && user.salary < filters.salaryMin)
-              return false;
-            if (filters.salaryMax && user.salary > filters.salaryMax)
-              return false;
-
-            return true;
-          });
+            if (filters.salaryMin && user.salary < filters.salaryMin) return false;
+            return !(filters.salaryMax && user.salary > filters.salaryMax);
+          }).map(item => ({
+            ...item,
+            user: {
+              ...item.user,
+              gender: item.user.gender as 'Male' | 'Female' | 'Other'
+            },
+            createdAt: new Date().toISOString()
+          } as PostData));
 
           if (isRefresh) {
-            setPosts(filteredPosts);
+            setPosts(filteredPosts as PostData[]);
           } else {
-            setPosts((prev) => [...prev, ...filteredPosts]);
+            setPosts((prev) => [...prev, ...filteredPosts as PostData[]]);
           }
           setHasMore(false); // Mock data doesn't paginate
           return;
@@ -99,20 +103,26 @@ export const useFeed = (initialFilters?: FeedFilters): UseFeedResult => {
         const errorMessage = getErrorMessage(err);
         setError(errorMessage);
 
-        // Fallback to mock data on error
-        if (posts.length === 0) {
-          setPosts(allUsers);
-        }
+        // Fallback to mock data on error (only on initial load)
+        const mockPosts = allUsers.map(item => ({
+          ...item,
+          user: {
+            ...item.user,
+            gender: item.user.gender as 'Male' | 'Female' | 'Other'
+          },
+          createdAt: new Date().toISOString()
+        } as PostData)) as PostData[];
+        setPosts(prevPosts => prevPosts.length === 0 ? mockPosts : prevPosts);
       }
     },
-    [filters, useMockData, posts.length]
+    [filters, useMockData]
   );
 
   // Initial load
   useEffect(() => {
     setIsLoading(true);
     fetchFeed(1, true).finally(() => setIsLoading(false));
-  }, []);
+  }, [fetchFeed]);
 
   // Refresh feed
   const refresh = useCallback(async () => {

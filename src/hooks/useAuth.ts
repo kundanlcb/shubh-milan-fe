@@ -1,11 +1,6 @@
-/**
- * useAuth Hook
- * Custom hook to manage authentication state
- */
-
 import { useState, useEffect, useCallback } from 'react';
 import { authService } from '../services';
-import type { User } from '../types/api.types';
+import type { User, RegisterRequest } from '../types/api.types';
 import { getErrorMessage, logError } from '../utils/errorHandler';
 
 interface UseAuthResult {
@@ -14,7 +9,7 @@ interface UseAuthResult {
   isLoading: boolean;
   error: string | null;
   login: (emailOrPhone: string, password: string) => Promise<void>;
-  register: (data: any) => Promise<void>;
+  register: (data: RegisterRequest) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
@@ -52,8 +47,12 @@ export const useAuth = (): UseAuthResult => {
   const login = useCallback(async (emailOrPhone: string, password: string) => {
     try {
       setError(null);
-      const response = await authService.login({ emailOrPhone, password });
-      setUser(response.user);
+      await authService.login({ emailOrPhone, password });
+      // After successful login, fetch user data
+      const cachedUser = await authService.getCachedUserProfile();
+      if (cachedUser) {
+        setUser(cachedUser);
+      }
       setIsAuthenticated(true);
     } catch (err) {
       logError(err, 'useAuth.login');
@@ -63,7 +62,7 @@ export const useAuth = (): UseAuthResult => {
     }
   }, []);
 
-  const register = useCallback(async (data: any) => {
+  const register = useCallback(async (data: RegisterRequest) => {
     try {
       setError(null);
       await authService.register(data);
