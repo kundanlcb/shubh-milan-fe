@@ -6,7 +6,7 @@
 // Environment-based configuration
 const ENV = __DEV__ ? 'development' : 'production';
 
-const DEFAULT_BACKEND_URL = 'https://86231846e1f9.ngrok-free.app/api';
+const DEFAULT_BACKEND_URL = 'https://9b475a10bbfd.ngrok-free.app/api';
 
 const API_CONFIGS = {
   development: {
@@ -52,15 +52,15 @@ export const API_ENDPOINTS = {
     OTP_SEND: '/auth/otp/send',
     OTP_VERIFY: '/auth/otp/verify',
   },
-  
+
   // Users & Profiles
   USERS: {
-    ME: '/users/me',
+    ME: '/profile/me',
     UPDATE_ME: '/users/me',
     GET_USER: (userId: string) => `/users/${userId}`,
     SEARCH: '/users/search',
   },
-  
+
   PROFILES: {
     ME: '/profiles/me',
     UPDATE_ME: '/profiles/me',
@@ -68,13 +68,13 @@ export const API_ENDPOINTS = {
     SEARCH: '/profiles',
     PHOTOS_PRESIGN: '/profiles/me/photos/presign',
   },
-  
+
   // Partner Preferences
   PREFERENCES: {
     ME: '/preferences/me',
     UPDATE_ME: '/preferences/me',
   },
-  
+
   // Feed & Posts
   FEED: {
     GET_FEED: '/feed',
@@ -85,7 +85,7 @@ export const API_ENDPOINTS = {
     GET_COMMENTS: (postId: string) => `/posts/${postId}/comments`,
     ADD_COMMENT: (postId: string) => `/posts/${postId}/comments`,
   },
-  
+
   // Stories
   STORIES: {
     GET_ALL: '/stories',
@@ -93,7 +93,7 @@ export const API_ENDPOINTS = {
     GET_STORY: (storyId: string) => `/stories/${storyId}`,
     VIEW_STORY: (storyId: string) => `/stories/${storyId}/view`,
   },
-  
+
   // Matches/Interests
   MATCHES: {
     GET_ALL: '/matches',
@@ -101,7 +101,7 @@ export const API_ENDPOINTS = {
     ACCEPT: (intentId: string) => `/matches/${intentId}/accept`,
     DECLINE: (intentId: string) => `/matches/${intentId}/decline`,
   },
-  
+
   // Chat
   CHAT: {
     GET_THREADS: '/chat/threads',
@@ -111,7 +111,7 @@ export const API_ENDPOINTS = {
     UNREAD_COUNT: '/chat/unread-count',
     WEBSOCKET: '/ws',
   },
-  
+
   // Notifications
   NOTIFICATIONS: {
     GET_ALL: '/notifications',
@@ -120,17 +120,17 @@ export const API_ENDPOINTS = {
     UNREAD_COUNT: '/notifications/unread-count',
     DELETE: (notificationId: string) => `/notifications/${notificationId}`,
   },
-  
+
   // Upload
   UPLOAD: {
     MEDIA: '/upload',
   },
-  
+
   // Search & Filters
   FILTERS: {
     GET_OPTIONS: '/filters',
   },
-  
+
   // Settings
   SETTINGS: {
     GET: '/settings',

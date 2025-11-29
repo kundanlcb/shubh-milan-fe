@@ -9,7 +9,10 @@ import {
     ImageResizeMode,
     ViewStyle,
 } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import { Colors } from '../constants/styles';
+
+const AnimatedFastImage = Animated.createAnimatedComponent(FastImage);
 import { Icon } from './Icon';
 
 interface SmartImageProps {
@@ -72,6 +75,17 @@ export const SmartImage: React.FC<SmartImageProps> = ({
         setHasError(true);
     };
 
+    // Map string resizeMode to FastImage.resizeMode
+    const getResizeMode = () => {
+        switch (resizeMode) {
+            case 'contain': return FastImage.resizeMode.contain;
+            case 'stretch': return FastImage.resizeMode.stretch;
+            case 'center': return FastImage.resizeMode.center;
+            case 'cover':
+            default: return FastImage.resizeMode.cover;
+        }
+    };
+
     return (
         <View style={[styles.container, containerStyle, style]}>
             {/* Loading Placeholder */}
@@ -93,14 +107,14 @@ export const SmartImage: React.FC<SmartImageProps> = ({
             )}
 
             {/* Actual Image */}
-            <Animated.Image
-                source={{ uri }}
+            <AnimatedFastImage
+                source={{ uri, priority: FastImage.priority.normal }}
                 style={[
                     StyleSheet.absoluteFill,
-                    style,
+                    style as any, // FastImage style types might slightly differ
                     { opacity: hasError ? 0 : opacity },
                 ]}
-                resizeMode={resizeMode}
+                resizeMode={getResizeMode()}
                 onLoad={handleLoad}
                 onError={handleError}
             />

@@ -7,6 +7,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosError } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getAPIConfig, STORAGE_KEYS, HTTP_STATUS, setDynamicBaseURL } from '../config/api.config';
 import type { ApiError } from '../types/api.types';
+import { SnackbarManager } from '../components/Snackbar';
 
 class ApiClient {
   private client: AxiosInstance;
@@ -71,6 +72,22 @@ class ApiClient {
             data: response.data,
           });
         }
+
+        // Show success snackbar for mutation requests
+        const method = response.config.method?.toLowerCase();
+        if (method === 'post' || method === 'put' || method === 'patch' || method === 'delete') {
+          // Don't show for background token refresh or specific endpoints if needed
+          if (!response.config.url?.includes('/auth/refresh')) {
+            // Optional: Check if response has a message to show
+            // const message = response.data?.message || 'Success';
+            // SnackbarManager.show({ message, type: 'success' });
+            // For now, let's stick to generic success or specific if provided, but user asked for popup for success/failures.
+            // I'll use a generic success unless data.message exists.
+            const message = response.data?.message || 'Operation successful';
+            SnackbarManager.show({ message, type: 'success' });
+          }
+        }
+
         return response;
       },
       async (error: AxiosError) => {
@@ -119,7 +136,15 @@ class ApiClient {
           }
         }
 
-        return Promise.reject(this.handleError(error));
+        const apiError = this.handleError(error);
+
+        // Show error snackbar
+        // Don't show for 401 as it might be handled by refresh logic or redirect
+        if (error.response?.status !== HTTP_STATUS.UNAUTHORIZED) {
+          SnackbarManager.show({ message: apiError.message, type: 'error' });
+        }
+
+        return Promise.reject(apiError);
       }
     );
   }

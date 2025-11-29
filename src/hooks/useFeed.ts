@@ -27,11 +27,11 @@ export const useFeed = (initialFilters?: FeedFilters): UseFeedResult => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const [filters, setFilters] = useState<FeedFilters>(initialFilters || {});
 
   // Fallback to mock data if API fails
-  const useMockData = __DEV__; // Use mock data in development mode
+  const useMockData = false; // Use mock data in development mode
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchFeed = useCallback(
@@ -121,14 +121,14 @@ export const useFeed = (initialFilters?: FeedFilters): UseFeedResult => {
   // Initial load
   useEffect(() => {
     setIsLoading(true);
-    fetchFeed(1, true).finally(() => setIsLoading(false));
+    fetchFeed(0, true).finally(() => setIsLoading(false));
   }, [fetchFeed]);
 
   // Refresh feed
   const refresh = useCallback(async () => {
     setIsRefreshing(true);
-    setPage(1);
-    await fetchFeed(1, true);
+    setPage(0);
+    await fetchFeed(0, true);
     setIsRefreshing(false);
   }, [fetchFeed]);
 
@@ -145,9 +145,9 @@ export const useFeed = (initialFilters?: FeedFilters): UseFeedResult => {
   const applyFilters = useCallback(
     async (newFilters: FeedFilters) => {
       setFilters(newFilters);
-      setPage(1);
+      setPage(0);
       setIsLoading(true);
-      await fetchFeed(1, true);
+      await fetchFeed(0, true);
       setIsLoading(false);
     },
     [fetchFeed]
@@ -160,10 +160,10 @@ export const useFeed = (initialFilters?: FeedFilters): UseFeedResult => {
       prevPosts.map((post) =>
         post.id === postId
           ? {
-              ...post,
-              isLiked: !post.isLiked,
-              likes: post.isLiked ? post.likes - 1 : post.likes + 1,
-            }
+            ...post,
+            isLiked: !post.isLiked,
+            likes: post.isLiked ? post.likes - 1 : post.likes + 1,
+          }
           : post
       )
     );
@@ -182,10 +182,10 @@ export const useFeed = (initialFilters?: FeedFilters): UseFeedResult => {
         prevPosts.map((post) =>
           post.id === postId
             ? {
-                ...post,
-                isLiked: !post.isLiked,
-                likes: post.isLiked ? post.likes + 1 : post.likes - 1,
-              }
+              ...post,
+              isLiked: !post.isLiked,
+              likes: post.isLiked ? post.likes + 1 : post.likes - 1,
+            }
             : post
         )
       );

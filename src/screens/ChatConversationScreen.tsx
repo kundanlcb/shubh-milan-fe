@@ -14,7 +14,7 @@ import {
   BackHandler,
   Image,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, Typography, Spacing, BorderRadius } from '../constants/styles';
 import { Icon } from '../components/Icon';
 import { SmartImage } from '../components/SmartImage';
@@ -205,6 +205,7 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
   navigation,
   route,
 }) => {
+  const insets = useSafeAreaInsets();
   const { chatName, isOnline } = route.params;
   // Pagination states
   const [page, setPage] = useState(1);
@@ -462,7 +463,7 @@ export const ChatConversationScreen: React.FC<MainScreenProps<'ChatConversation'
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
     >
       {/* Header moved outside SafeAreaView for flush top */}
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top }]}>
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}

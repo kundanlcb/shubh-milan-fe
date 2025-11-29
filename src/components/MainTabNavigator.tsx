@@ -81,135 +81,157 @@ export const MainTabNavigator: React.FC<{
   onNavigateToTermsPrivacy?: () => void;
   onNavigateToProfileDetail?: (sectionType: string) => void;
   onLogout: () => void;
-}> = ({ 
-  initialActiveTab = 'Home', 
-  onTabChange, 
-  onNavigateToUserProfile, 
-  onNavigateToChat, 
-  onNavigateToChatConversation, 
-  onNavigateToEditProfile, 
-  onNavigateToStoryViewer, 
+}> = ({
+  initialActiveTab = 'Home',
+  onTabChange,
+  onNavigateToUserProfile,
+  onNavigateToChat,
+  onNavigateToChatConversation,
+  onNavigateToEditProfile,
+  onNavigateToStoryViewer,
   onNavigateToSettings,
   onNavigateToPremiumUpgrade,
   onNavigateToHelpSupport,
   onNavigateToTermsPrivacy,
   onNavigateToProfileDetail,
-  onLogout 
+  onLogout
 }) => {
-  const [activeTab, setActiveTab] = useState<TabKey>(initialActiveTab as TabKey);
-  const [showAddStoryScreen, setShowAddStoryScreen] = useState(false);
-  const insets = useSafeAreaInsets();
+    const [activeTab, setActiveTab] = useState<TabKey>(initialActiveTab as TabKey);
+    const [showAddStoryScreen, setShowAddStoryScreen] = useState(false);
+    const insets = useSafeAreaInsets();
 
-  // Update activeTab when initialActiveTab prop changes (coming back from chat conversation)
-  useEffect(() => {
-    setActiveTab(initialActiveTab as TabKey);
-  }, [initialActiveTab]);
+    // Update activeTab when initialActiveTab prop changes (coming back from chat conversation)
+    useEffect(() => {
+      setActiveTab(initialActiveTab as TabKey);
+    }, [initialActiveTab]);
 
-  // Handle back button press
-  useEffect(() => {
-    const backAction = () => {
+    // Handle back button press
+    useEffect(() => {
+      const backAction = () => {
+        if (activeTab === 'AddPost') {
+          setActiveTab('Home');
+          return true; // Prevent default back navigation
+        } else if (showAddStoryScreen) {
+          setShowAddStoryScreen(false);
+          return true; // Prevent default back navigation
+        }
+        return false; // Allow default back navigation
+      };
+
+      const subscription = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+      return () => {
+        subscription.remove();
+      };
+    }, [activeTab, showAddStoryScreen]);
+
+    // Handle tab change and notify parent
+    const handleTabChange = (tab: TabKey) => {
+      setActiveTab(tab);
+      onTabChange?.(tab);
+    };
+
+    // If AddStory screen is active, show it
+    if (showAddStoryScreen) {
+      return (
+        <View style={styles.container}>
+          <AddStoryScreen navigation={{ goBack: () => setShowAddStoryScreen(false) }} />
+        </View>
+      );
+    }
+
+    const renderActiveScreen = () => {
+      const activeTabData = tabs.find(tab => tab.key === activeTab);
+      if (!activeTabData) return null;
+
+      const Component = activeTabData.component;
+
+      // Pass navigation-like props to AddPostScreen
       if (activeTab === 'AddPost') {
-        setActiveTab('Home');
-        return true; // Prevent default back navigation
-      } else if (showAddStoryScreen) {
-        setShowAddStoryScreen(false);
-        return true; // Prevent default back navigation
+        return <Component navigation={{ goBack: () => setActiveTab('Home') }} />;
       }
-      return false; // Allow default back navigation
+
+      // Pass navigation callback to HomeScreen
+      if (activeTab === 'Home') {
+        return <Component
+          onNavigateToAddPost={() => setActiveTab('AddPost')}
+          onNavigateToAddStory={() => setShowAddStoryScreen(true)}
+          onNavigateToUserProfile={onNavigateToUserProfile}
+          onNavigateToStoryViewer={onNavigateToStoryViewer}
+          onNavigateToChat={onNavigateToChat}
+        />;
+      }
+
+      // Pass navigation callback to SearchScreen
+      if (activeTab === 'Search') {
+        return <Component
+          navigation={{
+            navigate: (screen: string, params?: any) => {
+              if (screen === 'UserProfile') {
+                onNavigateToUserProfile(params.userId);
+              }
+            }
+          }}
+        />;
+      }
+
+      // Pass navigation callback to NotificationScreen
+      if (activeTab === 'Notification') {
+        return <Component
+          navigation={{
+            navigate: (screen: string, params?: any) => {
+              if (screen === 'ChatConversation') {
+                onNavigateToChatConversation(params);
+              }
+            }
+          }}
+        />;
+      }
+
+      // Pass navigation callback to ProfileScreen
+      if (activeTab === 'Profile') {
+        return <Component
+          onNavigateToEditProfile={onNavigateToEditProfile}
+          onNavigateToSettings={onNavigateToSettings}
+          onNavigateToPremiumUpgrade={onNavigateToPremiumUpgrade}
+          onNavigateToHelpSupport={onNavigateToHelpSupport}
+          onNavigateToTermsPrivacy={onNavigateToTermsPrivacy}
+          onNavigateToProfileDetail={onNavigateToProfileDetail}
+          onLogout={onLogout}
+        />;
+      }
+
+      return <Component />;
     };
 
-    const subscription = BackHandler.addEventListener('hardwareBackPress', backAction);
+    const renderTabButton = (tab: Tab) => {
+      const isActive = activeTab === tab.key;
+      const iconConfig = isActive ? tab.activeIconConfig : tab.iconConfig;
 
-    return () => {
-      subscription.remove();
-    };
-  }, [activeTab, showAddStoryScreen]);
+      // Special styling for the add button - but following same pattern as other tabs
+      if (tab.isAddButton) {
+        return (
+          <TouchableOpacity
+            key={tab.key}
+            style={[styles.tabButton, isActive && styles.activeTabButton]}
+            onPress={() => handleTabChange(tab.key)}
+          >
+            <View style={[styles.tabIconContainer, isActive && styles.activeTabIconContainer]}>
+              <Icon
+                name={iconConfig.name}
+                library={iconConfig.library}
+                size={22}
+                color={isActive ? Colors.white : Colors.textSecondary}
+              />
+            </View>
+            <Text style={[styles.tabLabel, isActive && styles.activeTabLabel]}>
+              {tab.label}
+            </Text>
+            {isActive && <View style={styles.activeIndicator} />}
+          </TouchableOpacity>
+        );
+      }
 
-  // Handle tab change and notify parent
-  const handleTabChange = (tab: TabKey) => {
-    setActiveTab(tab);
-    onTabChange?.(tab);
-  };
-
-  // If AddStory screen is active, show it
-  if (showAddStoryScreen) {
-    return (
-      <View style={styles.container}>
-        <AddStoryScreen navigation={{ goBack: () => setShowAddStoryScreen(false) }} />
-      </View>
-    );
-  }
-
-  const renderActiveScreen = () => {
-    const activeTabData = tabs.find(tab => tab.key === activeTab);
-    if (!activeTabData) return null;
-
-    const Component = activeTabData.component;
-
-    // Pass navigation-like props to AddPostScreen
-    if (activeTab === 'AddPost') {
-      return <Component navigation={{ goBack: () => setActiveTab('Home') }} />;
-    }
-
-    // Pass navigation callback to HomeScreen
-    if (activeTab === 'Home') {
-      return <Component
-        onNavigateToAddPost={() => setActiveTab('AddPost')}
-        onNavigateToAddStory={() => setShowAddStoryScreen(true)}
-        onNavigateToUserProfile={onNavigateToUserProfile}
-        onNavigateToStoryViewer={onNavigateToStoryViewer}
-        onNavigateToChat={onNavigateToChat}
-      />;
-    }
-
-    // Pass navigation callback to SearchScreen
-    if (activeTab === 'Search') {
-      return <Component
-        navigation={{
-          navigate: (screen: string, params?: any) => {
-            if (screen === 'UserProfile') {
-              onNavigateToUserProfile(params.userId);
-            }
-          }
-        }}
-      />;
-    }
-
-    // Pass navigation callback to NotificationScreen
-    if (activeTab === 'Notification') {
-      return <Component
-        navigation={{
-          navigate: (screen: string, params?: any) => {
-            if (screen === 'ChatConversation') {
-              onNavigateToChatConversation(params);
-            }
-          }
-        }}
-      />;
-    }
-
-    // Pass navigation callback to ProfileScreen
-    if (activeTab === 'Profile') {
-      return <Component
-        onNavigateToEditProfile={onNavigateToEditProfile}
-        onNavigateToSettings={onNavigateToSettings}
-        onNavigateToPremiumUpgrade={onNavigateToPremiumUpgrade}
-        onNavigateToHelpSupport={onNavigateToHelpSupport}
-        onNavigateToTermsPrivacy={onNavigateToTermsPrivacy}
-        onNavigateToProfileDetail={onNavigateToProfileDetail}
-        onLogout={onLogout}
-      />;
-    }
-
-    return <Component />;
-  };
-
-  const renderTabButton = (tab: Tab) => {
-    const isActive = activeTab === tab.key;
-    const iconConfig = isActive ? tab.activeIconConfig : tab.iconConfig;
-
-    // Special styling for the add button - but following same pattern as other tabs
-    if (tab.isAddButton) {
       return (
         <TouchableOpacity
           key={tab.key}
@@ -230,46 +252,24 @@ export const MainTabNavigator: React.FC<{
           {isActive && <View style={styles.activeIndicator} />}
         </TouchableOpacity>
       );
-    }
+    };
 
     return (
-      <TouchableOpacity
-        key={tab.key}
-        style={[styles.tabButton, isActive && styles.activeTabButton]}
-        onPress={() => handleTabChange(tab.key)}
-      >
-        <View style={[styles.tabIconContainer, isActive && styles.activeTabIconContainer]}>
-          <Icon
-            name={iconConfig.name}
-            library={iconConfig.library}
-            size={22}
-            color={isActive ? Colors.white : Colors.textSecondary}
-          />
-        </View>
-        <Text style={[styles.tabLabel, isActive && styles.activeTabLabel]}>
-          {tab.label}
-        </Text>
-        {isActive && <View style={styles.activeIndicator} />}
-      </TouchableOpacity>
-    );
-  };
+      <View style={styles.container}>
+        {/* Main Content */}
+        <SafeAreaView style={styles.content} edges={['top', 'left', 'right']}>
+          {renderActiveScreen()}
+        </SafeAreaView>
 
-  return (
-    <View style={styles.container}>
-      {/* Main Content */}
-      <SafeAreaView style={styles.content} edges={['left', 'right']}>
-        {renderActiveScreen()}
-      </SafeAreaView>
-
-      {/* Bottom Tab Bar */}
-      <View style={[styles.tabBar, { paddingBottom: insets.bottom }]}>
-        <View style={styles.tabContainer}>
-          {tabs.map(renderTabButton)}
+        {/* Bottom Tab Bar */}
+        <View style={[styles.tabBar, { paddingBottom: insets.bottom }]}>
+          <View style={styles.tabContainer}>
+            {tabs.map(renderTabButton)}
+          </View>
         </View>
       </View>
-    </View>
-  );
-};
+    );
+  };
 
 const styles = StyleSheet.create({
   container: {

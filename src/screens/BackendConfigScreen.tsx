@@ -21,7 +21,7 @@ type Props = {
 };
 
 export const BackendConfigScreen: React.FC<Props> = ({ onConfigSave }) => {
-  const [backendUrl, setBackendUrl] = useState('https://86231846e1f9.ngrok-free.app/api');
+  const [backendUrl, setBackendUrl] = useState('https://9b475a10bbfd.ngrok-free.app/api');
   const [isFocused, setIsFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 

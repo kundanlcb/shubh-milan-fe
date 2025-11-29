@@ -172,9 +172,9 @@ export const SettingsScreen: React.FC<MainScreenProps<'Settings'>> = ({
           'Language',
           'Select your preferred language',
           [
-            { text: 'English', onPress: () => {} },
-            { text: 'हिंदी (Hindi)', onPress: () => {} },
-            { text: 'मैथिली (Maithili)', onPress: () => {} },
+            { text: 'English', onPress: () => { } },
+            { text: 'हिंदी (Hindi)', onPress: () => { } },
+            { text: 'मैथिली (Maithili)', onPress: () => { } },
             { text: 'Cancel', style: 'cancel' },
           ]
         );
@@ -190,7 +190,7 @@ export const SettingsScreen: React.FC<MainScreenProps<'Settings'>> = ({
           'Account Verification',
           'Verify your account to build trust and get better matches.\n\n• ID Proof Verification\n• Photo Verification\n• Phone Verification',
           [
-            { text: 'Verify Now', onPress: () => {} },
+            { text: 'Verify Now', onPress: () => { } },
             { text: 'Later', style: 'cancel' },
           ]
         );
@@ -201,7 +201,7 @@ export const SettingsScreen: React.FC<MainScreenProps<'Settings'>> = ({
           'Your profile will be hidden from search and matches. You can reactivate anytime by logging in.',
           [
             { text: 'Cancel', style: 'cancel' },
-            { text: 'Deactivate', style: 'destructive', onPress: () => {} },
+            { text: 'Deactivate', style: 'destructive', onPress: () => { } },
           ]
         );
         break;
@@ -211,13 +211,13 @@ export const SettingsScreen: React.FC<MainScreenProps<'Settings'>> = ({
           'Warning: This action cannot be undone. All your data will be permanently deleted.',
           [
             { text: 'Cancel', style: 'cancel' },
-            { 
-              text: 'Delete Forever', 
-              style: 'destructive', 
+            {
+              text: 'Delete Forever',
+              style: 'destructive',
               onPress: () => {
                 Alert.alert('Confirm', 'Are you absolutely sure?', [
                   { text: 'Cancel', style: 'cancel' },
-                  { text: 'Yes, Delete', style: 'destructive', onPress: () => {} },
+                  { text: 'Yes, Delete', style: 'destructive', onPress: () => { } },
                 ]);
               }
             },
@@ -292,7 +292,7 @@ export const SettingsScreen: React.FC<MainScreenProps<'Settings'>> = ({
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['left', 'right']}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <TabHeader
         title="Settings"
         leftIcon="arrow-left"

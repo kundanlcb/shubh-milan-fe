@@ -90,7 +90,7 @@ export const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ navigation
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['left', 'right']}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       {/* Header */}
       <TabHeader
         title="Profile"
@@ -128,8 +128,8 @@ export const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ navigation
           <View style={styles.actionRow}>
             <TouchableOpacity
               style={[styles.followButton,
-                followStatus === 'following' && styles.followButtonFollowing,
-                followStatus === 'requested' && styles.followButtonRequested
+              followStatus === 'following' && styles.followButtonFollowing,
+              followStatus === 'requested' && styles.followButtonRequested
               ]}
               onPress={handleFollow}
             >
@@ -140,8 +140,8 @@ export const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ navigation
                 color={followStatus === 'follow' ? Colors.primary : followStatus === 'following' ? '#4CAF50' : '#FF9800'}
               />
               <Text style={[styles.followButtonText,
-                followStatus === 'following' && styles.followButtonTextFollowing,
-                followStatus === 'requested' && styles.followButtonTextRequested
+              followStatus === 'following' && styles.followButtonTextFollowing,
+              followStatus === 'requested' && styles.followButtonTextRequested
               ]}>
                 {followStatus === 'follow' ? 'Send Interest' : followStatus === 'following' ? 'Following' : 'Interest Sent'}
               </Text>
@@ -204,7 +204,7 @@ export const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ navigation
                   key={post.id}
                   post={post}
                   onLike={(postId) => console.log('Like post:', postId)}
-                  onProfile={() => {}}
+                  onProfile={() => { }}
                   onComment={() => handleMessage()}
                   onShare={(postId) => console.log('Share post:', postId)}
                   onSave={() => console.log('Save post')}

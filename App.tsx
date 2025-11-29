@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { StatusBar, useColorScheme, BackHandler, View, ActivityIndicator } from 'react-native';
+import { StatusBar, useColorScheme, BackHandler, View, ActivityIndicator, StyleSheet } from 'react-native';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LoginScreen } from './src/screens/LoginScreen';
@@ -25,6 +25,7 @@ import { TermsPrivacyScreen } from './src/screens/TermsPrivacyScreen';
 import { ProfileDetailScreen } from './src/screens/ProfileDetailScreen';
 import { Colors } from './src/constants/colors';
 import { STORAGE_KEYS, setDynamicBaseURL } from './src/config/api.config';
+import { Snackbar } from './src/components/Snackbar';
 
 type CurrentScreen = 'BackendConfig' | 'Login' | 'Register' | 'ForgotPassword' | 'OTPVerification' | 'Main' | 'Chat' | 'ChatConversation' | 'EditProfile' | 'StoryViewer' | 'UserProfile' | 'Settings' | 'PremiumUpgrade' | 'HelpSupport' | 'TermsPrivacy' | 'ProfileDetail';
 type ModalScreen = null;
@@ -206,6 +207,7 @@ function App(): React.JSX.Element {
       />
       <AppContainer>
         {renderScreen()}
+        <Snackbar />
       </AppContainer>
     </SafeAreaProvider>
   );
@@ -216,7 +218,7 @@ function App(): React.JSX.Element {
       <View style={{
         flex: 1,
         backgroundColor: Colors.background,
-        paddingTop: insets.top
+        // paddingTop: insets.top // Removed to allow screens to handle their own safe area
       }}>
         {children}
       </View>
@@ -233,215 +235,184 @@ function App(): React.JSX.Element {
       );
     }
 
-    if (currentScreen === 'BackendConfig') {
-      return (
-        <BackendConfigScreen
-          onConfigSave={handleBackendConfigSave}
-        />
-      );
+    // Auth screens
+    if (!isLoggedIn) {
+      switch (currentScreen) {
+        case 'Register':
+          return <RegisterScreen navigation={navigationProps} />;
+        case 'Login':
+        default:
+          return <LoginScreen navigation={navigationProps} />;
+      }
     }
 
-    if (isLoggedIn && currentScreen === 'EditProfile') {
-      return (
-        <EditProfileScreen
-          navigation={{
-            goBack: () => setCurrentScreen('Main'),
-            navigate: (_screen: string, _params?: any) => {
-              if (_screen === 'Main') {
-                setCurrentScreen('Main');
-              }
-            }
-          }}
-          route={{ params: undefined }}
+    // Authenticated App Structure
+    return (
+      <AppContainer>
+        <MainTabNavigator
+          initialActiveTab={activeTab}
+          onTabChange={setActiveTab}
+          onNavigateToUserProfile={(userId: string) => navigate('UserProfile', { userId })}
+          onNavigateToChat={() => navigate('Chat')}
+          onNavigateToChatConversation={(params: any) => navigate('ChatConversation', params)}
+          onNavigateToEditProfile={() => navigate('EditProfile')}
+          onNavigateToStoryViewer={(params: any) => navigate('StoryViewer', params)}
+          onNavigateToSettings={() => navigate('Settings')}
+          onNavigateToPremiumUpgrade={() => navigate('PremiumUpgrade')}
+          onNavigateToHelpSupport={() => navigate('HelpSupport')}
+          onNavigateToTermsPrivacy={() => navigate('TermsPrivacy')}
+          onNavigateToProfileDetail={(sectionType: string) => navigate('ProfileDetail', { sectionType })}
+          onLogout={handleLogout}
         />
-      );
-    }
 
-    if (isLoggedIn && currentScreen === 'Settings') {
-      return (
-        <SettingsScreen
-          navigation={{
-            goBack: () => setCurrentScreen('Main'),
-            navigate: (_screen: string, _params?: any) => {
-              if (_screen === 'Main') {
-                setCurrentScreen('Main');
-              }
-            }
-          }}
-          route={{ params: undefined }}
-        />
-      );
-    }
+        {/* Overlays for other screens */}
+        {currentScreen === 'EditProfile' && (
+          <View style={[StyleSheet.absoluteFill, { zIndex: 10, backgroundColor: Colors.background }]}>
+            <EditProfileScreen
+              navigation={{
+                goBack: () => setCurrentScreen('Main'),
+                navigate: (_screen: string, _params?: any) => {
+                  if (_screen === 'Main') setCurrentScreen('Main');
+                }
+              }}
+              route={{ params: undefined }}
+            />
+          </View>
+        )}
 
-    if (isLoggedIn && currentScreen === 'PremiumUpgrade') {
-      return (
-        <PremiumUpgradeScreen
-          navigation={{
-            goBack: () => setCurrentScreen('Main'),
-            navigate: (_screen: string, _params?: any) => {
-              if (_screen === 'Main') {
-                setCurrentScreen('Main');
-              }
-            }
-          }}
-          route={{ params: undefined }}
-        />
-      );
-    }
+        {currentScreen === 'Settings' && (
+          <View style={[StyleSheet.absoluteFill, { zIndex: 10, backgroundColor: Colors.background }]}>
+            <SettingsScreen
+              navigation={{
+                goBack: () => setCurrentScreen('Main'),
+                navigate: (_screen: string, _params?: any) => {
+                  if (_screen === 'Main') setCurrentScreen('Main');
+                }
+              }}
+              route={{ params: undefined }}
+            />
+          </View>
+        )}
 
-    if (isLoggedIn && currentScreen === 'HelpSupport') {
-      return (
-        <HelpSupportScreen
-          navigation={{
-            goBack: () => setCurrentScreen('Main'),
-            navigate: (_screen: string, _params?: any) => {
-              if (_screen === 'Main') {
-                setCurrentScreen('Main');
-              }
-            }
-          }}
-          route={{ params: undefined }}
-        />
-      );
-    }
+        {currentScreen === 'PremiumUpgrade' && (
+          <View style={[StyleSheet.absoluteFill, { zIndex: 10, backgroundColor: Colors.background }]}>
+            <PremiumUpgradeScreen
+              navigation={{
+                goBack: () => setCurrentScreen('Main'),
+                navigate: (_screen: string, _params?: any) => {
+                  if (_screen === 'Main') setCurrentScreen('Main');
+                }
+              }}
+              route={{ params: undefined }}
+            />
+          </View>
+        )}
 
-    if (isLoggedIn && currentScreen === 'TermsPrivacy') {
-      return (
-        <TermsPrivacyScreen
-          navigation={{
-            goBack: () => setCurrentScreen('Main'),
-            navigate: (_screen: string, _params?: any) => {
-              if (_screen === 'Main') {
-                setCurrentScreen('Main');
-              }
-            }
-          }}
-          route={{ params: undefined }}
-        />
-      );
-    }
+        {currentScreen === 'HelpSupport' && (
+          <View style={[StyleSheet.absoluteFill, { zIndex: 10, backgroundColor: Colors.background }]}>
+            <HelpSupportScreen
+              navigation={{
+                goBack: () => setCurrentScreen('Main'),
+                navigate: (_screen: string, _params?: any) => {
+                  if (_screen === 'Main') setCurrentScreen('Main');
+                }
+              }}
+              route={{ params: undefined }}
+            />
+          </View>
+        )}
 
-    if (isLoggedIn && currentScreen === 'ProfileDetail') {
-      return (
-        <ProfileDetailScreen
-          navigation={{
-            goBack: () => setCurrentScreen('Main'),
-            navigate: (_screen: string, _params?: any) => {
-              if (_screen === 'Main') {
-                setCurrentScreen('Main');
-              } else if (_screen === 'EditProfile') {
-                navigate('EditProfile');
-              }
-            }
-          }}
-          route={{ params: profileDetailParams }}
-        />
-      );
-    }
+        {currentScreen === 'TermsPrivacy' && (
+          <View style={[StyleSheet.absoluteFill, { zIndex: 10, backgroundColor: Colors.background }]}>
+            <TermsPrivacyScreen
+              navigation={{
+                goBack: () => setCurrentScreen('Main'),
+                navigate: (_screen: string, _params?: any) => {
+                  if (_screen === 'Main') setCurrentScreen('Main');
+                }
+              }}
+              route={{ params: undefined }}
+            />
+          </View>
+        )}
 
-    if (isLoggedIn && currentScreen === 'ChatConversation') {
-      return (
-        <ChatConversationScreen
-          navigation={{
-            goBack: () => setCurrentScreen('Main'),
-            navigate: (screen: string, params?: any) => {
-              if (screen === 'UserProfile') {
-                navigate('UserProfile', params);
-              }
-            }
-          }}
-          route={{ params: chatConversationParams }}
-        />
-      );
-    }
+        {currentScreen === 'ProfileDetail' && (
+          <View style={[StyleSheet.absoluteFill, { zIndex: 10, backgroundColor: Colors.background }]}>
+            <ProfileDetailScreen
+              navigation={{
+                goBack: () => setCurrentScreen('Main'),
+                navigate: (_screen: string, _params?: any) => {
+                  if (_screen === 'Main') setCurrentScreen('Main');
+                  else if (_screen === 'EditProfile') navigate('EditProfile');
+                }
+              }}
+              route={{ params: profileDetailParams }}
+            />
+          </View>
+        )}
 
-    if (isLoggedIn && currentScreen === 'StoryViewer') {
-      return (
-        <StoryViewerScreen
-          navigation={{
-            goBack: () => setCurrentScreen('Main'),
-            navigate: (_screen: string, _params?: any) => {
-              if (_screen === 'Main') {
-                setCurrentScreen('Main');
-              }
-            }
-          }}
-          route={{ params: storyViewerParams }}
-        />
-      );
-    }
+        {currentScreen === 'ChatConversation' && (
+          <View style={[StyleSheet.absoluteFill, { zIndex: 10, backgroundColor: Colors.background }]}>
+            <ChatConversationScreen
+              navigation={{
+                goBack: () => setCurrentScreen('Main'), // Or back to Chat? Logic in navigate handles flow usually
+                navigate: (screen: string, params?: any) => {
+                  if (screen === 'UserProfile') navigate('UserProfile', params);
+                }
+              }}
+              route={{ params: chatConversationParams }}
+            />
+          </View>
+        )}
 
-    if (isLoggedIn && currentScreen === 'UserProfile') {
-      return (
-        <UserProfileScreen
-          navigation={{
-            goBack: () => setCurrentScreen('Main'),
-            navigate: (screen: string, params?: any) => {
-              if (screen === 'ChatConversation') {
-                navigate('ChatConversation', params);
-              }
-            }
-          }}
-          route={{ params: modalParams }}
-        />
-      );
-    }
+        {currentScreen === 'StoryViewer' && (
+          <View style={[StyleSheet.absoluteFill, { zIndex: 20, backgroundColor: 'black' }]}>
+            <StoryViewerScreen
+              navigation={{
+                goBack: () => setCurrentScreen('Main'),
+                navigate: (_screen: string, _params?: any) => {
+                  if (_screen === 'Main') setCurrentScreen('Main');
+                }
+              }}
+              route={{ params: storyViewerParams }}
+            />
+          </View>
+        )}
 
-    if (isLoggedIn && currentScreen === 'Chat') {
-      return (
-        <ChatScreen
-          navigation={{
-            goBack: () => setCurrentScreen('Main'),
-            navigate: (screen: string, params?: any) => {
-              if (screen === 'ChatConversation') {
-                navigate('ChatConversation', params);
-              } else if (screen === 'UserProfile') {
-                navigate('UserProfile', params);
-              }
-            }
-          }}
-          route={{ params: undefined }}
-        />
-      );
-    }
-
-    if (isLoggedIn && currentScreen === 'Main') {
-      return (
-        <>
-          <MainTabNavigator
-            initialActiveTab={activeTab}
-            onTabChange={setActiveTab}
-            onNavigateToUserProfile={(userId: string) => navigate('UserProfile', { userId })}
-            onNavigateToChat={() => navigate('Chat')}
-            onNavigateToChatConversation={(params: any) => navigate('ChatConversation', params)}
-            onNavigateToEditProfile={() => navigate('EditProfile')}
-            onNavigateToStoryViewer={(params: any) => navigate('StoryViewer', params)}
-            onNavigateToSettings={() => navigate('Settings')}
-            onNavigateToPremiumUpgrade={() => navigate('PremiumUpgrade')}
-            onNavigateToHelpSupport={() => navigate('HelpSupport')}
-            onNavigateToTermsPrivacy={() => navigate('TermsPrivacy')}
-            onNavigateToProfileDetail={(sectionType: string) => navigate('ProfileDetail', { sectionType })}
-            onLogout={handleLogout}
-          />
-
-          {modalScreen === 'UserProfile' && (
+        {/* UserProfile Modal */}
+        {(currentScreen === 'UserProfile' || modalScreen === 'UserProfile') && (
+          <View style={[StyleSheet.absoluteFill, { zIndex: 30, backgroundColor: Colors.background }]}>
             <UserProfileScreen
-              navigation={{ goBack: closeModal }}
+              navigation={{
+                goBack: () => {
+                  if (modalScreen === 'UserProfile') closeModal();
+                  else setCurrentScreen('Main');
+                },
+                navigate: (screen: string, params?: any) => {
+                  if (screen === 'ChatConversation') navigate('ChatConversation', params);
+                }
+              }}
               route={{ params: modalParams }}
             />
-          )}
-        </>
-      );
-    }
+          </View>
+        )}
 
-    // Auth screens
-    switch (currentScreen) {
-      case 'Register':
-        return <RegisterScreen navigation={navigationProps} />;
-      case 'Login':
-      default:
-        return <LoginScreen navigation={navigationProps} />;
-    }
+        {currentScreen === 'Chat' && (
+          <View style={[StyleSheet.absoluteFill, { zIndex: 10, backgroundColor: Colors.background }]}>
+            <ChatScreen
+              navigation={{
+                goBack: () => setCurrentScreen('Main'),
+                navigate: (screen: string, params?: any) => {
+                  if (screen === 'ChatConversation') navigate('ChatConversation', params);
+                  else if (screen === 'UserProfile') navigate('UserProfile', params);
+                }
+              }}
+              route={{ params: undefined }}
+            />
+          </View>
+        )}
+      </AppContainer>
+    );
   }
 }
 

@@ -53,8 +53,8 @@ const getProfileData = (sectionType: string): ProfileSection[] => {
         {
           title: 'About Me',
           items: [
-            { 
-              label: 'Bio', 
+            {
+              label: 'Bio',
               value: 'Traditional values with modern outlook. Looking for a caring and understanding life partner who respects family values and supports personal growth.',
             },
           ],
@@ -176,8 +176,8 @@ const getProfileData = (sectionType: string): ProfileSection[] => {
         {
           title: 'Note',
           items: [
-            { 
-              label: 'Horoscope Matching', 
+            {
+              label: 'Horoscope Matching',
               value: 'Kundali matching will be done before finalizing the alliance. Detailed horoscope available on request.',
             },
           ],
@@ -198,8 +198,8 @@ const getProfileData = (sectionType: string): ProfileSection[] => {
           title: 'Address',
           items: [
             { label: 'Current Location', value: 'Darbhanga, Bihar', icon: 'map-pin' },
-            { 
-              label: 'Full Address', 
+            {
+              label: 'Full Address',
               value: 'Ward No. 12, Laheriasarai Road, Darbhanga - 846004, Bihar, India',
               icon: 'home',
             },
@@ -244,7 +244,7 @@ export const ProfileDetailScreen: React.FC<MainScreenProps<'ProfileDetail'>> = (
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['left', 'right']}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <TabHeader
         title={title}
         leftIcon="arrow-left"
